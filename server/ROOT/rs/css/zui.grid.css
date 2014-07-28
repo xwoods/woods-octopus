@@ -1,0 +1,256 @@
+/**
+ * Created by pw on 14-7-20.
+ */
+
+.zgrid-menu-bar {
+    height: 30px;
+    line-height: 30px;
+}
+
+.zgrid-header {
+}
+
+.zgrid-footer{
+}
+
+.zgrid-table {
+    border: 1px solid #D9D9D9;
+    margin: 5px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.left-panel {
+    width: 35px;
+    position: absolute;
+}
+
+.right-panel {
+    margin-left: 35px;
+    overflow-x: auto;
+}
+
+.zgrid-table-head {
+    height: 30px;
+    line-height: 30px;
+}
+
+.zgrid-table-body {
+    min-height: 400px;
+}
+
+.left-panel .zgrid-table-head {
+    text-align: center;
+    position: relative;
+    background-color: #f5f5f5;
+    border-color: #ddd;
+    background-image: linear-gradient(to bottom, #F5F4F9 0%, #ECEAF3 100%);
+}
+
+.left-panel .zgrid-table-head .column-setting-toggle {
+    cursor: pointer;
+}
+
+.left-panel .zgrid-table-head .zgrid-column-setting {
+    display: none;
+    position: absolute;
+    z-index: 1080;
+    width: 260px;
+    max-height: 300px;
+    padding: 5px 0;
+    overflow: auto;
+    left: 35px;
+    background: #fff;
+    border-width: 0 1px 1px 0;
+    border-style: solid;
+    border-color: #D9D9D9;
+    border-radius: 0 0 4px 4px;
+}
+
+.left-panel .zgrid-table-head.open .zgrid-column-setting {
+    display: block;
+}
+
+.zgrid-column-setting li {
+    height: 25px;
+    line-height: 25px;
+}
+
+
+.zgrid-column-setting li span {
+    display: inline-block;
+    width: 80px;
+    text-align: right;
+}
+
+.zgrid-column-setting li em {
+    width: 1px;
+    height: 0px;
+    margin: 0 8px;
+    overflow: hidden;
+    background-color: #e5e5e5;
+}
+.zgrid-column-setting li b {
+    width: 30px;
+    text-align: center;
+}
+
+.zgrid-column-setting li input{
+    border: 0;
+    border-radius: 2px;
+}
+
+.zgrid-column-setting li input[type=number] {
+    width: 50px;
+    padding:0 5px;
+}
+
+.left-panel .zgrid-table-body {
+}
+
+
+.right-panel .zgrid-table-head {
+    background-color: #f5f5f5;
+    border-color: #ddd;
+    background-image: linear-gradient(to bottom, #F5F4F9 0%, #ECEAF3 100%);
+}
+
+.right-panel .zgrid-table-body {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.right-panel .zgrid-table-body .zgrid-tr {
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.right-panel .zgrid-table-body .zgrid-tr:last-child {
+    border-bottom: 0;
+}
+
+.zgrid-th {
+    /*padding: 0 5px;*/
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.zgrid-th > i.fa {
+    display: none;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+}
+
+.zgrid-th.sort.asc > i.fa-sort-asc {
+    display: inline-block;
+}
+
+.zgrid-th.sort.desc > i.fa-sort-desc {
+    display: inline-block;
+}
+
+.zgrid-tr {
+    float: left;
+}
+
+.zgrid-td {
+    /*padding: 0 5px;*/
+    display: inline-block;
+    height: 25px;
+    line-height: 25px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.left-panel .zgrid-table-body .zgrid-td {
+    padding-right: 8px;
+    width: 35px;
+    text-align: center;
+    height: 26px;
+    line-height: 26px;
+    font-size: 12px;
+}
+
+.pager-area {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    display: inline-block;
+    float: right;
+    color: #333;
+}
+
+.pager-area > li {
+    display: inline-block;
+    padding: 0 5px;
+}
+
+.pager-area b {
+    font-size: 14px;
+    padding: 0 2px;
+}
+
+.pager-btn {
+    cursor: pointer;
+}
+
+.pager-btn.disable {
+    cursor: not-allowed;
+}
+
+
+.pager-btn.disable > i.fa {
+    opacity: 0;
+}
+
+.pager-btn > i.fa {
+    color: #888;
+}
+
+.pager-btn > i.fa:hover {
+    color: #333;
+}
+
+.pager-size {
+    border: 0;
+    border: 1px solid #D9D9D9;
+    border-radius: 4px;
+    padding-left: 5px;
+}
+
+
+.query-area {
+    display: inline-block;
+    float: left;
+}
+
+.query-area > li {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.query-area input {
+    border: 1px solid #D9D9D9;
+    border-radius: 4px;
+    padding: 0 5px;
+}
+
+.query-area select {
+    border: 1px solid #D9D9D9;
+    border-radius: 4px;
+    padding: 0 5px;
+}
+
+.query-area input.query-kwd {
+    width: 200px;
+    padding: 0 10px;
+}
+
+.query-area input.query-kwd:focus {
+    width: 350px;
+    color: #007AFF;
+}

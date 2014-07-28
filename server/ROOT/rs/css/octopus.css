@@ -1,0 +1,17 @@
+/**
+ * Created by pw on 14-7-15.
+ */
+
+.fa-spin-1s {
+    -webkit-animation: spin 1s infinite linear;
+    -moz-animation: spin 1s infinite linear;
+    -o-animation: spin 1s infinite linear;
+    animation: spin 1s infinite linear;
+}
+
+.fa-spin-05s {
+    -webkit-animation: spin 0.5s infinite linear;
+    -moz-animation: spin 0.5s infinite linear;
+    -o-animation: spin 0.5s infinite linear;
+    animation: spin 0.5s infinite linear;
+}
