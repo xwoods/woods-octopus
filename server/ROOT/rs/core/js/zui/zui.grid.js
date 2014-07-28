@@ -84,6 +84,7 @@
                 html += '           <li>'
                 html += '               <b class="pg-current">0</b> <b>/</b>';
                 html += '               <b class="pg-count">0</b>';
+                html += '               <b class="pg-total">( 0 )</b>';
                 html += '           </li>'
                 html += '           <li class="pager-btn pager-next"><i class="fa fa-chevron-circle-right fa-lg"></i></li>'
                 html += '       </ol>'
@@ -103,6 +104,11 @@
             html += '           <div class="zgrid-table-head">';
             html += '           </div>';
             html += '           <div class="zgrid-table-body">';
+            html += '           </div>';
+            html += '       </div>';
+            html += '       <div class="loading-panel">';
+            html += '           <div class="loading-tip">';
+            html += '               <i class="fa fa-refresh fa-spin-1s fa-5x"></i>';
             html += '           </div>';
             html += '       </div>';
             html += '   </div>';
@@ -204,6 +210,7 @@
             var lbody = selection.find('.left-panel .zgrid-table-body');
             var rbody = selection.find('.right-panel .zgrid-table-body');
             var pageArea = selection.find('.pager-area');
+            var loadingTip = selection.find('.loading-panel');
             if (reset) {
                 pager.pgnm = 1;
             }
@@ -225,6 +232,8 @@
             }
 
             opt.status.loading = true;
+            loadingTip.show();
+            var startTime = new Date().getTime();
             $z.http.post(query.url, $.extend(queryParams, cusParams), function (re) {
                 var qr = re.data;
                 var pg = qr.pager;
@@ -235,6 +244,7 @@
                 pager.pgnm = pg.pageNumber;
                 pageArea.find('.pg-current').html(pager.pgnm);
                 pageArea.find('.pg-count').html(pager.pgcount);
+                pageArea.find('.pg-total').html("( " + pager.total + " )");
                 if (pager.pgnm == 1) {
                     pageArea.find('.pager-prev').addClass('disable');
                 }
@@ -248,7 +258,14 @@
                 // 更新table
                 lbody[0].innerHTML = dom.leftBodyHtml(cols, dlist);
                 rbody[0].innerHTML = dom.rightBodyHtml(cols, dlist);
-                opt.status.loading = false;
+
+                var stopTime = new Date().getTime();
+                var useTime = stopTime - startTime;
+                console.log("use " + useTime + "ms to load data");
+                setTimeout(function () {
+                    loadingTip.hide();
+                    opt.status.loading = false;
+                }, useTime > 200 ? 0 : 200);
             });
         }
     };

@@ -208,7 +208,7 @@
 }
 
 .pager-btn > i.fa {
-    color: #888;
+    color: #ccc;
 }
 
 .pager-btn > i.fa:hover {
@@ -253,4 +253,25 @@
 .query-area input.query-kwd:focus {
     width: 350px;
     color: #007AFF;
+}
+
+.loading-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #EEE;
+    opacity: 0.9;
+    display: none;
+}
+
+.loading-tip {
+    width: 100px;
+    height: 50px;
+    line-height: 50px;
+    margin: 200px auto;
+    text-align: center;
+    color: #333333;
+    opacity: 1;
 }
