@@ -31,6 +31,7 @@
 </div>
 <%@include file="_msg.jsp" %>
 <script language="JavaScript" src="${rs}/core/js/jquery.js"></script>
+<script language="JavaScript" src="${rs}/core/js/underscore.js"></script>
 <script language="JavaScript" src="${rs}/core/js/angular.js"></script>
 <script language="JavaScript" src="${rs}/core/js/zlib/core.js"></script>
 <script language="JavaScript" src="${rs}/core/js/zlib/log.js"></script>

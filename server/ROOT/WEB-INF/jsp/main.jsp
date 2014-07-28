@@ -9,14 +9,14 @@
     <link rel="stylesheet" href="${rs}/core/css/reset.css"/>
     <link rel="stylesheet" href="${rs}/core/css/octopus.css">
 
-    <link rel="stylesheet" href="${rs}/core/css/zui.grid.css">
+    <link rel="stylesheet" href="${rs}/core/css/zui/zui.grid.css">
 
     <link rel="stylesheet" href="${rs}/core/css/module/main.css">
     <link rel="stylesheet" href="${rs}/core/css/module/me.css">
     <link rel="stylesheet" href="${rs}/core/css/module/users.css">
     <link rel="stylesheet" href="${rs}/core/css/module/setting.css">
 </head>
-<body dmnNm="${domain.name}" ng-app="routeApp">
+<body dmnNm="${domain.name}" ng-app="mainApp">
 <%@include file="_msg.jsp" %>
 <div class="header">
     <span>Oct</span><img class="logo" src="${rs}/core/img/octopus-logo.png"><span>pus</span>
@@ -48,7 +48,7 @@
                 </li>
             </ul>
         </li>
-        <li class="header-module hm-user" ng-controller="CurUserCtl">
+        <li class="header-module hm-user">
             <img src="${rs}/core/img/face/${userInfo.face}" class="user-face">
             <p class="user-name">${msg[user.alias]}</p>
             <i class="fa fa-lg fa-angle-down"></i>
@@ -66,7 +66,7 @@
                     <i class="fa fa-lg fa-unlock-alt"></i>
                     <span>${msg['page.header.user.lockscreen']}</span>
                 </li>
-                <li ng-click="quit()">
+                <li id="logout">
                     <i class="fa fa-lg fa-sign-out"></i>
                     <span>${msg['page.header.user.logout']}</span>
                 </li>
@@ -123,7 +123,7 @@
 <script language="JavaScript" src="${rs}/core/js/angular.js"></script>
 <script language="JavaScript" src="${rs}/core/js/angular-route.js"></script>
 <!-- 控件 -->
-<script language="JavaScript" src="${rs}/core/js/zui.grid.js"></script>
+<script language="JavaScript" src="${rs}/core/js/zui/zui.grid.js"></script>
 <!-- module -->
 <script language="JavaScript" src="${rs}/core/js/module/main.js"></script>
 <script language="JavaScript" src="${rs}/core/js/module/me.js"></script>
