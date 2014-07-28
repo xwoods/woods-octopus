@@ -197,7 +197,6 @@ $(document).ready(function () {
 });
 
 // 控制module跳转
-var appRoute = [];
 var coreRoute = [
     {
         url: '/me',
@@ -237,7 +236,7 @@ mainApp.config(['$routeProvider', function ($routeProvider) {
         var route = routeList[i];
         console.log("reg route : " + route.url);
         $routeProvider.when(route.url, {
-            templateUrl: "views/" + route.page,
+            templateUrl: "views" + route.page,
             controller: route.ctrl
         });
     }

@@ -125,6 +125,7 @@
 <!-- 控件 -->
 <script language="JavaScript" src="${rs}/core/js/zui/zui.grid.js"></script>
 <!-- module -->
+<script language="JavaScript" src="${rs}/module/route.js"></script>
 <script language="JavaScript" src="${rs}/core/js/module/main.js"></script>
 <script language="JavaScript" src="${rs}/core/js/module/me.js"></script>
 <script language="JavaScript" src="${rs}/core/js/module/users.js"></script>
