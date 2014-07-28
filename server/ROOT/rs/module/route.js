@@ -1,5 +1,5 @@
 // 配置route
-//  test
+
 var appRoute = [
     {
         url: '/storage/dataimport',
@@ -25,5 +25,6 @@ var appRoute = [
         url: '/storage/storageInOut',
         page: '/ieslab/storage/storageInOut.jsp',
         ctrl: 'StorageInOutCtl'
-    }
+    },
+    {}
 ];
