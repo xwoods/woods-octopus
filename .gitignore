@@ -12,4 +12,4 @@
 hs_err_pid*
 
 # 这个部署时每个项目自己建立
-server/ROOT/rs/module/route.js
+/server/ROOT/rs/module/route.js
