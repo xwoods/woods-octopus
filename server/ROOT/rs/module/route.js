@@ -1,5 +1,5 @@
 // 配置route
-// 
+//  test
 var appRoute = [
     {
         url: '/storage/dataimport',
