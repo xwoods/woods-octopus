@@ -26,4 +26,5 @@ var appRoute = [
         page: '/ieslab/storage/storageInOut.jsp',
         ctrl: 'StorageInOutCtl'
     }
+    ,{}
 ];
