@@ -4,21 +4,22 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>${msg['page.main.title']}</title>
-    <link rel="shortcut icon" href="${rs}/img/favicon.ico"/>
-    <link rel="stylesheet" href="${rs}/css/reset.css"/>
-    <link rel="stylesheet" href="${rs}/css/font-awesome.css">
-    <link rel="stylesheet" href="${rs}/css/octopus.css">
-    <link rel="stylesheet" href="${rs}/css/zui.grid.css">
-    <link rel="stylesheet" href="${rs}/css/main.css">
-    <link rel="stylesheet" href="${rs}/css/me.css">
-    <link rel="stylesheet" href="${rs}/css/users.css">
-    <link rel="stylesheet" href="${rs}/css/setting.css">
-    <link rel="stylesheet" href="${rs}/css/storage.css">
+    <link rel="shortcut icon" href="${rs}/core/img/favicon.ico"/>
+    <link rel="stylesheet" href="${rs}/core/css/font-awesome.css">
+    <link rel="stylesheet" href="${rs}/core/css/reset.css"/>
+    <link rel="stylesheet" href="${rs}/core/css/octopus.css">
+
+    <link rel="stylesheet" href="${rs}/core/css/zui.grid.css">
+
+    <link rel="stylesheet" href="${rs}/core/css/module/main.css">
+    <link rel="stylesheet" href="${rs}/core/css/module/me.css">
+    <link rel="stylesheet" href="${rs}/core/css/module/users.css">
+    <link rel="stylesheet" href="${rs}/core/css/module/setting.css">
 </head>
 <body dmnNm="${domain.name}" ng-app="routeApp">
 <%@include file="_msg.jsp" %>
 <div class="header">
-    <span>Oct</span><img class="logo" src="${rs}/img/octopus-logo.png"><span>pus</span>
+    <span>Oct</span><img class="logo" src="${rs}/core/img/octopus-logo.png"><span>pus</span>
     <ol class="header-menu">
         <li class="header-module">
             <i class="fa fa-tasks fa-2x header-icon"><span class="check-list-tip">20</span></i>
@@ -48,7 +49,7 @@
             </ul>
         </li>
         <li class="header-module hm-user" ng-controller="CurUserCtl">
-            <img src="${rs}/img/face/${userInfo.face}" class="user-face">
+            <img src="${rs}/core/img/face/${userInfo.face}" class="user-face">
             <p class="user-name">${msg[user.alias]}</p>
             <i class="fa fa-lg fa-angle-down"></i>
             <ul class="sub-menu">
@@ -110,24 +111,23 @@
     </div>
 </div>
 <!-- 库 -->
-<script language="JavaScript" src="${rs}/js/jquery.js"></script>
-<script language="JavaScript" src="${rs}/js/jquery-ui.js"></script>
-<script language="JavaScript" src="${rs}/js/handlebars.js"></script>
-<script language="JavaScript" src="${rs}/js/zlib/core.js"></script>
-<script language="JavaScript" src="${rs}/js/zlib/log.js"></script>
-<script language="JavaScript" src="${rs}/js/zlib/err.js"></script>
-<script language="JavaScript" src="${rs}/js/zlib/browser.js"></script>
-<script language="JavaScript" src="${rs}/js/zlib/http.js"></script>
-<script language="JavaScript" src="${rs}/js/underscore.js"></script>
-<script language="JavaScript" src="${rs}/js/angular.js"></script>
-<script language="JavaScript" src="${rs}/js/angular-route.js"></script>
+<script language="JavaScript" src="${rs}/core/js/jquery.js"></script>
+<script language="JavaScript" src="${rs}/core/js/jquery-ui.js"></script>
+<script language="JavaScript" src="${rs}/core/js/handlebars.js"></script>
+<script language="JavaScript" src="${rs}/core/js/zlib/core.js"></script>
+<script language="JavaScript" src="${rs}/core/js/zlib/log.js"></script>
+<script language="JavaScript" src="${rs}/core/js/zlib/err.js"></script>
+<script language="JavaScript" src="${rs}/core/js/zlib/browser.js"></script>
+<script language="JavaScript" src="${rs}/core/js/zlib/http.js"></script>
+<script language="JavaScript" src="${rs}/core/js/underscore.js"></script>
+<script language="JavaScript" src="${rs}/core/js/angular.js"></script>
+<script language="JavaScript" src="${rs}/core/js/angular-route.js"></script>
 <!-- 控件 -->
-<script language="JavaScript" src="${rs}/js/zui.grid.js"></script>
+<script language="JavaScript" src="${rs}/core/js/zui.grid.js"></script>
 <!-- module -->
-<script language="JavaScript" src="${rs}/js/module/main.js"></script>
-<script language="JavaScript" src="${rs}/js/module/me.js"></script>
-<script language="JavaScript" src="${rs}/js/module/users.js"></script>
-<script language="JavaScript" src="${rs}/js/module/setting.js"></script>
-<script language="JavaScript" src="${rs}/js/module/storage.js"></script>
+<script language="JavaScript" src="${rs}/core/js/module/main.js"></script>
+<script language="JavaScript" src="${rs}/core/js/module/me.js"></script>
+<script language="JavaScript" src="${rs}/core/js/module/users.js"></script>
+<script language="JavaScript" src="${rs}/core/js/module/setting.js"></script>
 </body>
 </html>

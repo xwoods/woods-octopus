@@ -73,7 +73,6 @@ function navConf(nc) {
 
 var navUrlNameMap = {};
 
-
 var tmpl_crumb_li = '<li><span>{{value}}</span></li>';
 
 function crumbHtml(route) {
@@ -195,55 +194,88 @@ $(document).ready(function () {
 
 var routeApp = angular.module('routeApp', ['ngRoute']);
 
-routeApp.controller('CurUserCtl', function ($scope) {
-    $scope.quit = function () {
-        $z.http.get('/user/logout', function () {
-            window.location.href = "/login";
-        });
-    }
-});
-
 routeApp.controller('NoImplCtl', function ($scope) {
-
 });
+
+var coreRoute = {
+    routes: [
+        {
+            url: '/me',
+            page: '/core/me.jsp',
+            ctrl: 'MeCtl'
+        },
+        {
+            url: '/users',
+            page: '/core/users.jsp',
+            ctrl: 'UsersCtl'
+        },
+        {
+            url: '/setting',
+            page: '/core/setting.jsp',
+            ctrl: 'SettingCtl'
+        },
+        {
+            url: '/domains',
+            page: '/core/domains.jsp',
+            ctrl: 'DomainsCtl'
+        },
+        {
+            url: '/notImpl',
+            page: '/core/notImpl.jsp',
+            ctrl: 'NoImplCtl'
+        }
+    ]
+};
+
 
 routeApp.config(['$routeProvider', function ($routeProvider) {
-    $routeProvider
-        .when('/me', {
-            templateUrl: 'views/me.jsp',
-            controller: 'MeCtl'
-        })
-        .when('/users', {
-            templateUrl: 'views/users.jsp',
-            controller: 'UsersCtl'
-        })
-        .when('/setting', {
-            templateUrl: 'views/setting.jsp',
-            controller: 'SettingCtl'
-        })
-        .when('/storage/dataimport', {
-            templateUrl: 'views/storage/import.jsp',
-            controller: 'ImportCtl'
-        })
-        .when('/storage/storage', {
-            templateUrl: 'views/storage/storage.jsp',
-            controller: 'StorageCtl'
-        })
-        .when('/storage/storageTotal', {
-            templateUrl: 'views/storage/storageTotal.jsp',
-            controller: 'StorageTotalCtl'
-        })
-        .when('/storage/material', {
-            templateUrl: 'views/storage/material.jsp',
-            controller: 'MaterialCtl'
-        })
-        .when('/storage/storageInOut', {
-            templateUrl: 'views/storage/storageInOut.jsp',
-            controller: 'StorageInOutCtl'
-        })
-        .when('/noimpl', {
-            templateUrl: 'views/noimpl.jsp',
-            controller: 'NoImplCtl'
-        })
-        .otherwise({redirectTo: '/noimpl'})
+//    $routeProvider
+//        .when('/me', {
+//            templateUrl: 'views/me.jsp',
+//            controller: 'MeCtl'
+//        })
+//        .when('/users', {
+//            templateUrl: 'views/users.jsp',
+//            controller: 'UsersCtl'
+//        })
+//        .when('/setting', {
+//            templateUrl: 'views/setting.jsp',
+//            controller: 'SettingCtl'
+//        })
+//        .when('/storage/dataimport', {
+//            templateUrl: 'views/storage/import.jsp',
+//            controller: 'ImportCtl'
+//        })
+//        .when('/storage/storage', {
+//            templateUrl: 'views/storage/storage.jsp',
+//            controller: 'StorageCtl'
+//        })
+//        .when('/storage/storageTotal', {
+//            templateUrl: 'views/storage/storageTotal.jsp',
+//            controller: 'StorageTotalCtl'
+//        })
+//        .when('/storage/material', {
+//            templateUrl: 'views/storage/material.jsp',
+//            controller: 'MaterialCtl'
+//        })
+//        .when('/storage/storageInOut', {
+//            templateUrl: 'views/storage/storageInOut.jsp',
+//            controller: 'StorageInOutCtl'
+//        })
+//        .when('/noimpl', {
+//            templateUrl: 'views/notImpl.jsp',
+//            controller: 'NoImplCtl'
+//        })
+//        .otherwise({redirectTo: '/noimpl'})
+
+    var routeList = [].concat(coreRoute).concat(appRoute || []);
+    for (var i = 0; i < routeList.length; i++) {
+        var route = routeList[i];
+        $routeProvider.when(route.url, {
+            templateUrl: route.page,
+            controller: route.ctrl
+        });
+        console.log("reg route : " + route.url);
+    }
+    $routeProvider.otherwise({redirectTo: '/noImpl'});
 }]);

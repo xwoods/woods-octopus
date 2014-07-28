@@ -262,6 +262,9 @@
             _onChange(respTxt, opt);
         };
         evts.onerror = function (e) {
+            if(opt.onFinish){
+                opt.onFinish();
+            }
             if (opt.onError) {
                 opt.onError(e);
             } else {

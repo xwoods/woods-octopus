@@ -19,6 +19,9 @@
         },
         checkOpt: function (opt) {
             // TODO
+            opt.status = opt.status || {
+                loading: false
+            };
             return opt;
         },
         selection: function (ele) {
@@ -191,6 +194,9 @@
         },
         refresh: function (selection, reset) {
             var opt = util.opt(selection);
+            if (opt.status.loading) {
+                return;
+            }
             var cols = opt.table.columns;
             var query = opt.table.query;
             var pager = opt.table.pager;
@@ -218,6 +224,7 @@
                 cusParams = opt.header.queryParam(pjqs);
             }
 
+            opt.status.loading = true;
             $z.http.post(query.url, $.extend(queryParams, cusParams), function (re) {
                 var qr = re.data;
                 var pg = qr.pager;
@@ -241,6 +248,7 @@
                 // 更新table
                 lbody[0].innerHTML = dom.leftBodyHtml(cols, dlist);
                 rbody[0].innerHTML = dom.rightBodyHtml(cols, dlist);
+                opt.status.loading = false;
             });
         }
     };
@@ -284,6 +292,9 @@
             var btn = $(this);
             var sel = util.selection(this);
             var opt = util.opt(sel);
+            if (opt.status.loading) {
+                return;
+            }
             if (btn.hasClass('disable')) {
                 return;
             }
@@ -298,12 +309,14 @@
             var sel = util.selection(this);
             var opt = util.opt(sel);
             opt.table.pager.pgsz = $(this).val();
-
             data.refresh(sel, true);
         },
         sortBy: function () {
             var sel = util.selection(this);
             var opt = util.opt(sel);
+            if (opt.status.loading) {
+                return;
+            }
             var th = $(this);
             var newby = th.attr('field');
             var oldby = opt.table.order.by;
