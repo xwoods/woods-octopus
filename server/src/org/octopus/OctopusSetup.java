@@ -10,7 +10,9 @@ import org.nutz.mvc.Setup;
 
 public class OctopusSetup implements Setup {
 
-    private final static Log log = Logs.get();
+    private Log log = Logs.get();
+
+    private OctopusSetupChain setupChain;
 
     @Override
     public void init(NutConfig nc) {
@@ -35,11 +37,18 @@ public class OctopusSetup implements Setup {
         // 开启msg文件监控
         // MsgWatcher.startWatch(OctopusMainModule.class, ioc);
 
+        // setupChain
+        if (ioc.has("setupChain")) {
+            setupChain = ioc.get(OctopusSetupChain.class, "setupChain");
+            setupChain.initEach(nc);
+        }
     }
 
     @Override
     public void destroy(NutConfig nc) {
-
+        if (setupChain != null) {
+            setupChain.destroyEach(nc);
+        }
     }
 
 }
