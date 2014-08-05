@@ -5,6 +5,7 @@
 .zgrid-menu-bar {
     height: 30px;
     line-height: 30px;
+    overflow: hidden;
 }
 
 .zgrid-header {
@@ -49,6 +50,7 @@
 
 .left-panel .zgrid-table-head .column-setting-toggle {
     cursor: pointer;
+    display: inline-block;
 }
 
 .left-panel .zgrid-table-head .zgrid-column-setting {
@@ -168,7 +170,7 @@
 .left-panel .zgrid-table-body .zgrid-td {
     padding-right: 8px;
     width: 35px;
-    text-align: center;
+    text-align: right;
     height: 26px;
     line-height: 26px;
     font-size: 12px;

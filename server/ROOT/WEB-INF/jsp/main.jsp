@@ -78,6 +78,9 @@
 <div class="main-container">
     <div class="main-nav">
         <div class="nav-menu">
+            <ol>
+                <li><i class="fa fa-angle-double-left fa-2x nav-mini-toogle"></i></li>
+            </ol>
         </div>
         <ul class="nav-list">
         </ul>

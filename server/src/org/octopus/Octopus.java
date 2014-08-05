@@ -12,6 +12,7 @@ import javax.crypto.spec.DESKeySpec;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
+import org.nutz.dao.entity.annotation.Table;
 import org.nutz.json.Json;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
@@ -112,7 +113,17 @@ public class Octopus {
     public static void createTableByPKG(Dao dao, String pkg) {
         List<Class<?>> clzs = Scans.me().scanPackage(pkg);
         for (Class<?> clz : clzs) {
-            dao.create(clz, false);
+            Table anTable = clz.getAnnotation(Table.class);
+            if (anTable != null) {
+                String tbName = anTable.value();
+                if (tbName.indexOf("${") != -1) {
+                    log.warnf("Find Class(%s) has Dynamic-Table-Name(%s), Can't Create Table",
+                              clz.getName(),
+                              tbName);
+                } else {
+                    dao.create(clz, false);
+                }
+            }
         }
     }
 

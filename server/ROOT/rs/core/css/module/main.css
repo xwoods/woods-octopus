@@ -197,13 +197,14 @@ body {
     display: block;
     float: left;
     min-width: 50px;
-    max-width: 100px;
+    max-width: 200px;
     text-align: left;
-    font-size: 16px;
+    font-size: 14px;
     margin: 6px auto;
     line-height: 35px;
     height: 35px;
     padding: 0 15px 0 0;
+    overflow: hidden;
 }
 
 .logo {
@@ -215,6 +216,93 @@ body {
 
 .main-container {
     background-color: rgb(246, 246, 246);
+}
+
+.main-container.mini {
+
+}
+
+.main-container.mini .main-nav {
+    width: 50px;
+}
+
+.main-container.mini .main-content {
+    margin-left: 50px;
+}
+
+.main-container.mini .module-title {
+    display: none;
+}
+
+.main-container.mini .subnav-switch {
+    display: none;
+}
+
+.main-container.mini .main-nav .nav-list > li:hover > a:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 1px;
+    height: 42px;
+    top: 0px;
+    left: 50px;
+    background: #FFFFFF;
+    z-index: 1005;
+}
+
+.main-container.mini .main-nav .nav-list > li:hover {
+    width: 251px;
+}
+
+.main-container.mini .main-nav .nav-list > li:hover .module-title {
+    display: inline-block;
+    padding-left: 35px;
+}
+
+.main-container.mini .main-nav .nav-list > li:hover .subnav-list {
+    display: block;
+    position: absolute;
+    top: 42px;
+    left: 51px;
+    width: 200px;
+    z-index: 1030;
+    border-top: 1px solid rgb(200, 199, 204);
+}
+
+.main-container.mini .main-nav .nav-list > li:hover .subnav-list > li > a {
+    padding-left: 25px;
+}
+
+.main-container.mini .main-nav .nav-list > li:hover:before {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    border-width: 12px;
+    border-style: solid;
+    border-color: transparent transparent transparent rgb(219, 218, 223);
+    position: absolute;
+    top: 8px;
+    left: 50px;
+    z-index: 1020;
+}
+
+.main-container.mini .main-nav .nav-list > li:hover:after {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    border-width: 14px;
+    border-style: solid;
+    border-color: transparent transparent transparent rgb(255, 255, 255);
+    position: absolute;
+    top: 6px;
+    left: 50px;
+    z-index: 1010;
+}
+
+.main-container.mini .main-nav .nav-list > li.active:hover:before {
+    border-color: transparent transparent transparent #007AFF;
 }
 
 .main-nav {
@@ -235,10 +323,25 @@ body {
     height: 50px;
 }
 
+.nav-menu ol {
+    float: right;
+    display: inline-block;
+    margin-top: 13px;
+    margin-right: 20px;
+}
+
+.nav-menu .nav-mini-toogle {
+    cursor: pointer;
+}
+
+.nav-menu .nav-mini-toogle:hover {
+    color: #007AFF;
+}
+
 .nav-list {
     color: rgb(0, 0, 0);
     display: block;
-    width: 225px;
+    width: 100%;
     font-family: 'Open+Sans', sans-serif;
 }
 
@@ -249,8 +352,6 @@ body {
 
 .nav-list .fa {
     width: 24px;
-    height: 24px;
-    line-height: 24px;
     text-align: center;
 }
 
@@ -264,7 +365,7 @@ body {
     display: block;
     font-size: 14px;
     font-weight: 300;
-    padding: 10px 15px;
+    padding: 10px;
     position: relative;
     text-decoration: none;
     border-top: 1px solid rgb(200, 199, 204);
@@ -297,6 +398,12 @@ body {
     color: #007AFF;
     font-weight: normal;
     margin-right: 5px;
+}
+
+.nav-list > li > a > .module-title {
+    height: 20px;
+    line-height: 20px;
+    display: inline-block;
 }
 
 .nav-list > li.active > a > i {

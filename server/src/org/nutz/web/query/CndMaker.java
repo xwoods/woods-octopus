@@ -1,13 +1,16 @@
 package org.nutz.web.query;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.dao.QueryResult;
+import org.nutz.dao.TableName;
 import org.nutz.dao.pager.Pager;
 import org.nutz.dao.util.cri.SimpleCriteria;
 import org.nutz.lang.Strings;
+import org.nutz.lang.util.NutMap;
 
 public abstract class CndMaker {
 
@@ -28,21 +31,42 @@ public abstract class CndMaker {
         return Cnd.byCri(sc);
     }
 
-    public QueryResult queryResult(Dao dao,
-                                   Class<?> clz,
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public QueryResult queryResult(final Dao dao,
+                                   final Class<?> clz,
+                                   NutMap refer,
                                    int pgnm,
                                    int pgsz,
                                    String orderby,
                                    boolean asc,
                                    String kwd,
                                    String... otherQCnd) {
-        Cnd qcnd = makeQCnd(orderby, asc, kwd, otherQCnd);
-        Pager pager = null;
+        final Cnd qcnd = makeQCnd(orderby, asc, kwd, otherQCnd);
+        final Pager pager = new Pager().setPageNumber(pgnm).setPageSize(pgsz);
+        final List qlist = new ArrayList();
         if (pgsz > 0) {
-            pager = new Pager().setPageNumber(pgnm).setPageSize(pgsz);
-            pager.setRecordCount(dao.count(clz, qcnd));
+            if (refer != null) {
+                TableName.run(refer, new Runnable() {
+                    @Override
+                    public void run() {
+                        pager.setRecordCount(dao.count(clz, qcnd));
+                    }
+                });
+            } else {
+                pager.setRecordCount(dao.count(clz, qcnd));
+            }
         }
-        List<?> qlist = dao.query(clz, qcnd, pager);
+        if (refer != null) {
+            TableName.run(refer, new Runnable() {
+                public void run() {
+                    List qreList = dao.query(clz, qcnd, pager);
+                    qlist.addAll(qreList);
+                }
+            });
+        } else {
+            List<?> qreList = dao.query(clz, qcnd, pager);
+            qlist.addAll(qreList);
+        }
         return new QueryResult(qlist, pager);
     }
 }

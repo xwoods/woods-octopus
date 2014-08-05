@@ -22,7 +22,7 @@ var tmpl_li = '';
 tmpl_li += '<li>';
 tmpl_li += '    <a href="#{{url}}">';
 tmpl_li += '        <i class="fa {{icon}} fa-lg"></i>';
-tmpl_li += '        <span>{{name}}</span>';
+tmpl_li += '        <span class="module-title">{{name}}</span>';
 tmpl_li += '    </a>';
 tmpl_li += '</li>';
 
@@ -30,7 +30,7 @@ var tmpl_li_sub = '';
 tmpl_li_sub += '<li class="has-sub">';
 tmpl_li_sub += '    <a href="javascrpt:void(0)">';
 tmpl_li_sub += '        <i class="fa {{icon}} fa-lg"></i>';
-tmpl_li_sub += '        <span>{{name}}</span>';
+tmpl_li_sub += '        <span class="module-title">{{name}}</span>';
 tmpl_li_sub += '        <i class="fa fa-lg subnav-switch"></i>';
 tmpl_li_sub += '    </a>';
 tmpl_li_sub += '    <ul class="subnav-list">';
@@ -106,19 +106,30 @@ $(document).ready(function () {
     // 基本信息
     var dmnNm = $(document.body).attr('dmnNm');
 
+    var mainContainer = $('.main-container');
+
     // 侧边导航栏
     var navListJq = $('.nav-list');
     var crumbJq = $('.crumb');
-    navListJq.delegate('a', 'click', function () {
+
+    mainContainer.delegate('.main-nav .nav-list a', 'click', function () {
         var clkA = $(this);
         var clkLi = clkA.parent();
         var clkUl = clkLi.parent();
         var hasSub = clkLi.hasClass('has-sub');
         var isSub = clkUl.hasClass('subnav-list');
-        // 一级餐单, 那就把其他的关闭
-        if (!isSub) {
-            clkLi.siblings('.has-sub').removeClass('open');
+
+        // 非mini模式
+        if (!mainContainer.hasClass('mini')) {
+            // 一级餐单, 那就把其他的关闭
+            if (!isSub) {
+                clkLi.siblings('.has-sub').removeClass('open');
+            }
+            if (hasSub) {
+                clkLi.toggleClass('open');
+            }
         }
+
         if (!clkLi.hasClass('active')) {
             if (!isSub) {
                 if (!hasSub) {
@@ -131,9 +142,6 @@ $(document).ready(function () {
                 clkLi.addClass('active');
             }
         }
-        if (hasSub) {
-            clkLi.toggleClass('open');
-        }
 
         // 切换页面信息
         var route = clkA.attr('href').substr(1);
@@ -141,6 +149,24 @@ $(document).ready(function () {
             var ch = crumbHtml(route);
             crumbJq.find('li:not(.crumb-first)').remove();
             crumbJq.append(ch);
+        }
+    });
+
+    // 切换mini
+    var navMenu = $('.nav-menu');
+    navMenu.delegate(".nav-mini-toogle", 'click', function () {
+        navListJq.find('.has-sub.open').removeClass('open');
+        var tbtn = $(this);
+        if (tbtn.hasClass("mode-mini")) {
+            tbtn.removeClass('mode-mini');
+            tbtn.removeClass('fa-angle-double-right');
+            tbtn.addClass('fa-angle-double-left');
+            mainContainer.removeClass("mini");
+        } else {
+            tbtn.addClass('mode-mini');
+            tbtn.removeClass('fa-angle-double-left');
+            tbtn.addClass('fa-angle-double-right');
+            mainContainer.addClass("mini");
         }
     });
 
