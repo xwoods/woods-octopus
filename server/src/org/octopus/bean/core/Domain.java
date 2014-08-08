@@ -1,10 +1,13 @@
 package org.octopus.bean.core;
 
 import org.nutz.dao.entity.annotation.ColDefine;
+import org.nutz.dao.entity.annotation.Index;
 import org.nutz.dao.entity.annotation.Table;
+import org.nutz.dao.entity.annotation.TableIndexes;
 import org.octopus.bean.BeanWithTrace;
 
 @Table("t_domain")
+@TableIndexes({@Index(name = "t_domain_name", fields = {"name"}, unique = true)})
 public class Domain extends BeanWithTrace {
 
     private String name;

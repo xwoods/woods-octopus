@@ -2,10 +2,16 @@ package org.octopus.bean.core;
 
 import java.util.Date;
 
+import org.nutz.dao.entity.annotation.Index;
 import org.nutz.dao.entity.annotation.Table;
+import org.nutz.dao.entity.annotation.TableIndexes;
 import org.octopus.bean.BeanWithTrace;
 
 @Table("t_user")
+@TableIndexes({@Index(name = "t_user_name", fields = {"name"}, unique = true),
+               @Index(name = "t_user_alias", fields = {"alias"}, unique = true),
+               @Index(name = "t_user_phone", fields = {"phone"}, unique = true),
+               @Index(name = "t_user_email", fields = {"email"}, unique = true)})
 public class User extends BeanWithTrace {
 
     private String name;

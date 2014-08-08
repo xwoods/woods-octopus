@@ -74,6 +74,7 @@
                 html += '       <ol class="pager-area">'
                 html += '           <li>'
                 html += '               <select class="pager-size">';
+                html += '                   <option value="10">10</option>';
                 html += '                   <option value="20">20</option>';
                 html += '                   <option value="50">50</option>';
                 html += '                   <option value="100">100</option>';
@@ -185,7 +186,11 @@
                     var col = cols[j];
                     var style = 'style="width:' + col.width + 'px;display:' + (col.show ? "inline-block" : "none" ) + '"';
                     html += '<div class="zgrid-td" field="' + col.fieldName + '" ' + style + ' colwidth="' + col.width + '" >';
-                    html += col.cellHtml ? col.cellHtml(da) : da[col.fieldName];
+                    var tdhtml = col.cellHtml ? col.cellHtml(da) : da[col.fieldName];
+                    if (tdhtml == undefined || tdhtml == null) {
+                        tdhtml = "";
+                    }
+                    html += tdhtml;
                     html += '</div>';
                 }
                 html += '</div>';
@@ -236,8 +241,13 @@
             var startTime = new Date().getTime();
             $z.http.post(query.url, $.extend(queryParams, cusParams), function (re) {
                 var qr = re.data;
-                var pg = qr.pager;
-                var dlist = qr.list;
+                var pg = qr.pager || {
+                    recordCount: 0,
+                    pageCount: 0,
+                    pageNumber: 0
+                };
+                var dlist = qr.list || [];
+
                 // 更新pager
                 pager.total = pg.recordCount;
                 pager.pgcount = pg.pageCount;
@@ -245,7 +255,7 @@
                 pageArea.find('.pg-current').html(pager.pgnm);
                 pageArea.find('.pg-count').html(pager.pgcount);
                 pageArea.find('.pg-total').html("( " + pager.total + " )");
-                if (pager.pgnm == 1) {
+                if (pager.pgnm <= 1) {
                     pageArea.find('.pager-prev').addClass('disable');
                 }
                 if (pager.pgnm == pager.pgcount) {
@@ -255,6 +265,7 @@
                         pageArea.find('.pager-next').removeClass('disable');
                     }
                 }
+
                 // 更新table
                 lbody[0].innerHTML = dom.leftBodyHtml(cols, dlist);
                 rbody[0].innerHTML = dom.rightBodyHtml(cols, dlist);
@@ -454,6 +465,9 @@
             events.unbind(selection);
             util.removeOpt(selection);
             selection.empty();
+        },
+        refresh: function () {
+            data.refresh(this);
         }
     };
     // _________________________________

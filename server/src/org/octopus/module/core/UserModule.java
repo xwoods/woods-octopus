@@ -93,13 +93,17 @@ public class UserModule extends AbstractBaseModule {
                                               Cnd.where("domainId", "=", dmn.getId())
                                                  .and("userId", "=", u.getId()));
                     if (null != du) {
-                        u.setLastLogin(new Date());
-                        u.setLastIP(Lang.getIP(req));
-                        dao.update(u, "lastLogin|lastIP");
                         // 用户其他信息
                         NutMap userInfo = new NutMap();
-                        userInfo.put("type", du.getUserType());
-                        userInfo.put("face", "face_0" + new Random().nextInt(10) + ".jpg");
+                        userInfo.put("lastLogin", u.getLastLogin());
+                        userInfo.put("lastIP", u.getLastIP());
+                        // 更新后设置当前的
+                        updateLoginInfo(u, req);
+                        userInfo.put("curtLogin", u.getLastLogin());
+                        userInfo.put("curtIP", u.getLastIP());
+                        userInfo.put("userType", du.getUserType());
+                        // FIXME 获得用户的照片
+                        userInfo.put("userFace", "face_0" + new Random().nextInt(10) + ".jpg");
                         // 放入session中
                         sess.setAttribute(Keys.SESSION_DOMAIN, dmn);
                         sess.setAttribute(Keys.SESSION_USER, u);
@@ -116,6 +120,12 @@ public class UserModule extends AbstractBaseModule {
             }
         }
         return ar;
+    }
+
+    private void updateLoginInfo(User u, HttpServletRequest req) {
+        u.setLastLogin(new Date());
+        u.setLastIP(Lang.getIP(req));
+        dao.update(u, "lastLogin|lastIP");
     }
 
     @At("/logout")

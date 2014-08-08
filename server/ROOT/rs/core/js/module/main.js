@@ -2,13 +2,11 @@
  * Created by pw on 14-7-16.
  */
 
-var isDebug = false;
+var isDebug = true;
 
 function afterLoadReady() {
     var blr = $("#before-load-ready");
-    if (isDebug) {
-        blr.remove();
-    } else {
+    if (!isDebug && blr.length > 0) {
         setTimeout(function () {
             // blr.animate({top: -1 * blr.height()}, 300, function(){
             blr.animate({opacity: 0}, 300, function () {
@@ -28,7 +26,7 @@ tmpl_li += '</li>';
 
 var tmpl_li_sub = '';
 tmpl_li_sub += '<li class="has-sub">';
-tmpl_li_sub += '    <a href="javascrpt:void(0)">';
+tmpl_li_sub += '    <a href="javascript:void(0)">';
 tmpl_li_sub += '        <i class="fa {{icon}} fa-lg"></i>';
 tmpl_li_sub += '        <span class="module-title">{{name}}</span>';
 tmpl_li_sub += '        <i class="fa fa-lg subnav-switch"></i>';
@@ -93,6 +91,11 @@ function crumbHtml(route) {
 }
 
 $(document).ready(function () {
+
+    if (isDebug) {
+        var blr = $("#before-load-ready");
+        blr.remove();
+    }
 
     $z.initMsg();
 

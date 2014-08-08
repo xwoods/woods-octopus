@@ -214,4 +214,29 @@ public class Octopus {
             }
         }
     }
+
+    // 根据id进行转换后得到目录
+    public static String evalPath(String uu16) {
+        // 默认针对R.UU16(), 共32位, 2位一分割
+        // d10b7a95db034927887c6b78ff3a7de8
+        // /d1/0b/7a/95/db/03/49/27/88/7c/6b/78/ff/3a/7d/e8
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < uu16.length(); i++) {
+            if (i % 2 == 0) {
+                sb.append("/");
+            }
+            sb.append(uu16.charAt(i));
+        }
+        return sb.toString();
+    }
+
+    // 根据用户信息, 返回对应的目录
+    public static String userDir(String uname) {
+        return "";
+    }
+
+    // 文件全路径 (某用户名下的某个文件)
+    public static String fullPath(String uname, String fid) {
+        return userDir(uname) + evalPath(fid);
+    }
 }
