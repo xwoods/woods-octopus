@@ -145,17 +145,7 @@ public class Octopus {
             dao.insert(dmn);
         }
         String superUserPassword = encrypt(dmnConf.getManager().getPassword());
-        User admin = dao.fetch(User.class, Cnd.where("name", "=", dmnConf.getDomain().getName()));
-        if (null == admin) {
-            admin = new User();
-            admin.setName(dmnConf.getDomain().getName());
-            admin.setAlias(dmnConf.getManager().getAlias());
-            admin.setPassword(superUserPassword);
-            admin.setCreateTime(new Date());
-            admin.setCreateUser("God");
-            admin.setEnable(true);
-            dao.insert(admin);
-        }
+        User admin = dmnConf.getManager();
         DomainUser du = dao.fetch(DomainUser.class,
                                   Cnd.where("domainId", "=", dmn.getId()).and("userId",
                                                                               "=",
@@ -232,11 +222,25 @@ public class Octopus {
 
     // 根据用户信息, 返回对应的目录
     public static String userDir(String uname) {
-        return "";
+        return "/" + uname;
     }
 
     // 文件全路径 (某用户名下的某个文件)
     public static String fullPath(String uname, String fid) {
-        return userDir(uname) + evalPath(fid);
+        String fullPath = fsHomePath + userDir(uname) + evalPath(fid);
+        if (log.isDebugEnabled()) {
+            log.debugf("fullPath : %s", fullPath);
+        }
+        return fullPath;
+    }
+
+    private static String fsHomePath;
+
+    public static void setFsHome(String path) {
+        fsHomePath = path;
+    }
+
+    public static String getFsHome() {
+        return fsHomePath;
     }
 }

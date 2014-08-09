@@ -1,9 +1,15 @@
 package org.octopus.bean.issue;
 
 import org.nutz.dao.entity.annotation.ColDefine;
-import org.octopus.bean.BeanWithTrace;
+import org.nutz.dao.entity.annotation.Index;
+import org.nutz.dao.entity.annotation.Table;
+import org.nutz.dao.entity.annotation.TableIndexes;
+import org.octopus.bean.BeanCreateModify;
 
-public class IssueReply extends BeanWithTrace {
+@Table("t_issue_reply")
+@TableIndexes({@Index(name = "t_issue_id", fields = {"issueId"}, unique = false),
+               @Index(name = "t_issue_ct", fields = {"createTime"}, unique = false)})
+public class IssueReply extends BeanCreateModify {
 
     private String issueId;
 

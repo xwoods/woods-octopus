@@ -1,35 +1,28 @@
 package org.octopus.bean.issue;
 
 import org.nutz.dao.entity.annotation.ColDefine;
+import org.nutz.dao.entity.annotation.Index;
 import org.nutz.dao.entity.annotation.Table;
-import org.octopus.bean.BeanWithTrace;
+import org.nutz.dao.entity.annotation.TableIndexes;
+import org.octopus.bean.BeanCreateModify;
 
 @Table("t_issue")
-public class Issue extends BeanWithTrace {
+@TableIndexes({@Index(name = "t_issue_domain", fields = {"domain"}, unique = false)})
+public class Issue extends BeanCreateModify {
 
-    private String domainId;
+    private String domain;
 
-    private String domainName;
-
-    @ColDefine(width = 1024)
+    @ColDefine(width = 2048)
     private String content;
 
     private String status;
 
-    public String getDomainId() {
-        return domainId;
+    public String getDomain() {
+        return domain;
     }
 
-    public void setDomainId(String domainId) {
-        this.domainId = domainId;
-    }
-
-    public String getDomainName() {
-        return domainName;
-    }
-
-    public void setDomainName(String domainName) {
-        this.domainName = domainName;
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     public String getContent() {

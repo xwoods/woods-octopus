@@ -17,6 +17,7 @@ import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.annotation.Param;
 import org.nutz.mvc.view.HttpStatusView;
 import org.octopus.Keys;
+import org.octopus.Octopus;
 import org.octopus.bean.core.Document;
 import org.octopus.bean.core.User;
 import org.octopus.fs.FileAs;
@@ -64,7 +65,7 @@ public class ExchangeModule extends AbstractBaseModule {
         }
         // 检查是不是文件夹 FIXME 默认是检查是不是文件类型的
         boolean checkIsFile = true;
-        if (checkIsFile && doc.getAs() == FileAs.DIR) {
+        if (checkIsFile && doc.getFileAs() == FileAs.DIR) {
             log.warnf("Dir[%s](Create by %s) Can't As File by %s",
                       doc.getName(),
                       doc.getCreateUser(),
@@ -108,7 +109,6 @@ public class ExchangeModule extends AbstractBaseModule {
         if (errStatusView != null) {
             return errStatusView;
         }
-        // 正常访问
         try {
             String encode = new String(doc.getName().getBytes("UTF-8"), "ISO8859-1");
             resp.setHeader("Content-Disposition", "attachment; filename=" + encode);
@@ -119,6 +119,6 @@ public class ExchangeModule extends AbstractBaseModule {
             throw Lang.wrapThrow(e);
         }
         // 用户目录 + 文件目录
-        return new File(doc.evalPath());
+        return new File(Octopus.fullPath(me.getName(), fid));
     }
 }

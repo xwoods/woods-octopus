@@ -1,15 +1,19 @@
 package org.octopus.module.core;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
-import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.nutz.dao.Cnd;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
 import org.nutz.lang.util.NutMap;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
 import org.nutz.mvc.annotation.At;
 import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.annotation.Param;
@@ -26,6 +30,8 @@ import org.octopus.module.AbstractBaseModule;
 @At("/user")
 @Ok("ajax")
 public class UserModule extends AbstractBaseModule {
+
+    private Log log = Logs.get();
 
     private String password(String password) {
         return Octopus.encrypt(password);
@@ -102,8 +108,7 @@ public class UserModule extends AbstractBaseModule {
                         userInfo.put("curtLogin", u.getLastLogin());
                         userInfo.put("curtIP", u.getLastIP());
                         userInfo.put("userType", du.getUserType());
-                        // FIXME 获得用户的照片
-                        userInfo.put("userFace", "face_0" + new Random().nextInt(10) + ".jpg");
+                        userInfo.put("userFace", u.getName());
                         // 放入session中
                         sess.setAttribute(Keys.SESSION_DOMAIN, dmn);
                         sess.setAttribute(Keys.SESSION_USER, u);
@@ -131,6 +136,26 @@ public class UserModule extends AbstractBaseModule {
     @At("/logout")
     public void logout(HttpSession sess) {
         sess.removeAttribute(Keys.SESSION_USER);
+    }
+
+    @At("/face/?")
+    @Ok("raw")
+    public Object userFace(String uname, HttpServletResponse resp) {
+        try {
+            String encode = new String(uname.getBytes("UTF-8"), "ISO8859-1");
+            resp.setHeader("Content-Disposition", "attachment; filename=" + encode);
+            resp.setHeader("Content-Type", "image/jpg");
+        }
+        catch (UnsupportedEncodingException e) {
+            throw Lang.wrapThrow(e);
+        }
+        File uface = new File(Octopus.getFsHome() + "/" + uname + "/face");
+        if (uface.exists()) {
+            return uface;
+        } else {
+            log.warnf("User[%s] Face Not Found!", uname);
+            return this.getClass().getResourceAsStream("/face.png");
+        }
     }
 
 }

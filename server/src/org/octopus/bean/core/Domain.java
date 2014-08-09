@@ -2,14 +2,16 @@ package org.octopus.bean.core;
 
 import org.nutz.dao.entity.annotation.ColDefine;
 import org.nutz.dao.entity.annotation.Index;
+import org.nutz.dao.entity.annotation.Name;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.entity.annotation.TableIndexes;
-import org.octopus.bean.BeanWithTrace;
+import org.octopus.bean.CreateModify;
 
 @Table("t_domain")
-@TableIndexes({@Index(name = "t_domain_name", fields = {"name"}, unique = true)})
-public class Domain extends BeanWithTrace {
+@TableIndexes({@Index(name = "t_domain_alias", fields = {"alias"}, unique = true)})
+public class Domain extends CreateModify {
 
+    @Name
     private String name;
 
     private String alias;

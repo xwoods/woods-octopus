@@ -1,12 +1,22 @@
 package org.octopus;
 
+import java.io.File;
+
 import org.nutz.dao.Dao;
 import org.nutz.ioc.Ioc;
+import org.nutz.lang.ContinueLoop;
+import org.nutz.lang.Each;
+import org.nutz.lang.ExitLoop;
+import org.nutz.lang.Files;
+import org.nutz.lang.Lang;
+import org.nutz.lang.LoopException;
 import org.nutz.lang.Strings;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.mvc.NutConfig;
 import org.nutz.mvc.Setup;
+import org.octopus.bean.core.User;
+import org.octopus.fs.FS;
 
 public class OctopusSetup implements Setup {
 
@@ -36,6 +46,27 @@ public class OctopusSetup implements Setup {
 
         // 开启msg文件监控
         // MsgWatcher.startWatch(OctopusMainModule.class, ioc);
+
+        // 初始化fs
+        FS.loadConf();
+        String fsHomePath = conf.get("fs-home");
+        if (Strings.isBlank(fsHomePath)) {
+            fsHomePath = Lang.runRootPath() + "/fs";
+        }
+        Octopus.setFsHome(fsHomePath);
+
+        // 用户目录初始化
+        final File fsHome = Files.createDirIfNoExists(fsHomePath);
+        dao.each(User.class, null, new Each<User>() {
+            @Override
+            public void invoke(int index, User ele, int length) throws ExitLoop, ContinueLoop,
+                    LoopException {
+                if (log.isDebugEnabled()) {
+                    log.debugf("Create User-Home : %s", ele.getName());
+                }
+                Files.createDirIfNoExists(new File(fsHome, ele.getName()));
+            }
+        });
 
         // setupChain
         if (ioc.has("setupChain")) {

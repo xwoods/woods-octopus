@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.woods.json4excel.annotation.J4EIgnore;
 
-public class BeanWithTrace extends Bean {
+public class CreateModify {
 
     @J4EIgnore
     protected Date createTime;

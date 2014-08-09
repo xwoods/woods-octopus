@@ -1,31 +1,31 @@
 package org.octopus.bean.core;
 
 import org.nutz.dao.entity.annotation.Table;
-import org.octopus.bean.BeanWithTrace;
+import org.octopus.bean.BeanCreateModify;
 
 @Table("t_domain_user")
-public class DomainUser extends BeanWithTrace {
+public class DomainUser extends BeanCreateModify {
 
-    private String domainId;
+    private String domain;
 
-    private String userId;
+    private String user;
 
     private String userType;
 
-    public String getDomainId() {
-        return domainId;
+    public String getDomain() {
+        return domain;
     }
 
-    public void setDomainId(String domainId) {
-        this.domainId = domainId;
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUser() {
+        return user;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public String getUserType() {

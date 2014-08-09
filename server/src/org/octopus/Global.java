@@ -33,7 +33,6 @@ public class Global {
         if (me == null) {
             me = new Global();
             me.dao = dao;
-
             // 执行初始化操作
             me.updateDomainNav();
         }
@@ -53,7 +52,6 @@ public class Global {
         domainNavMap.put("default", Json.fromJsonAsList(NavItem.class, loadNavJS("default")));
         for (Domain domain : domains) {
             String dmnNm = domain.getName().toLowerCase();
-            String dmnId = domain.getId().toLowerCase();
             log.infof("Load Domain [%s] Navigation", dmnNm);
             List<NavItem> nList = domainNavMap.get(dmnNm);
             if (nList == null) {
@@ -65,7 +63,6 @@ public class Global {
                     domainNavMap.put(dmnNm, domainNavMap.get("default"));
                 }
             }
-            domainNavMap.put(dmnId, domainNavMap.get(dmnNm));
         }
     }
 

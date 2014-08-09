@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="${rs}/core/css/module/main.css">
     <link rel="stylesheet" href="${rs}/core/css/module/me.css">
     <link rel="stylesheet" href="${rs}/core/css/module/users.css">
+    <link rel="stylesheet" href="${rs}/core/css/module/domains.css">
     <link rel="stylesheet" href="${rs}/core/css/module/setting.css">
 </head>
 <body dmnNm="${domain.name}" ng-app="mainApp">
@@ -49,7 +50,7 @@
             </ul>
         </li>
         <li class="header-module hm-user">
-            <img src="${rs}/core/img/face/${userInfo.face}" class="user-face">
+            <img src="/user/face/${userInfo.userFace}" class="user-face">
             <p class="user-name">${msg[user.alias]}</p>
             <i class="fa fa-lg fa-angle-down"></i>
             <ul class="sub-menu">
@@ -132,6 +133,7 @@
 <script language="JavaScript" src="${rs}/core/js/module/main.js"></script>
 <script language="JavaScript" src="${rs}/core/js/module/me.js"></script>
 <script language="JavaScript" src="${rs}/core/js/module/users.js"></script>
+<script language="JavaScript" src="${rs}/core/js/module/domains.js"></script>
 <script language="JavaScript" src="${rs}/core/js/module/setting.js"></script>
 </body>
 </html>

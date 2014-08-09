@@ -118,13 +118,18 @@ body {
     font-size: 11px;
 }
 
-.header-menu > li.open {
+.header-menu > li:hover {
     background: #D9D9D9;
 }
 
-.header-menu > li.open > i {
-    color: #999999;
+.header-menu > li:hover > i {
+    color: #333;
 }
+
+.header-menu > li:hover > ul {
+    display: block;
+}
+
 
 .header-menu > li > .sub-menu {
     display: none;
@@ -173,10 +178,6 @@ body {
 
 .header-menu > li > .sub-menu > .bottom-bar > span {
     padding: 0 10px;
-}
-
-.header-menu > li.open > .sub-menu {
-    display: block;
 }
 
 .hm-user > i.fa {
@@ -517,8 +518,8 @@ body {
 
 .footer {
     width: 100%;
-    height: 40px;
-    padding: 10px 20px;
+    height: 30px;
+    padding: 8px 20px;
     text-align: center;
 }
 

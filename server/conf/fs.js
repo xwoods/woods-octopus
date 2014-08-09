@@ -1,12 +1,11 @@
 {
-	// 文件类型
-	"default": {
-		"name": "xxx", // 文件后缀
-		"as": "TXT", // T:文本 D:文件夹 B:二进制					
-		"mime": "text/plain" // mimeType, 下载时使用
+	"defaultSupport": {
+		"name": "xxx",
+		"as": "TXT",
+		"mime": "text/plain"
 	},
 	"support": [{
-		"name": "folder",
+		"name": "dir",
 		"as": "DIR"
 	}, {
 		"name": "bin",
@@ -34,13 +33,12 @@
 		"name": "gif"
 		"as": "BIN",
 		"mime": "image/gif"
-	}]
-	// 文件类型分类
-	"cate": [{
+	}],
+	"category": [{
 		"name": "video",
 		"types": ["mp4", "avi", "wmv", "mpg", "mov", "3gp"]
 	}, {
-		"name": "music",
+		"name": "audio",
 		"types": ["mp3", "ogg"]
 	}, {
 		"name": "image",

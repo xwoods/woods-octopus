@@ -3,7 +3,7 @@
 	icon: "fa-meh-o",
 	name: "page.main.nav.me"
 }, {
-	url : "/domain",
+	url : "/domains",
 	icon : "fa-cubes",
 	name : "page.main.nav.domain"
 }, {

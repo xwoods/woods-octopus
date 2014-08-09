@@ -3,17 +3,18 @@ package org.octopus.bean.core;
 import java.util.Date;
 
 import org.nutz.dao.entity.annotation.Index;
+import org.nutz.dao.entity.annotation.Name;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.entity.annotation.TableIndexes;
-import org.octopus.bean.BeanWithTrace;
+import org.octopus.bean.CreateModify;
 
 @Table("t_user")
-@TableIndexes({@Index(name = "t_user_name", fields = {"name"}, unique = true),
-               @Index(name = "t_user_alias", fields = {"alias"}, unique = true),
+@TableIndexes({@Index(name = "t_user_alias", fields = {"alias"}, unique = true),
                @Index(name = "t_user_phone", fields = {"phone"}, unique = true),
                @Index(name = "t_user_email", fields = {"email"}, unique = true)})
-public class User extends BeanWithTrace {
+public class User extends CreateModify {
 
+    @Name
     private String name;
 
     private String alias;

@@ -65,9 +65,7 @@ public class DomainModule extends AbstractBaseModule {
             dmnConf.getDomain().setAlias(Strings.isBlank(domain.getAlias()) ? domain.getName()
                                                                            : domain.getAlias());
         }
-        if (!Strings.isBlank(domain.getAbout())) {
-            dmnConf.getDomain().setAbout(domain.getAbout());
-        }
+        dmnConf.getDomain().setAbout(Strings.isBlank(domain.getAbout()) ? "" : domain.getAbout());
         dmnConf.getManager().setName(domain.getName());
         // 初始化域
         Octopus.initDomain(dao, dmnConf);
@@ -77,13 +75,12 @@ public class DomainModule extends AbstractBaseModule {
     }
 
     @At("/user/list")
-    public AjaxReturn listUser(@Param("domainId") String domainId, HttpSession session) {
-        Domain dmn = Strings.isBlank(domainId) ? DMN(session) : dao.fetch(Domain.class, domainId);
+    public AjaxReturn listUser(@Param("domain") String domain, HttpSession session) {
+        Domain dmn = Strings.isBlank(domain) ? DMN(session) : dao.fetch(Domain.class, domain);
         List<NutMap> re = new ArrayList<NutMap>();
-        List<DomainUser> dulist = dao.query(DomainUser.class,
-                                            Cnd.where("domainId", "=", dmn.getId()));
+        List<DomainUser> dulist = dao.query(DomainUser.class, Cnd.where("domain", "=", domain));
         for (DomainUser du : dulist) {
-            User u = dao.fetch(User.class, du.getUserId());
+            User u = dao.fetch(User.class, du.getUser());
             u.setPassword(null);
             NutMap uobj = new NutMap();
             uobj.put("user", u);
@@ -94,25 +91,34 @@ public class DomainModule extends AbstractBaseModule {
     }
 
     @At("/user/add")
-    public AjaxReturn addUser(@Param("userIds") String uIds,
+    public AjaxReturn addUser(@Param("users") String users,
+                              @Param("domain") String domain,
                               @Param("userType") String userType,
                               HttpSession session) {
+        User me = ME(session);
         if (Strings.isBlank(userType)) {
             userType = Keys.DMN_USER_TYPE_NORMAL;
         }
-        Domain dmn = DMN(session);
-        User me = ME(session);
-        String[] uIdArray = Strings.splitIgnoreBlank(uIds, ",");
-        for (String uId : uIdArray) {
-            DomainUser du = dao.fetch(DomainUser.class, Cnd.where("domainId", "=", dmn.getId())
-                                                           .and("userId", "=", uId));
+        Domain dmn = dao.fetch(Domain.class, domain);
+        if (dmn == null) {
+            log.errorf("Domain[%s] Not Exist, Can't Add Users", domain);
+            return Ajax.fail();
+        }
+        String[] userNames = Strings.splitIgnoreBlank(users, ",");
+        for (String user : userNames) {
+            if (dao.fetch(User.class, user) == null) {
+                log.warnf("User[%s] Not Exist, Can't Add to Domain[%s]", user, domain);
+                continue;
+            }
+            DomainUser du = dao.fetch(DomainUser.class,
+                                      Cnd.where("domain", "=", domain).and("user", "=", user));
             if (null == du) {
                 du = new DomainUser();
-                du.setDomainId(dmn.getId());
-                du.setUserId(uId);
+                du.setDomain(domain);
+                du.setUser(user);
                 du.setUserType(userType);
                 du.setCreateTime(new Date());
-                du.setCreateUser(me.getId());
+                du.setCreateUser(me.getName());
                 dao.insert(du);
             }
         }

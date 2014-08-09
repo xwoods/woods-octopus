@@ -2,7 +2,7 @@
  * Created by pw on 14-7-16.
  */
 
-var isDebug = true;
+var isDebug = false;
 
 function afterLoadReady() {
     var blr = $("#before-load-ready");
@@ -101,9 +101,12 @@ $(document).ready(function () {
 
     // 调整.container的min-height
     var containerJq = $('.container');
-    var winsz = $z.browser.winsz();
+    var winHeight = $z.browser.winsz().height;
+    var headerHeight = $('.header').outerHeight();
+    var footerHeight = $('.footer').outerHeight();
+    console.log("win : " + winHeight + ", header : " + headerHeight + ", footer : " + footerHeight);
     containerJq.css({
-        'min-height': winsz.height - 90
+        'min-height': winHeight - headerHeight - footerHeight
     });
 
     // 基本信息
@@ -171,27 +174,6 @@ $(document).ready(function () {
             tbtn.addClass('fa-angle-double-right');
             mainContainer.addClass("mini");
         }
-    });
-
-    // 顶部导航栏
-    var headMenu = $('.header-menu');
-    headMenu.delegate('li.header-module', 'click', function (e) {
-        var cliJq = $(this);
-        if (cliJq.hasClass('open')) {
-            cliJq.removeClass('open');
-        } else {
-            cliJq.siblings().removeClass('open');
-            cliJq.addClass('open');
-        }
-        e.stopPropagation();
-        $(document.body).one('click', function () {
-            headMenu.find('li.header-module.open').removeClass('open');
-        });
-    });
-
-    headMenu.delegate('ul.sub-menu', 'click', function (e) {
-        // 防止上层被触发click事件
-        e.stopPropagation();
     });
 
     // 加载后台nav配置

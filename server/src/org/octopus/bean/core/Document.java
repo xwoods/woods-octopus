@@ -5,7 +5,7 @@ import org.nutz.dao.entity.annotation.Index;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.entity.annotation.TableIndexes;
 import org.octopus.Octopus;
-import org.octopus.bean.BeanWithTrace;
+import org.octopus.bean.BeanCreateModify;
 import org.octopus.fs.FileAs;
 
 @Table("t_document")
@@ -13,7 +13,7 @@ import org.octopus.fs.FileAs;
                @Index(name = "t_document_type", fields = {"type"}, unique = false),
                @Index(name = "t_document_cate", fields = {"cate"}, unique = false),
                @Index(name = "t_document_ctuser", fields = {"createUser"}, unique = false)})
-public class Document extends BeanWithTrace {
+public class Document extends BeanCreateModify {
     // 文件名
     @ColDefine(width = 512)
     private String name;
@@ -24,7 +24,7 @@ public class Document extends BeanWithTrace {
     // 文件mime
     private String mime;
     // 文件读取类型
-    private FileAs as;
+    private FileAs fileAs;
     // 文件大小
     private long size;
     // 父节点id (如果是根节点的话, 那就是用户的id)
@@ -70,12 +70,12 @@ public class Document extends BeanWithTrace {
         this.mime = mime;
     }
 
-    public FileAs getAs() {
-        return as;
+    public FileAs getFileAs() {
+        return fileAs;
     }
 
-    public void setAs(FileAs as) {
-        this.as = as;
+    public void setFileAs(FileAs fileAs) {
+        this.fileAs = fileAs;
     }
 
     public String getName() {
