@@ -90,7 +90,7 @@ body {
 }
 
 .reg-content {
-    display: none;
+    display: block;
     width: 400px;
     height: 460px;
     position: absolute;
