@@ -136,25 +136,36 @@ $(document).ready(function () {
     var lcontent = $('.login-content');
     var rcontent = $('.reg-content');
 
-    var showTopLogin = parseInt(lcontent.css('margin-top'));
-    var showTopReg = parseInt(rcontent.css('margin-top'));
-
-    rcontent.css('margin-top', (showTopReg * -3) + "px");
-
-    console.log('login-form-top : ' + showTopLogin);
-    console.log('  reg-form-top : ' + showTopReg);
-
     $('.switch-form').on('click', function () {
         if ($(this).hasClass('reg')) {
-            lcontent.animate({'margin-top': (showTopLogin * -3) + "px"}, 200, function () {
-                rcontent.animate({'margin-top': showTopReg + "px"}, 200, function () {
-                });
-            });
+            lcontent.hide();
+            rcontent.show();
         } else {
-            rcontent.animate({'margin-top': (showTopReg * -3) + "px"}, 200, function () {
-                lcontent.animate({'margin-top': showTopLogin + "px"}, 200, function () {
-                });
-            });
+            rcontent.hide();
+            lcontent.show();
         }
     })
+
+//    var showTopLogin = parseInt(lcontent.css('margin-top'));
+//    var showTopReg = parseInt(rcontent.css('margin-top'));
+//
+//    rcontent.css('margin-top', (showTopReg * -3) + "px");
+//
+//    console.log('login-form-top : ' + showTopLogin);
+//    console.log('  reg-form-top : ' + showTopReg);
+//
+//    $('.switch-form').on('click', function () {
+//        if ($(this).hasClass('reg')) {
+//            lcontent.animate({'margin-top': (showTopLogin * -3) + "px"}, 200, function () {
+//                rcontent.animate({'margin-top': showTopReg + "px"}, 200, function () {
+//                });
+//            });
+//        } else {
+//            rcontent.animate({'margin-top': (showTopReg * -3) + "px"}, 200, function () {
+//                lcontent.animate({'margin-top': showTopLogin + "px"}, 200, function () {
+//                });
+//            });
+//        }
+//    })
+
 });
