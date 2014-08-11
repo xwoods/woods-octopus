@@ -35,24 +35,27 @@
     <form ng-submit="reg()" class="reg-form">
         <div class="form-title">用户名</div>
         <div class="form-item">
-            <input type="text" name="regname" placeholder="2-20位字母+数字">
+            <input type="text" name="regname" placeholder="2-20位(字母+数字)">
             <i class="fa fa-check-circle fa-lg chk-i chk-ok"></i>
             <i class="fa fa fa-spinner fa-spin-1s fa-lg chk-i chk-ing"></i>
             <i class="fa fa-times-circle fa-lg chk-i chk-fail"></i>
+            <span class="fail-tip">2-20位(字母+数字)</span>
         </div>
         <div class="form-title">昵称</div>
         <div class="form-item">
-            <input type="text" name="regalias" placeholder="2-20位任意字符">
+            <input type="text" name="regalias" placeholder="2-20位(字母+数字+中文字符)">
             <i class="fa fa-check-circle fa-lg chk-i chk-ok"></i>
             <i class="fa fa fa-spinner fa-spin-1s fa-lg chk-i chk-ing"></i>
             <i class="fa fa-times-circle fa-lg chk-i chk-fail"></i>
+            <span class="fail-tip">2-20位(字母+数字)</span>
         </div>
         <div class="form-title">密码</div>
         <div class="form-item">
-            <input type="password" name="regpassword" placeholder="6-20位字母+数字">
+            <input type="password" name="regpassword" placeholder="6-20位(字母+数字+@)">
             <i class="fa fa-check-circle fa-lg chk-i chk-ok"></i>
             <i class="fa fa fa-spinner fa-spin-1s fa-lg chk-i chk-ing"></i>
             <i class="fa fa-times-circle fa-lg chk-i chk-fail"></i>
+            <span class="fail-tip">2-20位(字母+数字)</span>
         </div>
         <div class="form-title">邀请码</div>
         <div class="form-item">

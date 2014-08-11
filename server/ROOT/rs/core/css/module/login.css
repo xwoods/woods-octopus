@@ -139,6 +139,10 @@ body {
     display: inline-block;
 }
 
+.form-item.fail .fail-tip {
+    display: block;
+}
+
 .form-item.fail input {
     color: #ff0000;
 }
@@ -165,6 +169,31 @@ body {
 
 .chk-ing {
     color: #007AFF;
+}
+
+.fail-tip {
+    display: none;
+    font-size: 12px;
+    padding: 2px 15px;
+    position: absolute;
+    top: -28px;
+    left: 60px;
+    background: #ff0000;
+    color: #ffffff;
+    border-radius: 2px;
+}
+
+.fail-tip:before {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    border-width: 10px;
+    border-style: solid;
+    border-color: transparent #ff0000 transparent transparent;
+    position: absolute;
+    left: -19px;
+    top: 1px;
 }
 
 .reg-submit {

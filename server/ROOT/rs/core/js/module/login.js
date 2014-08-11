@@ -53,7 +53,7 @@ function RegCtrl($scope) {
             ralias.parent().removeClass('ing').removeClass('ok').removeClass('fail');
             return;
         }
-        var repName = new RegExp("^.{2,20}$");
+        var repName = new RegExp("^([\u4E00-\uFA29]|[\uE7C7-\uE7F3]|[a-zA-Z0-9]){2,20}$");
         if (repName.test(val)) {
             $z.http.get("/user/checkExist/alias/" + val, function (re) {
                 if (re.data) {
@@ -65,6 +65,29 @@ function RegCtrl($scope) {
         } else {
             ralias.parent().removeClass('ok').removeClass('ing').addClass('fail');
         }
+    });
+
+    rpassword.on('change', function () {
+        var val = rpassword.val();
+        if ($z.util.isBlank(val)) {
+            rpassword.parent().removeClass('ing').removeClass('ok').removeClass('fail');
+            return;
+        }
+        var repName = new RegExp("^[a-zA-Z0-9_@]{6,20}$");
+        if (repName.test(val)) {
+            rpassword.parent().removeClass('ing').removeClass('fail').addClass('ok');
+        } else {
+            rpassword.parent().removeClass('ok').removeClass('ing').addClass('fail');
+        }
+    });
+
+    ric.on('change', function () {
+        var val = ric.val();
+        if ($z.util.isBlank(val)) {
+            ric.parent().removeClass('ing').removeClass('ok').removeClass('fail');
+            return;
+        }
+        ric.parent().removeClass('ing').removeClass('fail').addClass('ok');
     });
 
 
