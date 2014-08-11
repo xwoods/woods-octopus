@@ -112,15 +112,15 @@ public class Octopus {
 
     // 初始化户用户与域
     public static void initUserAndDomain(Dao dao) {
-        String uname = "God";
-        User god = dao.fetch(User.class, uname);
+        String godName = "God";
+        User god = dao.fetch(User.class, godName);
         if (god == null) {
             god = new User();
-            god.setName("God");
-            god.setAlias("super.user.god");
+            god.setName(godName);
+            god.setAlias(godName);
             god.setPassword(encrypt(godPassword));
             god.setCreateTime(new Date());
-            god.setCreateUser("God"); // 自己创造自己
+            god.setCreateUser(godName); // 自己创造自己
             god.setEnable(true);
             createUser(dao, god);
         }
@@ -130,8 +130,8 @@ public class Octopus {
         User admin = dao.fetch(User.class, adminStr);
         if (admin == null) {
             admin = new User();
-            admin.setName("admin");
-            admin.setAlias("super.user.admin");
+            admin.setName(adminStr);
+            admin.setAlias(adminStr);
             admin.setPassword(encrypt(godPassword));
             admin.setCreateTime(new Date());
             admin.setCreateUser(god.getName());
@@ -142,7 +142,7 @@ public class Octopus {
         if (adminDomain == null) {
             adminDomain = new Domain();
             adminDomain.setName(adminStr);
-            adminDomain.setAlias("super.domain.admin");
+            adminDomain.setAlias(adminStr);
             adminDomain.setAbout("");
 
             DomainConf dmnConf = new DomainConf();
