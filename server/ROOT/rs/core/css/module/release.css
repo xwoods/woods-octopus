@@ -1,0 +1,35 @@
+/**
+ * Created by pw on 14-8-12.
+ */
+
+.release-date {
+    height: 40px;
+    line-height: 40px;
+    padding-left: 30px;
+    font-size: 14px;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.release-note {
+    padding: 20px 0;
+}
+
+.release-note li {
+    height: 30px;
+    line-height: 30px;
+    margin-left: 25px;
+    position: relative;
+    font-size: 15px;
+}
+
+.release-note li:before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    display: block;
+    position: absolute;
+    background: #007AFF;
+    top: 10px;
+    left: -20px;
+}

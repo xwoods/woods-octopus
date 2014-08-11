@@ -2,7 +2,7 @@
 <%@include file="/WEB-INF/jsp/_setup.jsp" %>
 <div class="module-content module-issue">
     <div class="issue-title">
-        欢迎提出各种关于本系统的问题, 我们将尽快回答并对系统进行完善^_^
+        欢迎提出各种关于本系统的问题, 我们将尽快回答并对系统进行完善 ^_^
     </div>
     <ul class="issue-list">
 

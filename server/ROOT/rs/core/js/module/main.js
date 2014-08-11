@@ -16,14 +16,6 @@ function afterLoadReady() {
     }
 }
 
-String.prototype.replaceAll = function (reallyDo, replaceWith, ignoreCase) {
-    if (!RegExp.prototype.isPrototypeOf(reallyDo)) {
-        return this.replace(new RegExp(reallyDo, (ignoreCase ? "gi" : "g")), replaceWith);
-    } else {
-        return this.replace(reallyDo, replaceWith);
-    }
-}
-
 var tmpl_li = '';
 tmpl_li += '<li>';
 tmpl_li += '    <a href="#{{url}}">';
@@ -256,6 +248,11 @@ var coreRoute = [
         url: '/issue',
         page: '/core/issue.jsp',
         ctrl: 'IssueCtl'
+    },
+    {
+        url: '/releaseNote',
+        page: '/core/release.jsp',
+        ctrl: 'ReleaseCtl'
     },
     {
         url: '/notImpl',
