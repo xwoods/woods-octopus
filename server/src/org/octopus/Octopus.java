@@ -136,7 +136,7 @@ public class Octopus {
             admin.setCreateTime(new Date());
             admin.setCreateUser(god.getName());
             admin.setEnable(true);
-            createUser(dao, god);
+            createUser(dao, admin);
         }
         Domain adminDomain = dao.fetch(Domain.class, adminStr);
         if (adminDomain == null) {

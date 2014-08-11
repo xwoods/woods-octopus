@@ -9,7 +9,6 @@ import javax.servlet.http.HttpSession;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.QueryResult;
 import org.nutz.lang.Strings;
-import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.mvc.Scope;
@@ -81,19 +80,16 @@ public class DomainModule extends AbstractBaseModule {
 
     @At("/user/list")
     public AjaxReturn listUser(@Param("domain") String domain, HttpSession session) {
+        List<User> uList = new ArrayList<User>();
         Domain dmn = Strings.isBlank(domain) ? DMN(session) : dao.fetch(Domain.class, domain);
-        List<NutMap> re = new ArrayList<NutMap>();
         List<DomainUser> dulist = dao.query(DomainUser.class,
                                             Cnd.where("domain", "=", dmn.getName()));
         for (DomainUser du : dulist) {
             User u = dao.fetch(User.class, du.getUser());
             u.setPassword(null);
-            NutMap uobj = new NutMap();
-            uobj.put("user", u);
-            uobj.put("type", du.getUserType());
-            re.add(uobj);
+            uList.add(u);
         }
-        return Ajax.ok().setData(re);
+        return Ajax.ok().setData(uList);
     }
 
     @At("/user/add")

@@ -32,6 +32,16 @@ public class User extends CreateModify {
 
     private String lastIP;
 
+    private String lastDomain;
+
+    public String getLastDomain() {
+        return lastDomain;
+    }
+
+    public void setLastDomain(String lastDomain) {
+        this.lastDomain = lastDomain;
+    }
+
     public String getName() {
         return name;
     }

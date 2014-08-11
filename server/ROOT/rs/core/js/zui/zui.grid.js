@@ -129,6 +129,9 @@
             colset[0].innerHTML = dom.setHtml(cols);
             rhead[0].innerHTML = dom.headHtml(cols);
             layout.tableResize(selection);
+
+
+            selection.find('.pager-size').val(opt.table.pager.pgsz);
         },
         setHtml: function (cols) {
             var html = '';

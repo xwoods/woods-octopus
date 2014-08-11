@@ -131,7 +131,11 @@ public class UserModule extends AbstractBaseModule {
                         userInfo.put("lastLogin", u.getLastLogin());
                         userInfo.put("lastIP", u.getLastIP());
                         // 更新后设置当前的
-                        updateLoginInfo(u, req);
+                        u.setLastDomain(dmnName);
+                        u.setLastLogin(new Date());
+                        u.setLastIP(Lang.getIP(req));
+                        dao.update(u, "lastLogin|lastIP|lastDomain");
+                        //
                         userInfo.put("curtLogin", u.getLastLogin());
                         userInfo.put("curtIP", u.getLastIP());
                         userInfo.put("userType", du.getUserType());
@@ -152,12 +156,6 @@ public class UserModule extends AbstractBaseModule {
             }
         }
         return ar;
-    }
-
-    private void updateLoginInfo(User u, HttpServletRequest req) {
-        u.setLastLogin(new Date());
-        u.setLastIP(Lang.getIP(req));
-        dao.update(u, "lastLogin|lastIP");
     }
 
     @At("/logout")

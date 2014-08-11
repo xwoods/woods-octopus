@@ -4,3 +4,59 @@
 .user-table {
     width: 100%;
 }
+
+.user-domain {
+    margin-top: 10px;
+}
+
+.user-to-domain {
+    font-size: 13px;
+    line-height: 30px;
+    height: 30px;
+    width: 500px;
+    border-radius: 4px;
+    padding: 5px;
+    background-color: #FFFFFF;
+    border: 1px solid #D5D5D5;
+    color: #858585;
+    margin-left: 15px;
+}
+
+.btn-u2d {
+    border: none;
+    width: 100px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 14px;
+    border-radius: 4px;
+    color: #ffffff;
+    cursor: pointer;
+    background-color: #007AFF;
+    margin-left: 5px;
+}
+
+.doman-sel {
+    font-size: 13px;
+    line-height: 30px;
+    height: 30px;
+    width: 200px;
+    border-radius: 4px;
+    padding: 5px;
+    background-color: #FFFFFF;
+    border: 1px solid #D5D5D5;
+    color: #858585;
+}
+
+.user-in-domain {
+
+}
+
+.user-in-domain > li > span {
+    display: inline-block;
+    width: 200px;
+    text-align: left;
+    padding: 5px;
+    line-height: 30px;
+    height: 30px;
+}

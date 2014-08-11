@@ -1,14 +1,17 @@
 package org.octopus.module.core.query;
 
 import org.nutz.dao.util.cri.SimpleCriteria;
+import org.nutz.lang.Strings;
 import org.nutz.web.query.CndMaker;
 
 public class UserCndMaker extends CndMaker {
 
     @Override
     public void analysisQueryStr(SimpleCriteria sc, String kwd, String... otherQCnd) {
-        sc.where().and("name", "like", "%" + kwd + "%");
-        sc.where().or("alias", "like", "%" + kwd + "%");
+        if (!Strings.isBlank(kwd)) {
+            sc.where().and("name", "like", "%" + kwd + "%");
+            sc.where().or("alias", "like", "%" + kwd + "%");
+        }
     }
 
 }
