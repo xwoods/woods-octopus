@@ -8,10 +8,10 @@ public class IssueCndMaker extends CndMaker {
 
     @Override
     public void analysisQueryStr(SimpleCriteria sc, String kwd, String... otherQCnd) {
-        if (otherQCnd != null && otherQCnd.length >= 1) {
+        if (otherQCnd != null && otherQCnd.length >= 1 && !Strings.isBlank(otherQCnd[0])) {
             sc.where().andEquals("domain", otherQCnd[0]);
         }
-        if (otherQCnd != null && otherQCnd.length >= 2) {
+        if (otherQCnd != null && otherQCnd.length >= 2 && !Strings.isBlank(otherQCnd[1])) {
             sc.where().andEquals("createUser", otherQCnd[1]);
         }
         if (!Strings.isBlank(kwd)) {

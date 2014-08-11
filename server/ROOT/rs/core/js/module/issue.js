@@ -36,15 +36,14 @@ function IssueCtl($scope) {
         $z.http.post("/issue/query", {
             "orderby": 'createTime',
             "asc": false,
-            "domain": dmnNm,
-            "user": userNm
+            "domain": dmnNm
         }, function (re) {
             issueListJq.empty();
             var ilist = re.data.list;
             var uhtml = '';
             for (var i = 0; i < ilist.length; i++) {
                 var issue = ilist[i];
-                uhtml += '<li>';
+                uhtml += '<li class="' + (issue.createUser == userNm ? "my-issue" : "") + '">';
                 uhtml += '    <div class="ct-user">';
                 uhtml += '        <img src="/user/face/' + issue.createUser + '">';
                 uhtml += '        <p>' + window.getAlias(issue.createUser) + '</p>';
@@ -69,7 +68,7 @@ function IssueCtl($scope) {
             var uhtml = '';
             for (var i = 0; i < ilist.length; i++) {
                 var issueReply = ilist[i];
-                uhtml += '<li class="ct-user-right">';
+                uhtml += '<li class="ct-user-right ' + (issueReply.createUser == userNm ? "my-issue" : "") + '">';
                 uhtml += '    <div class="ct-user">';
                 uhtml += '        <img src="/user/face/' + issueReply.createUser + '">';
                 uhtml += '        <p>' + window.getAlias(issueReply.createUser) + '</p>';
@@ -99,6 +98,7 @@ function IssueCtl($scope) {
             cli.removeClass('reply');
             cul.removeClass('check-reply');
             isReply = false;
+            issueSubmitJq.html('发 布');
             issueListJq.find('li.ct-user-right').remove();
             issueId = 0;
         } else {
@@ -108,6 +108,7 @@ function IssueCtl($scope) {
             cli.addClass('reply');
             cul.addClass('check-reply');
             isReply = true;
+            issueSubmitJq.html('回 复');
             // 添加reply
             refreshIssueReplyList(issueId);
         }
@@ -130,7 +131,7 @@ function IssueCtl($scope) {
             $z.http.post('/issue/reply/add', {'content': cval, 'issueId': issueId}, function () {
                 issueContentJq.val('');
                 issueSubmitJq.removeClass('ing');
-                issueSubmitJq.html('发 布');
+                issueSubmitJq.html("回 复");
                 refreshIssueReplyList(issueId);
             });
         } else {

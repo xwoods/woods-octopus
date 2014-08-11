@@ -13,7 +13,6 @@
 .issue-list {
     width: 100%;
     padding: 10px 0;
-    background: #00a800;
     overflow-y: auto;
     margin: 10px 0;
 }
@@ -45,6 +44,7 @@
     border-radius: 18px;
     margin: 5px 12px 2px 12px;
     display: block;
+    box-shadow: 1px 1px 2px #888;
 }
 
 .ct-user > p {
@@ -57,9 +57,28 @@
 .ct-issue {
     margin-left: 80px;
     margin-right: 40px;
-    background: #dd3e38;
+    background: #E5E5EA;
+    color: #000000;
     border-radius: 8px;
     position: relative;
+    box-shadow: 1px 1px 2px #888;
+}
+
+.issue-list li.my-issue .ct-issue {
+    background: #33CA22;
+    color: #ffffff;
+}
+
+.issue-list li.my-issue .ct-issue:before {
+    border-color: transparent #33CA22 transparent transparent;
+}
+
+.issue-list li.my-issue .ct-issue:after {
+    border-color: transparent transparent transparent #33CA22;
+}
+
+.issue-list li.my-issue .ct-issue > span {
+    color: #000000;
 }
 
 .ct-issue:before {
@@ -69,7 +88,7 @@
     height: 0;
     border-width: 12px 20px;
     border-style: solid;
-    border-color: transparent #007AFF transparent transparent;
+    border-color: transparent #E5E5EA transparent transparent;
     position: absolute;
     top: 10px;
     left: -40px;
@@ -82,7 +101,7 @@
     height: 0;
     border-width: 12px 20px;
     border-style: solid;
-    border-color: transparent transparent transparent #007AFF;
+    border-color: transparent transparent transparent #E5E5EA;
     position: absolute;
     top: 10px;
     right: -40px;
@@ -94,6 +113,7 @@
     padding: 5px 15px;
     font-size: 12px;
     color: #ffffff;
+    text-decoration: underline;
 }
 
 .ct-issue > em {
