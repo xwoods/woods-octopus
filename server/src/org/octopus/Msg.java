@@ -7,6 +7,7 @@ public class Msg {
     public static final String USER_LOGIN_FAIL = "user.login.fail";
     public static final String USER_ENABLE_FALSE = "user.enable.false";
 
+    public static final String USER_INVITE_CODE_EXPIRED = "user.invite.code.expired";
     public static final String USER_EXIST_NAME = "user.exist.name";
     public static final String USER_EXIST_ALIAS = "user.exist.alias";
     public static final String USER_EXIST_EMAIL = "user.exist.email";

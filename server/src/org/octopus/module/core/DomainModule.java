@@ -1,6 +1,5 @@
 package org.octopus.module.core;
 
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -8,12 +7,14 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import org.nutz.dao.Cnd;
-import org.nutz.json.Json;
+import org.nutz.dao.QueryResult;
 import org.nutz.lang.Strings;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
+import org.nutz.mvc.Scope;
 import org.nutz.mvc.annotation.At;
+import org.nutz.mvc.annotation.Attr;
 import org.nutz.mvc.annotation.By;
 import org.nutz.mvc.annotation.Filters;
 import org.nutz.mvc.annotation.Ok;
@@ -30,6 +31,7 @@ import org.octopus.bean.core.Domain;
 import org.octopus.bean.core.DomainUser;
 import org.octopus.bean.core.User;
 import org.octopus.module.AbstractBaseModule;
+import org.octopus.module.core.query.DomainCndMaker;
 
 @Filters({@By(type = CheckNotLogin.class, args = {Keys.SESSION_USER, "/login"})})
 @At("/domain")
@@ -44,29 +46,15 @@ public class DomainModule extends AbstractBaseModule {
     }
 
     @At("/register")
-    public AjaxReturn register(@Param("..") Domain domain, HttpSession session) {
+    public AjaxReturn register(@Param("..") Domain domain,
+                               @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
         if (checkExist("name", domain.getName())) {
             return Ajax.fail().setMsg(Msg.DOMAIN_EXIST_NAME);
         }
-        // 尝试加载对应的配置
-        DomainConf dmnConf = null;
-        try {
-            dmnConf = Json.fromJson(DomainConf.class,
-                                    new InputStreamReader(Octopus.class.getResourceAsStream("/dmn/"
-                                                                                            + domain.getName()
-                                                                                            + ".js")));
-        }
-        catch (Exception e) {
-            log.warnf("not find dmnConf by [%s], use default.js", domain.getName());
-            // 加载默认
-            dmnConf = Json.fromJson(DomainConf.class,
-                                    new InputStreamReader(Octopus.class.getResourceAsStream("/dmn/default.js")));
-            dmnConf.getDomain().setName(domain.getName());
-            dmnConf.getDomain().setAlias(Strings.isBlank(domain.getAlias()) ? domain.getName()
-                                                                           : domain.getAlias());
-        }
-        dmnConf.getDomain().setAbout(Strings.isBlank(domain.getAbout()) ? "" : domain.getAbout());
-        dmnConf.getManager().setName(domain.getName());
+        domain.setAbout(Strings.isBlank(domain.getAbout()) ? "" : domain.getAbout());
+        DomainConf dmnConf = new DomainConf();
+        dmnConf.setDomain(domain);
+        dmnConf.setManager(me);
         // 初始化域
         Octopus.initDomain(dao, dmnConf);
         // 更新nav
@@ -74,11 +62,29 @@ public class DomainModule extends AbstractBaseModule {
         return Ajax.ok().setMsg(Msg.USER_REGISTER_OK);
     }
 
+    @At("/query")
+    public AjaxReturn queryDomain(@Param("kwd") String kwd,
+                                  @Param("pgnm") int pgnm,
+                                  @Param("pgsz") int pgsz,
+                                  @Param("orderby") String orderby,
+                                  @Param("asc") boolean asc) {
+        QueryResult qr = new DomainCndMaker().queryResult(dao,
+                                                          Domain.class,
+                                                          null,
+                                                          pgnm,
+                                                          pgsz,
+                                                          orderby,
+                                                          asc,
+                                                          kwd);
+        return Ajax.ok().setData(qr);
+    }
+
     @At("/user/list")
     public AjaxReturn listUser(@Param("domain") String domain, HttpSession session) {
         Domain dmn = Strings.isBlank(domain) ? DMN(session) : dao.fetch(Domain.class, domain);
         List<NutMap> re = new ArrayList<NutMap>();
-        List<DomainUser> dulist = dao.query(DomainUser.class, Cnd.where("domain", "=", domain));
+        List<DomainUser> dulist = dao.query(DomainUser.class,
+                                            Cnd.where("domain", "=", dmn.getName()));
         for (DomainUser du : dulist) {
             User u = dao.fetch(User.class, du.getUser());
             u.setPassword(null);
@@ -125,17 +131,42 @@ public class DomainModule extends AbstractBaseModule {
         return Ajax.ok();
     }
 
+    @At("/user/remove")
+    public AjaxReturn removeUser(@Param("users") String users,
+                                 @Param("domain") String domain,
+                                 @Param("userType") String userType,
+                                 HttpSession session) {
+        Domain dmn = dao.fetch(Domain.class, domain);
+        if (dmn == null) {
+            log.errorf("Domain[%s] Not Exist, Can't Remove Users", domain);
+            return Ajax.fail();
+        }
+        String[] userNames = Strings.splitIgnoreBlank(users, ",");
+        for (String user : userNames) {
+            if (dao.fetch(User.class, user) == null) {
+                log.warnf("User[%s] Not Exist, Can't Remove from Domain[%s]", user, domain);
+                continue;
+            }
+            DomainUser du = dao.fetch(DomainUser.class,
+                                      Cnd.where("domain", "=", domain).and("user", "=", user));
+            if (null != du) {
+                dao.delete(du);
+            }
+        }
+        return Ajax.ok();
+    }
+
     @At("/user/setType")
-    public AjaxReturn setUserType(@Param("userId") String uId,
+    public AjaxReturn setUserType(@Param("uname") String uname,
                                   @Param("userType") String userType,
                                   HttpSession session) {
         Domain dmn = DMN(session);
         DomainUser du = dao.fetch(DomainUser.class,
-                                  Cnd.where("domainId", "=", dmn.getId()).and("userId", "=", uId));
+                                  Cnd.where("domain", "=", dmn.getName()).and("user", "=", uname));
         if (null != du && !du.getUserType().equals(userType)) {
             du.setUserType(userType);
             du.setModifyTime(new Date());
-            du.setModifyUser(ME(session).getId());
+            du.setModifyUser(ME(session).getName());
             dao.update(du, "userType|modifyTime|modifyUser");
             return Ajax.ok();
         }

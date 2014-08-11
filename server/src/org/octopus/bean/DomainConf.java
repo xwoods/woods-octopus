@@ -17,17 +17,7 @@ public class DomainConf {
 
     private User manager;
 
-    private List<User> users;
-
-    private boolean crossDomain;
-
-    public boolean isCrossDomain() {
-        return crossDomain;
-    }
-
-    public void setCrossDomain(boolean crossDomain) {
-        this.crossDomain = crossDomain;
-    }
+    private List<String> users;
 
     public Domain getDomain() {
         return domain;
@@ -45,11 +35,11 @@ public class DomainConf {
         this.manager = manager;
     }
 
-    public List<User> getUsers() {
+    public List<String> getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(List<String> users) {
         this.users = users;
     }
 

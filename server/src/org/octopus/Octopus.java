@@ -1,6 +1,6 @@
 package org.octopus;
 
-import java.io.InputStreamReader;
+import java.io.File;
 import java.security.SecureRandom;
 import java.util.Date;
 import java.util.List;
@@ -13,7 +13,7 @@ import javax.crypto.spec.DESKeySpec;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.dao.entity.annotation.Table;
-import org.nutz.json.Json;
+import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
 import org.nutz.log.Log;
@@ -34,8 +34,14 @@ public class Octopus {
 
     private static String secretKey = "1234567890";
 
+    private static String godPassword = "123456";
+
     protected static void setSecretKey(String sKey) {
         secretKey = sKey;
+    }
+
+    protected static void setGodPassword(String gpd) {
+        godPassword = gpd;
     }
 
     /**
@@ -102,11 +108,53 @@ public class Octopus {
         for (String tbPkg : tables) {
             createTableByPKG(dao, tbPkg);
         }
+    }
 
-        // 默认域
-        DomainConf adminDmnConf = Json.fromJson(DomainConf.class,
-                                                new InputStreamReader(Octopus.class.getResourceAsStream("/dmn/admin.js")));
-        initDomain(dao, adminDmnConf);
+    // 初始化户用户与域
+    public static void initUserAndDomain(Dao dao) {
+        String uname = "God";
+        User god = dao.fetch(User.class, uname);
+        if (god == null) {
+            god = new User();
+            god.setName("God");
+            god.setAlias("super.user.god");
+            god.setPassword(encrypt(godPassword));
+            god.setCreateTime(new Date());
+            god.setCreateUser("God"); // 自己创造自己
+            god.setEnable(true);
+            createUser(dao, god);
+        }
+
+        // 初始化admin域
+        String adminStr = "admin";
+        User admin = dao.fetch(User.class, adminStr);
+        if (admin == null) {
+            admin = new User();
+            admin.setName("admin");
+            admin.setAlias("super.user.admin");
+            admin.setPassword(encrypt(godPassword));
+            admin.setCreateTime(new Date());
+            admin.setCreateUser(god.getName());
+            admin.setEnable(true);
+            createUser(dao, god);
+        }
+        Domain adminDomain = dao.fetch(Domain.class, adminStr);
+        if (adminDomain == null) {
+            adminDomain = new Domain();
+            adminDomain.setName(adminStr);
+            adminDomain.setAlias("super.domain.admin");
+            adminDomain.setAbout("");
+
+            DomainConf dmnConf = new DomainConf();
+            dmnConf.setDomain(adminDomain);
+            dmnConf.setManager(admin);
+            initDomain(dao, dmnConf);
+        }
+    }
+
+    public static void createUser(Dao dao, User nUser) {
+        dao.insert(nUser);
+        Files.createDirIfNoExists(new File(fsHomePath, nUser.getName()));
     }
 
     // 建表
@@ -134,71 +182,61 @@ public class Octopus {
      * @param dmnConf
      */
     public static void initDomain(Dao dao, DomainConf dmnConf) {
-        Domain dmn = dao.fetch(Domain.class, Cnd.where("name", "=", dmnConf.getDomain().getName()));
+        String domainName = dmnConf.getDomain().getName();
+        String adminName = dmnConf.getManager().getName();
+        // 建立域
+        Domain dmn = dao.fetch(Domain.class, Cnd.where("name", "=", domainName));
         if (null == dmn) {
+            log.infof("Create Domain [%s] Success", domainName);
             dmn = new Domain();
-            dmn.setName(dmnConf.getDomain().getName());
+            dmn.setName(domainName);
             dmn.setAlias(dmnConf.getDomain().getAlias());
             dmn.setAbout(dmnConf.getDomain().getAbout());
             dmn.setCreateTime(new Date());
-            dmn.setCreateUser("God");
+            dmn.setCreateUser(adminName);
             dao.insert(dmn);
+        } else {
+            log.warnf("Create Domain [%s] Fail, Domain Existed!", domainName);
         }
-        String superUserPassword = encrypt(dmnConf.getManager().getPassword());
-        User admin = dmnConf.getManager();
+        // 管理员加入域中
         DomainUser du = dao.fetch(DomainUser.class,
-                                  Cnd.where("domainId", "=", dmn.getId()).and("userId",
-                                                                              "=",
-                                                                              admin.getId()));
+                                  Cnd.where("domain", "=", domainName).and("user", "=", adminName));
         if (null == du) {
+            log.infof("Add Admin[%s] to Domain [%s] Success", adminName, domainName);
             du = new DomainUser();
-            du.setDomainId(dmn.getId());
-            du.setUserId(admin.getId());
+            du.setDomain(domainName);
+            du.setUser(adminName);
             du.setUserType(Keys.DMN_USER_TYPE_ADMIN);
             du.setCreateTime(new Date());
-            du.setCreateUser("God");
+            du.setCreateUser(adminName);
             dao.insert(du);
+        } else {
+            log.warnf("Add Admin[%s] to Domain [%s] Fail, Domain Existed", adminName, domainName);
         }
 
         // 普通用户
-        List<User> ulist = dmnConf.getUsers();
+        List<String> ulist = dmnConf.getUsers();
         if (null != ulist && ulist.size() > 0) {
-            for (User user : ulist) {
-                User existUser = dao.fetch(User.class, Cnd.where("name", "=", user.getName()));
+            for (String user : ulist) {
+                User existUser = dao.fetch(User.class, Cnd.where("name", "=", user));
                 if (null == existUser) {
-                    user.setPassword(encrypt("123456"));
-                    user.setCreateTime(new Date());
-                    user.setCreateUser(admin.getId());
-                    user.setEnable(true);
-                    dao.insert(user);
-
+                    log.warnf("Add User[%s] to Domain [%s] Fail, User Not Existed",
+                              user,
+                              domainName);
+                } else {
                     DomainUser duser = dao.fetch(DomainUser.class,
-                                                 Cnd.where("domainId", "=", dmn.getId())
-                                                    .and("userId", "=", user.getId()));
+                                                 Cnd.where("domain", "=", domainName).and("user",
+                                                                                          "=",
+                                                                                          user));
                     if (null == duser) {
+                        log.infof("Add User[%s] to Domain [%s] Success", user, domainName);
                         duser = new DomainUser();
-                        duser.setDomainId(dmn.getId());
-                        duser.setUserId(user.getId());
+                        duser.setDomain(domainName);
+                        duser.setUser(user);
                         duser.setUserType(Keys.DMN_USER_TYPE_NORMAL);
                         duser.setCreateTime(new Date());
-                        duser.setCreateUser(admin.getId());
+                        duser.setCreateUser(adminName);
                         dao.insert(duser);
-                    }
-                } else {
-                    log.warnf("User [%s] Existed!", user.getName());
-                    if (dmnConf.isCrossDomain()) {
-                        DomainUser duser = dao.fetch(DomainUser.class,
-                                                     Cnd.where("domainId", "=", dmn.getId())
-                                                        .and("userId", "=", existUser.getId()));
-                        if (null == duser) {
-                            duser = new DomainUser();
-                            duser.setDomainId(dmn.getId());
-                            duser.setUserId(existUser.getId());
-                            duser.setUserType(Keys.DMN_USER_TYPE_NORMAL);
-                            duser.setCreateTime(new Date());
-                            duser.setCreateUser(admin.getId());
-                            dao.insert(duser);
-                        }
                     }
                 }
             }

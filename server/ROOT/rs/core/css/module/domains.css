@@ -1,0 +1,100 @@
+/**
+ * Created by pw on 14-8-11.
+ */
+
+.domain-form {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.form-title {
+    font-size: 14px;
+    margin-bottom: 5px;
+    padding-left: 5px;
+}
+
+.form-item {
+    margin-bottom: 5px;
+}
+
+.form-item input {
+    background-color: #FFFFFF;
+    border: 1px solid #D5D5D5;
+    color: #858585;
+    font-size: 13px;
+    padding: 0 5px;
+    border-radius: 4px;
+    width: 200px;
+    height: 30px;
+    line-height: 30px;
+}
+
+.form-item textarea {
+    font-size: 13px;
+    line-height: 30px;
+    width: 300px;
+    height: 100px;
+    border-radius: 4px;
+    padding: 5px;
+    background-color: #FFFFFF;
+    border: 1px solid #D5D5D5;
+    color: #858585;
+}
+
+.form-item.ok .chk-ok {
+    display: inline-block;
+}
+
+.form-item.fail .chk-fail {
+    display: inline-block;
+}
+
+.form-item.fail input {
+    color: #ff0000;
+}
+
+.form-item.ing .chk-ing {
+    display: inline-block;
+}
+
+.chk-i {
+    display: none;
+    margin-left: 5px;
+}
+
+.chk-ok {
+    color: #080;
+}
+
+.chk-fail {
+    color: #ff0000;
+}
+
+.chk-ing {
+    color: #007AFF;
+}
+
+.form-submit {
+    border: none;
+    width: 100px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 14px;
+    border-radius: 4px;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.form-submit.ok {
+    background-color: #007AFF;
+}
+
+.form-submit.cancel {
+    background-color: #ff0000;
+}
+
+.domain-table {
+    width: 100%;
+}
+

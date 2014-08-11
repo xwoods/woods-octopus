@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.nutz.dao.Cnd;
+import org.nutz.dao.QueryResult;
+import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
 import org.nutz.lang.util.NutMap;
@@ -26,6 +28,7 @@ import org.octopus.bean.core.Domain;
 import org.octopus.bean.core.DomainUser;
 import org.octopus.bean.core.User;
 import org.octopus.module.AbstractBaseModule;
+import org.octopus.module.core.query.DomainCndMaker;
 
 @At("/user")
 @Ok("ajax")
@@ -45,8 +48,15 @@ public class UserModule extends AbstractBaseModule {
         return dao.count(User.class, Cnd.where(field, "=", value)) >= 1;
     }
 
+    @Inject("java:$conf.get('invite-code', '123456')")
+    protected String inviteCode;
+
     @At("/register")
-    public AjaxReturn register(@Param("..") User user) {
+    public AjaxReturn register(@Param("..") User user, @Param("ic") String inviteCode) {
+        if (!this.inviteCode.equals(inviteCode)) {
+            log.warnf("UserIC[%s] Not Match ServerIC[%s]", inviteCode, this.inviteCode);
+            return Ajax.fail().setMsg(Msg.USER_INVITE_CODE_EXPIRED);
+        }
         if (checkExist("name", user.getName())) {
             return Ajax.fail().setMsg(Msg.USER_EXIST_NAME);
         }
@@ -65,8 +75,25 @@ public class UserModule extends AbstractBaseModule {
         user.setPassword(password(user.getPassword()));
         user.setCreateTime(new Date());
         user.setEnable(true);
-        dao.insert(user);
+        Octopus.createUser(dao, user);
         return Ajax.ok().setMsg(Msg.USER_REGISTER_OK);
+    }
+
+    @At("/query")
+    public AjaxReturn queryUser(@Param("kwd") String kwd,
+                                @Param("pgnm") int pgnm,
+                                @Param("pgsz") int pgsz,
+                                @Param("orderby") String orderby,
+                                @Param("asc") boolean asc) {
+        QueryResult qr = new DomainCndMaker().queryResult(dao,
+                                                          User.class,
+                                                          null,
+                                                          pgnm,
+                                                          pgsz,
+                                                          orderby,
+                                                          asc,
+                                                          kwd);
+        return Ajax.ok().setData(qr);
     }
 
     @At("/login")
@@ -96,8 +123,8 @@ public class UserModule extends AbstractBaseModule {
             if (null != u) {
                 if (u.isEnable()) {
                     DomainUser du = dao.fetch(DomainUser.class,
-                                              Cnd.where("domainId", "=", dmn.getId())
-                                                 .and("userId", "=", u.getId()));
+                                              Cnd.where("domain", "=", dmn.getName())
+                                                 .and("user", "=", u.getName()));
                     if (null != du) {
                         // 用户其他信息
                         NutMap userInfo = new NutMap();
