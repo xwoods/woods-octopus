@@ -1,4 +1,4 @@
-package org.octopus.bean.issue;
+package org.octopus.bean.core;
 
 import org.nutz.dao.entity.annotation.ColDefine;
 import org.nutz.dao.entity.annotation.Index;

@@ -1,4 +1,4 @@
-package org.octopus.bean.issue;
+package org.octopus.bean.core;
 
 import org.nutz.dao.entity.annotation.ColDefine;
 import org.nutz.dao.entity.annotation.Index;
@@ -7,7 +7,9 @@ import org.nutz.dao.entity.annotation.TableIndexes;
 import org.octopus.bean.BeanCreateModify;
 
 @Table("t_issue")
-@TableIndexes({@Index(name = "t_issue_domain", fields = {"domain"}, unique = false)})
+@TableIndexes({@Index(name = "t_issue_domain", fields = {"domain"}, unique = false),
+               @Index(name = "t_issue_ctuser", fields = {"createUser"}, unique = false),
+               @Index(name = "t_issue_content", fields = {"content"}, unique = false)})
 public class Issue extends BeanCreateModify {
 
     private String domain;

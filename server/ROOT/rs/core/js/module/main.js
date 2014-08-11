@@ -69,6 +69,16 @@ function navConf(nc) {
     }
 }
 
+window.namap = {};
+
+window.getAlias = function (name) {
+    var alias = window.namap[name];
+    if ($z.util.isBlank(alias)) {
+        return name;
+    }
+    return alias;
+}
+
 var navUrlNameMap = {};
 
 var tmpl_crumb_li = '<li><span>{{value}}</span></li>';
@@ -98,6 +108,11 @@ $(document).ready(function () {
     }
 
     $z.initMsg();
+
+    $z.http.get('/user/na', function (re) {
+        window.namap = re.data;
+        console.log("Map Name-Alias Ready");
+    });
 
     // 调整.container的min-height
     var containerJq = $('.container');
@@ -228,6 +243,11 @@ var coreRoute = [
         url: '/domains',
         page: '/core/domains.jsp',
         ctrl: 'DomainsCtl'
+    },
+    {
+        url: '/issue',
+        page: '/core/issue.jsp',
+        ctrl: 'IssueCtl'
     },
     {
         url: '/notImpl',

@@ -2,6 +2,9 @@ package org.octopus.module.core;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +13,9 @@ import javax.servlet.http.HttpSession;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.QueryResult;
+import org.nutz.dao.Sqls;
+import org.nutz.dao.sql.Sql;
+import org.nutz.dao.sql.SqlCallback;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
@@ -183,4 +189,20 @@ public class UserModule extends AbstractBaseModule {
         }
     }
 
+    @At("/na")
+    public AjaxReturn userNameAlias() {
+        final NutMap naMap = new NutMap();
+        Sql sql = Sqls.create("select name, alias from t_user");
+        sql.setCallback(new SqlCallback() {
+            @Override
+            public Object invoke(Connection conn, ResultSet rs, Sql sql) throws SQLException {
+                while (rs.next()) {
+                    naMap.put(rs.getString(1), rs.getString(2));
+                }
+                return null;
+            }
+        });
+        dao.execute(sql);
+        return Ajax.ok().setData(naMap);
+    }
 }

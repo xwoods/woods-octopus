@@ -16,8 +16,9 @@
     <link rel="stylesheet" href="${rs}/core/css/module/users.css">
     <link rel="stylesheet" href="${rs}/core/css/module/domains.css">
     <link rel="stylesheet" href="${rs}/core/css/module/setting.css">
+    <link rel="stylesheet" href="${rs}/core/css/module/issue.css">
 </head>
-<body dmnNm="${domain.name}" ng-app="mainApp">
+<body dmnNm="${domain.name}" userNm="${user.name}" ng-app="mainApp">
 <%@include file="_msg.jsp" %>
 <div class="header">
     <span>Oct</span><img class="logo" src="${rs}/core/img/octopus-logo.png"><span>pus</span>
@@ -135,5 +136,6 @@
 <script language="JavaScript" src="${rs}/core/js/module/users.js"></script>
 <script language="JavaScript" src="${rs}/core/js/module/domains.js"></script>
 <script language="JavaScript" src="${rs}/core/js/module/setting.js"></script>
+<script language="JavaScript" src="${rs}/core/js/module/issue.js"></script>
 </body>
 </html>

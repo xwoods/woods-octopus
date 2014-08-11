@@ -53,7 +53,7 @@ function RegCtrl($scope) {
             ralias.parent().removeClass('ing').removeClass('ok').removeClass('fail');
             return;
         }
-        var repName = new RegExp("^([\u4E00-\uFA29]|[\uE7C7-\uE7F3]|[a-zA-Z0-9]){2,20}$");
+        var repName = new RegExp("^([\u4E00-\uFA29]|[\uE7C7-\uE7F3]|[a-zA-Z0-9]){2,10}$");
         if (repName.test(val)) {
             $z.http.get("/user/checkExist/alias/" + val, function (re) {
                 if (re.data) {
