@@ -47,7 +47,7 @@
             <i class="fa fa-check-circle fa-lg chk-i chk-ok"></i>
             <i class="fa fa fa-spinner fa-spin-1s fa-lg chk-i chk-ing"></i>
             <i class="fa fa-times-circle fa-lg chk-i chk-fail"></i>
-            <span class="fail-tip">2-20位(字母+数字)</span>
+            <span class="fail-tip">2-20位(字母+数字+中文字符)</span>
         </div>
         <div class="form-title">密码</div>
         <div class="form-item">
@@ -55,7 +55,7 @@
             <i class="fa fa-check-circle fa-lg chk-i chk-ok"></i>
             <i class="fa fa fa-spinner fa-spin-1s fa-lg chk-i chk-ing"></i>
             <i class="fa fa-times-circle fa-lg chk-i chk-fail"></i>
-            <span class="fail-tip">2-20位(字母+数字)</span>
+            <span class="fail-tip">6-20位(字母+数字+@)</span>
         </div>
         <div class="form-title">邀请码</div>
         <div class="form-item">
@@ -65,6 +65,7 @@
             <i class="fa fa-times-circle fa-lg chk-i chk-fail"></i>
         </div>
         <input type="submit" class="reg-submit" value="注 册"/>
+
         <div class="switch-form login">返回登录</div>
     </form>
 </div>
