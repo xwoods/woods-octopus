@@ -107,4 +107,12 @@
         return util.fromJson(str);
     };
 
+    util.replaceAll = function (str, reallyDo, replaceWith, ignoreCase) {
+        if (!RegExp.prototype.isPrototypeOf(reallyDo)) {
+            return str.replace(new RegExp(reallyDo, (ignoreCase ? "gi" : "g")), replaceWith);
+        } else {
+            return str.replace(reallyDo, replaceWith);
+        }
+    };
+
 })(window);

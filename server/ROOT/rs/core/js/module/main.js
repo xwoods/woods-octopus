@@ -16,6 +16,14 @@ function afterLoadReady() {
     }
 }
 
+String.prototype.replaceAll = function (reallyDo, replaceWith, ignoreCase) {
+    if (!RegExp.prototype.isPrototypeOf(reallyDo)) {
+        return this.replace(new RegExp(reallyDo, (ignoreCase ? "gi" : "g")), replaceWith);
+    } else {
+        return this.replace(reallyDo, replaceWith);
+    }
+}
+
 var tmpl_li = '';
 tmpl_li += '<li>';
 tmpl_li += '    <a href="#{{url}}">';

@@ -11,7 +11,7 @@
 .zgrid-header {
 }
 
-.zgrid-footer{
+.zgrid-footer {
 }
 
 .zgrid-table {
@@ -78,7 +78,6 @@
     line-height: 25px;
 }
 
-
 .zgrid-column-setting li span {
     display: inline-block;
     width: 80px;
@@ -92,24 +91,24 @@
     overflow: hidden;
     background-color: #e5e5e5;
 }
+
 .zgrid-column-setting li b {
     width: 30px;
     text-align: center;
 }
 
-.zgrid-column-setting li input{
+.zgrid-column-setting li input {
     border: 0;
     border-radius: 2px;
 }
 
 .zgrid-column-setting li input[type=number] {
     width: 50px;
-    padding:0 5px;
+    padding: 0 5px;
 }
 
 .left-panel .zgrid-table-body {
 }
-
 
 .right-panel .zgrid-table-head {
     background-color: #f5f5f5;
@@ -167,6 +166,10 @@
     white-space: nowrap;
 }
 
+.nobar-back {
+    display: none;
+}
+
 .left-panel .zgrid-table-body .zgrid-td {
     padding-right: 8px;
     width: 35px;
@@ -174,6 +177,15 @@
     height: 26px;
     line-height: 26px;
     font-size: 12px;
+}
+
+.left-panel .zgrid-table-body .zgrid-td:hover span {
+    display: none;
+}
+
+.left-panel .zgrid-table-body .zgrid-td:hover .nobar-back {
+    display: inline-block;
+    cursor: pointer;
 }
 
 .pager-area {
@@ -204,7 +216,6 @@
     cursor: not-allowed;
 }
 
-
 .pager-btn.disable > i.fa {
     opacity: 0;
 }
@@ -223,7 +234,6 @@
     border-radius: 4px;
     padding-left: 5px;
 }
-
 
 .query-area {
     display: inline-block;

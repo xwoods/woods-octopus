@@ -22,6 +22,7 @@
             opt.status = opt.status || {
                 loading: false
             };
+            opt.rows = [];
             return opt;
         },
         selection: function (ele) {
@@ -173,10 +174,17 @@
             var template = Handlebars.compile(html);
             return template({'cols': cols});
         },
-        leftBodyHtml: function (cols, dlist) {
+        leftBodyHtml: function (cols, dlist, nobar) {
             var html = '';
             for (var i = 0; i < dlist.length; i++) {
-                html += '<div class="zgrid-td">' + (i + 1) + '</div>';
+                html += '<div class="zgrid-td" no="' + i + '">';
+                html += '<span>' + (i + 1) + '</span>';
+                if (nobar) {
+                    html += nobar.html;
+                } else {
+                    html += '<span class="nobar-back">' + (i + 4) + '</span>';
+                }
+                html += '</div>';
             }
             return html;
         },
@@ -270,8 +278,10 @@
                 }
 
                 // 更新table
-                lbody[0].innerHTML = dom.leftBodyHtml(cols, dlist);
+                lbody[0].innerHTML = dom.leftBodyHtml(cols, dlist, opt.table.nobar);
                 rbody[0].innerHTML = dom.rightBodyHtml(cols, dlist);
+
+                opt.rows = dlist;
 
                 var stopTime = new Date().getTime();
                 var useTime = stopTime - startTime;
@@ -305,6 +315,15 @@
                 for (var i = 0; i < cusQA.length; i++) {
                     selection.delegate("." + cusQA[i].clz, cusQA[i].eventType, events.dataRefresh);
                 }
+            }
+
+            if (opt.table.nobar) {
+                selection.delegate('.nobar-back', 'click', function (e) {
+                    e.stopPropagation();
+                    var no = parseInt($(this).parent().attr('no'));
+                    var rowData = opt.rows[no];
+                    opt.table.nobar.click(rowData);
+                });
             }
         },
         dataRefresh: function () {

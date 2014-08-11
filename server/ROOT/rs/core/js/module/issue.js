@@ -2,15 +2,6 @@
  * Created by pw on 14-8-11.
  */
 
-
-String.prototype.replaceAll = function (reallyDo, replaceWith, ignoreCase) {
-    if (!RegExp.prototype.isPrototypeOf(reallyDo)) {
-        return this.replace(new RegExp(reallyDo, (ignoreCase ? "gi" : "g")), replaceWith);
-    } else {
-        return this.replace(reallyDo, replaceWith);
-    }
-}
-
 function IssueCtl($scope) {
 
     var module = $('.module-issue');
@@ -50,7 +41,7 @@ function IssueCtl($scope) {
                 uhtml += '    </div>';
                 uhtml += '    <div class="ct-issue">';
                 uhtml += '        <span>' + issue.createTime + '</span>';
-                uhtml += '        <p>' + issue.content.replaceAll("\n", "<br>") + '</p>';
+                uhtml += '        <p>' + $z.util.replaceAll(issue.content, "\n", "<br>") + '</p>';
                 uhtml += '        <em issueId="' + issue.id + '">查看回复</em>';
                 uhtml += '    </div>';
                 uhtml += '</li>';
@@ -75,7 +66,7 @@ function IssueCtl($scope) {
                 uhtml += '    </div>';
                 uhtml += '    <div class="ct-issue">';
                 uhtml += '        <span>' + issueReply.createTime + '</span>';
-                uhtml += '        <p>' + issueReply.content.replaceAll("\n", "<br>") + '</p>';
+                uhtml += '        <p>' + $z.util.replaceAll(issueReply.content, "\n", "<br>") + '</p>';
                 uhtml += '    </div>';
                 uhtml += '</li>';
             }
