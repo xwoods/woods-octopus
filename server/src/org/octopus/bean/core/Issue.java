@@ -17,7 +17,30 @@ public class Issue extends BeanCreateModify {
     @ColDefine(width = 2048)
     private String content;
 
+    // 问题状态
     private String status;
+
+    // 问题类型
+    private String type;
+
+    // 回复数量
+    private int replyNum;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getReplyNum() {
+        return replyNum;
+    }
+
+    public void setReplyNum(int replyNum) {
+        this.replyNum = replyNum;
+    }
 
     public String getDomain() {
         return domain;

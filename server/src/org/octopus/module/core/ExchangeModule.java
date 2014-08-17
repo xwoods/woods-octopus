@@ -1,21 +1,27 @@
 package org.octopus.module.core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.UnsupportedEncodingException;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.nutz.dao.Cnd;
 import org.nutz.lang.Lang;
+import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.mvc.Scope;
 import org.nutz.mvc.annotation.At;
 import org.nutz.mvc.annotation.Attr;
+import org.nutz.mvc.annotation.By;
+import org.nutz.mvc.annotation.Filters;
 import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.annotation.Param;
 import org.nutz.mvc.view.HttpStatusView;
+import org.nutz.web.fliter.CheckNotLogin;
 import org.octopus.Keys;
 import org.octopus.Octopus;
 import org.octopus.bean.core.Document;
@@ -23,6 +29,7 @@ import org.octopus.bean.core.User;
 import org.octopus.fs.FileAs;
 import org.octopus.module.AbstractBaseModule;
 
+@Filters({@By(type = CheckNotLogin.class, args = {Keys.SESSION_USER, "/login"})})
 @At("/ex")
 @Ok("ajax")
 public class ExchangeModule extends AbstractBaseModule {
@@ -120,5 +127,23 @@ public class ExchangeModule extends AbstractBaseModule {
         }
         // 用户目录 + 文件目录
         return new File(Octopus.fullPath(me.getName(), fid));
+    }
+
+    @At("/r/txt")
+    @Ok("raw")
+    public Object readTxt(@Param("fid") String fid,
+                          HttpServletResponse resp,
+                          @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        Object tf = readBinary(fid, resp, me);
+        if (tf instanceof HttpStatusView) {
+            return tf;
+        }
+        try {
+            return Streams.readAndClose(new FileReader((File) tf));
+        }
+        catch (FileNotFoundException e) {
+            log.error(e);
+        }
+        return new HttpStatusView(500);
     }
 }

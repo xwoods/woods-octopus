@@ -102,6 +102,11 @@ function crumbHtml(route) {
 
 $(document).ready(function () {
 
+    window.myConf = {
+        'domain' : $(document.body).attr('dmnNm'),
+        'user' : $(document.body).attr('userNm')
+    }
+
     if (isDebug) {
         var blr = $("#before-load-ready");
         blr.remove();

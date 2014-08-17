@@ -2,6 +2,14 @@
 <%@include file="/WEB-INF/jsp/_setup.jsp" %>
 <div class="module-content module-me">
     <div>
+        <div class="release-date">2014-08-17</div>
+        <div class="release-note">
+            <ul>
+                <li>
+                    "线上监控", 支持自动保存/加载配置(列设置, 查询条件, 分页, 服务器与域选择等信息)
+                </li>
+            </ul>
+        </div>
         <div class="release-date">2014-08-12</div>
         <div class="release-note">
             <ul>

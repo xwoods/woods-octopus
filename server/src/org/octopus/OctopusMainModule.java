@@ -12,12 +12,10 @@ import org.nutz.web.error.ErrPageViewMaker;
 
 @Modules(scanPackage = true)
 @Localization(value = "msg", defaultLocalizationKey = "zh-CN")
-@IocBy(type = ComboIocProvider.class,
-// 采用复合加载器的参数
-args = {"*org.nutz.ioc.loader.json.JsonLoader",
-        "ioc",
-        "*org.nutz.ioc.loader.annotation.AnnotationIocLoader",
-        "org.octopus.module"})
+@IocBy(type = ComboIocProvider.class, args = {"*org.nutz.ioc.loader.json.JsonLoader",
+                                              "ioc",
+                                              "*org.nutz.ioc.loader.annotation.AnnotationIocLoader",
+                                              "org.octopus.module"})
 @SetupBy(OctopusSetup.class)
 @Views(value = {AjaxViewMaker.class, ErrPageViewMaker.class})
 @Fail("errpage")

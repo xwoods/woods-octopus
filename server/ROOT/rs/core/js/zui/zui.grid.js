@@ -23,6 +23,7 @@
                 loading: false
             };
             opt.rows = [];
+            opt.columnsRender = opt.columnsRender || {};
             return opt;
         },
         selection: function (ele) {
@@ -44,7 +45,7 @@
             var rwidth = 0;
             for (var i = 0; i < cols.length; i++) {
                 if (cols[i].show) {
-                    rwidth += cols[i].width;
+                    rwidth += parseInt(cols[i].width);
                     opt.table._showColNum++;
                 }
             }
@@ -61,7 +62,7 @@
                 html += '   <div class="zgrid-header zgrid-menu-bar">';
                 html += '       <ol class="query-area">'
                 html += '           <li>';
-                html += '               <input type="text" placeholder="请输入过滤条件.." class="query-kwd"/>';
+                html += '               <input type="text" placeholder="请输入过滤条件.." class="query-kwd" value="' + opt.table.query.kwd + '"/>';
                 html += '           </li>';
                 if (opt.header.queryArea) {
                     var cusQA = opt.header.queryArea;
@@ -188,7 +189,7 @@
             }
             return html;
         },
-        rightBodyHtml: function (cols, dlist) {
+        rightBodyHtml: function (cols, dlist, columnsRender) {
             var html = '';
             for (var i = 0; i < dlist.length; i++) {
                 var da = dlist[i];
@@ -197,7 +198,8 @@
                     var col = cols[j];
                     var style = 'style="width:' + col.width + 'px;display:' + (col.show ? "inline-block" : "none" ) + '"';
                     html += '<div class="zgrid-td" field="' + col.fieldName + '" ' + style + ' colwidth="' + col.width + '" >';
-                    var tdhtml = col.cellHtml ? col.cellHtml(da) : da[col.fieldName];
+                    var render = columnsRender[col.fieldName];
+                    var tdhtml = render ? render(da) : da[col.fieldName];
                     if (tdhtml == undefined || tdhtml == null) {
                         tdhtml = "";
                     }
@@ -279,7 +281,7 @@
 
                 // 更新table
                 lbody[0].innerHTML = dom.leftBodyHtml(cols, dlist, opt.table.nobar);
-                rbody[0].innerHTML = dom.rightBodyHtml(cols, dlist);
+                rbody[0].innerHTML = dom.rightBodyHtml(cols, dlist, opt.table.columnsRender);
 
                 opt.rows = dlist;
 
@@ -336,6 +338,9 @@
             var opt = util.opt(sel);
             var kwd = $.trim(qinput.val());
             opt.table.query.kwd = kwd;
+            if (opt.table.afterChangeKwd) {
+                opt.table.afterChangeKwd();
+            }
             data.refresh(sel, true);
         },
         nextPage: function () {
@@ -359,6 +364,9 @@
             var sel = util.selection(this);
             var opt = util.opt(sel);
             opt.table.pager.pgsz = $(this).val();
+            if (opt.table.afterChangePager) {
+                opt.table.afterChangePager();
+            }
             data.refresh(sel, true);
         },
         sortBy: function () {
@@ -434,6 +442,9 @@
                 opt.table._showColNum--;
                 opt.table.columns[index].show = false;
             }
+            if (opt.table.afterChangeColumns) {
+                opt.table.afterChangeColumns();
+            }
         },
         resizeTableByWidth: function () {
             var winput = $(this);
@@ -445,22 +456,21 @@
             var index = parseInt(winput.attr('index'));
             var nwidth = winput.val();
             var owidth = parseInt(winput.attr('old'));
-
             var colhead = thead.find('.zgrid-th[field=' + field + ']');
             var colbody = tbody.find('.zgrid-td[field=' + field + ']');
-
             var wdif = nwidth - owidth;
             colhead.width(nwidth);
             colbody.width(nwidth);
-
-            opt.table.columns[index].width = nwidth;
-
+            opt.table.columns[index].width = parseInt(nwidth);
             // 判断是不是显示的列
             if (opt.table.columns[index].show) {
                 thead[0].style.width = parseInt(thead[0].style.width) + wdif + "px";
                 tbody[0].style.width = thead[0].style.width;
             }
             winput.attr('old', nwidth);
+            if (opt.table.afterChangeColumns) {
+                opt.table.afterChangeColumns();
+            }
         }
     };
     // _________________________________
