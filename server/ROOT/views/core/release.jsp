@@ -2,6 +2,23 @@
 <%@include file="/WEB-INF/jsp/_setup.jsp" %>
 <div class="module-content module-me">
     <div>
+        <div class="release-date">2014-08-18</div>
+        <div class="release-note">
+            <ul>
+                <li>
+                    "线上监控"模块更新
+                    <ol>
+                        <li>修正3G信息, 最后心跳时间的显示问题</li>
+                    </ol>
+                </li>
+                <li>
+                    "截图监控"模块上线
+                    <ol>
+                        <li>查看某个盒子的一天内的截图, 通过截图变化, 判断盒子是否正常运行</li>
+                    </ol>
+                </li>
+            </ul>
+        </div>
         <div class="release-date">2014-08-17</div>
         <div class="release-note">
             <ul>

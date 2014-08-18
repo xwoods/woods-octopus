@@ -263,7 +263,7 @@ body {
 .main-container.mini .main-nav .nav-list > li:hover .subnav-list {
     display: block;
     position: absolute;
-    top: 42px;
+    top: 40px;
     left: 51px;
     width: 200px;
     z-index: 1030;
