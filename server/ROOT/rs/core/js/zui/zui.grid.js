@@ -23,7 +23,7 @@
                 loading: false
             };
             opt.rows = [];
-            opt.columnsRender = opt.columnsRender || {};
+            opt.table.columnsRender = opt.table.columnsRender || {};
             return opt;
         },
         selection: function (ele) {
