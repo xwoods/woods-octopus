@@ -166,8 +166,10 @@
     white-space: nowrap;
 }
 
-.nobar-back {
+.row-hover {
     display: none;
+    width: 100%;
+    height: 100%;
 }
 
 .left-panel .zgrid-table-body .zgrid-td {
@@ -179,13 +181,13 @@
     font-size: 12px;
 }
 
-.left-panel .zgrid-table-body .zgrid-td:hover span {
-    display: none;
-}
-
-.left-panel .zgrid-table-body .zgrid-td:hover .nobar-back {
+.left-panel .zgrid-table-body:hover .zgrid-td .row-hover {
     display: inline-block;
     cursor: pointer;
+}
+
+.left-panel .zgrid-table-body:hover .zgrid-td .row-front {
+    display: none;
 }
 
 .pager-area {

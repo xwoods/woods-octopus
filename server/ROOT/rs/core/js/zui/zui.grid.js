@@ -175,15 +175,13 @@
             var template = Handlebars.compile(html);
             return template({'cols': cols});
         },
-        leftBodyHtml: function (cols, dlist, nobar) {
+        leftBodyHtml: function (cols, dlist, row) {
             var html = '';
             for (var i = 0; i < dlist.length; i++) {
                 html += '<div class="zgrid-td" no="' + i + '">';
-                html += '<span>' + (i + 1) + '</span>';
-                if (nobar) {
-                    html += nobar.html;
-                } else {
-                    html += '<span class="nobar-back">' + (i + 4) + '</span>';
+                html += '<div class="row-front">' + (i + 1) + '</div>';
+                if (row) {
+                    html += '<div class="row-hover">' + row.hover.render(dlist[i]) + '</div>';
                 }
                 html += '</div>';
             }
@@ -280,7 +278,7 @@
                 }
 
                 // 更新table
-                lbody[0].innerHTML = dom.leftBodyHtml(cols, dlist, opt.table.nobar);
+                lbody[0].innerHTML = dom.leftBodyHtml(cols, dlist, opt.table.row);
                 rbody[0].innerHTML = dom.rightBodyHtml(cols, dlist, opt.table.columnsRender);
 
                 opt.rows = dlist;
@@ -319,12 +317,12 @@
                 }
             }
 
-            if (opt.table.nobar) {
-                selection.delegate('.nobar-back', 'click', function (e) {
+            if (opt.table.row && opt.table.row.hover) {
+                selection.delegate('.left-panel .zgrid-td .row-hover', 'click', function (e) {
                     e.stopPropagation();
                     var no = parseInt($(this).parent().attr('no'));
                     var rowData = opt.rows[no];
-                    opt.table.nobar.click(rowData);
+                    opt.table.row.hover.click(rowData);
                 });
             }
         },
