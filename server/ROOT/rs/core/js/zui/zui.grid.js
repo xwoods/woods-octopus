@@ -132,7 +132,6 @@
             rhead[0].innerHTML = dom.headHtml(cols);
             layout.tableResize(selection);
 
-
             selection.find('.pager-size').val(opt.table.pager.pgsz);
         },
         setHtml: function (cols) {
@@ -214,6 +213,26 @@
         init: function (selection) {
             data.refresh(selection)
         },
+        queryParams: function (selection) {
+            var opt = util.opt(selection);
+            var query = opt.table.query;
+            var order = opt.table.order;
+            var queryParams = {
+                'kwd': query.kwd,
+                'orderby': order.by,
+                'asc': order.asc
+            };
+            var cusQA = opt.header.queryArea;
+            var cusParams = {};
+            if (cusQA) {
+                var pjqs = [];
+                for (var i = 0; i < cusQA.length; i++) {
+                    pjqs.push(cusQA[i].val(selection.find("." + cusQA[i].clz)));
+                }
+                cusParams = opt.header.queryParam(pjqs);
+            }
+            return $.extend(queryParams, cusParams);
+        },
         refresh: function (selection, reset) {
             var opt = util.opt(selection);
             if (opt.status.loading) {
@@ -250,7 +269,9 @@
             opt.status.loading = true;
             loadingTip.show();
             var startTime = new Date().getTime();
-            $z.http.post(query.url, $.extend(queryParams, cusParams), function (re) {
+            var realQueryParams = $.extend(queryParams, cusParams);
+
+            $z.http.post(query.url, realQueryParams, function (re) {
                 var qr = re.data;
                 var pg = qr.pager || {
                     recordCount: 0,
@@ -498,6 +519,9 @@
         },
         refresh: function () {
             data.refresh(this);
+        },
+        queryParams: function () {
+            return data.queryParams(this);
         }
     };
     // _________________________________
