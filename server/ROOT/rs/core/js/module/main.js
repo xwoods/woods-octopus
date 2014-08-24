@@ -260,6 +260,11 @@ var coreRoute = [
         ctrl: 'ReleaseCtl'
     },
     {
+        url: '/ext/sql',
+        page: '/ext/sql.jsp',
+        ctrl: 'SqlCtl'
+    },
+    {
         url: '/notImpl',
         page: '/core/notImpl.jsp',
         ctrl: 'NoImplCtl'
