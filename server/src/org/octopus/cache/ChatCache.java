@@ -135,7 +135,7 @@ public class ChatCache {
 
     public static void startRunner() {
         for (ChatMsgRunner cr : chatRunnerMap.values()) {
-            if (!cr.isRunning()) {
+            if (!cr.isAlive()) {
                 new Thread(cr).start();
             }
         }
@@ -143,7 +143,7 @@ public class ChatCache {
 
     public static void stopRunner() {
         for (ChatMsgRunner cr : chatRunnerMap.values()) {
-            if (cr.isRunning()) {
+            if (cr.isAlive()) {
                 cr.stopSend();
             }
         }
@@ -152,7 +152,7 @@ public class ChatCache {
     public static void addRunner(long chatId, boolean startRun) {
         ChatMsgRunner cr = new ChatMsgRunner(chatId, chatHistoryMap.get(chatId), dao);
         chatRunnerMap.put(chatId, cr);
-        if (startRun && !cr.isRunning()) {
+        if (startRun && !cr.isAlive()) {
             new Thread(cr).start();
         }
     }

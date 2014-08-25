@@ -17,7 +17,6 @@ import org.nutz.web.ajax.Ajax;
 import org.nutz.web.ajax.AjaxReturn;
 import org.nutz.web.fliter.CheckNotLogin;
 import org.octopus.Keys;
-import org.octopus.bean.core.Chat;
 import org.octopus.bean.core.ChatHistory;
 import org.octopus.bean.core.ChatMember;
 import org.octopus.bean.core.ChatUnread;
@@ -56,23 +55,24 @@ public class ChatModule extends AbstractBaseModule {
                                                .asc("historyId"));
             ChatCache.setUnread(myName, false);
             // 这里返回对应的数量
-            Map<Long, Chat> chatMap = new HashMap<Long, Chat>();
+            // Map<Long, Chat> chatMap = new HashMap<Long, Chat>();
             Map<Long, Integer> unreadMap = new HashMap<Long, Integer>();
             for (ChatUnread chatUnread : cu) {
                 long chatId = chatUnread.getChatId();
-                Chat tChat = chatMap.get(chatId);
-                if (tChat == null) {
-                    tChat = ChatCache.getChatByIdAndUser(chatId, chatUnread.getUser());
-                    chatMap.put(chatId, tChat);
-                }
+                // Chat tChat = chatMap.get(chatId);
+                // if (tChat == null) {
+                // tChat = ChatCache.getChatByIdAndUser(chatId,
+                // chatUnread.getUser());
+                // chatMap.put(chatId, tChat);
+                // }
                 int unum = unreadMap.get(chatId);
                 unreadMap.put(chatId, unum + 1);
             }
             //
-            NutMap result = new NutMap();
-            result.setv("chat", chatMap);
-            result.setv("unread", unreadMap);
-            return Ajax.ok().setData(result);
+            // NutMap result = new NutMap();
+            // result.setv("chat", chatMap);
+            // result.setv("unread", unreadMap);
+            return Ajax.ok().setData(unreadMap);
         }
         return Ajax.ok();
     }

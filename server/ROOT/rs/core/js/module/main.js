@@ -90,7 +90,9 @@ if (!window.myConf) {
     window.myConf = {
         'domain': '',
         'user': '',
+        'alias': '',
         'friends': [],
+        'friendsNameMap': {},
         'friendsOnline': {},
         'friendsName': '',
         'friendsChat': {},
@@ -105,6 +107,9 @@ $(document).ready(function () {
     // 我的配置
     window.myConf.domain = $(document.body).attr('dmnNm');
     window.myConf.user = $(document.body).attr('userNm');
+    window.myConf.alias = $(document.body).attr('userAlias');
+
+    window.myConf.friendsNameMap[window.myConf.user] = window.myConf.alias;
 
     if (window.myConf.isDebug) {
         var blr = $("#before-load-ready");
@@ -132,17 +137,6 @@ $(document).ready(function () {
         'min-height': winHeight - headerHeight - footerHeight
     });
 
-
-    function sidebarResize() {
-        var wh = $z.browser.winsz().height;
-        mainSidebar.css('height', wh - 47);
-    }
-
-    sidebarResize();
-
-    window.onresize = function () {
-        sidebarResize();
-    }
 
     // 基本信息
     var dmnNm = $(document.body).attr('dmnNm');
@@ -316,6 +310,18 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
     var chatContainer = mainSidebar.find('.chat-container');
     var noChat = mainSidebar.find('.no-chat');
 
+    function sidebarResize() {
+        var wh = $z.browser.winsz().height;
+        mainSidebar.css('height', wh - 47);
+        mainSidebar.find('.chat-container .chat-content').css('height', wh - 47 - 200);
+    }
+
+    sidebarResize();
+
+    window.onresize = function () {
+        sidebarResize();
+    }
+
     // 切换sidebar
     mainSidebar.delegate(".main-sidebar-switch i", 'click', function () {
         var sbtn = $(this);
@@ -333,7 +339,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
     });
 
     function addNewChat(chatMember) {
-        if(!noChat.hasClass('hdn')){
+        if (!noChat.hasClass('hdn')) {
             noChat.addClass('hdn')
         }
         var chatId = chatMember.chatId;
@@ -352,17 +358,19 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             var chtml = '';
             chtml += '<div id="chat-container-' + chatId + '">';
             chtml += '  <div class="chat-header">' + chatTitle + '</div>';
-            chtml += '  <ul class="chat-content"></ul>';
+            chtml += '  <div class="chat-content"></div>';
             chtml += '  <div class="chat-footer">';
             chtml += '      <div class="chat-menu-bar">';
             chtml += '      </div>';
             chtml += '      <div class="chat-submit">';
             chtml += '          <textarea placeholder="写点什么吧...."></textarea>';
-            chtml += '          <span>发送</span>';
+            chtml += '          <span chatId="' + chatId + '">发送</span>';
             chtml += '      </div>';
             chtml += '  </div>';
             chtml += '</div>';
             chatContainer.append(chtml);
+            // 调整高度
+            sidebarResize();
             // 最新的切换
             chatList.children().last().click();
         } else {
@@ -370,6 +378,53 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             chatItem.click();
         }
     }
+
+    var isGetChatMsg = false;
+
+    function getChatMsg(chatId) {
+        if (!isGetChatMsg) {
+            isGetChatMsg = true;
+            $z.http.get('/chat/msg/get', {
+                'chatId': chatId
+            }, function (re) {
+                if (re.data) {
+                    var chlist = re.data;
+                    var chBody = chatContainer.find('#chat-container-' + chatId + ' .chat-content');
+                    // 拿到的新的数据
+                    for (var i = 0; i < chlist.length; i++) {
+                        var ch = chlist[i];
+                        var html = '';
+                        html += '<div class="' + (ch.user == window.myConf.user ? "me" : "") + '">';
+                        html += '   <span class="name">' + window.myConf.friendsNameMap[ch.user] + "</span>";
+                        html += '   <span class="time">' + ch.createTime + "</span>";
+                        html += '   <p>' + ch.content + "</p>";
+                        html += '</div>';
+                        chBody.append(html);
+                    }
+                }
+                isGetChatMsg = false;
+            });
+        }
+    }
+
+    // 发送
+    chatContainer.delegate('.chat-footer .chat-submit span', 'click', function () {
+        var sbtn = $(this);
+        var stxt = sbtn.prev();
+        var chatId = sbtn.attr('chatId');
+        var content = stxt.val();
+        stxt.val('');
+        if (!$z.util.isBlank(content)) {
+            // 发送消息
+            $z.http.post('/chat/msg/send', {
+                'chatId': chatId,
+                'content': content
+            }, function (re) {
+                // 获取当前队列的消息, 也包括自己的
+                getChatMsg(chatId);
+            });
+        }
+    });
 
     // 激活chat
     chatList.delegate('li', 'click', function () {
@@ -433,6 +488,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
                 var fnms = [];
                 for (var i = 0; i < nfriends.length; i++) {
                     fnms.push(nfriends[i].name);
+                    window.myConf.friendsNameMap[nfriends[i].name] = nfriends[i].alias;
                 }
                 window.myConf.friendsName = fnms.join(',');
                 $scope.users = window.myConf.friends;

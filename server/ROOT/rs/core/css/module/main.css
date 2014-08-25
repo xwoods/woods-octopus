@@ -495,9 +495,6 @@ body {
     height: 50px;
     line-height: 50px;
     border-bottom: 1px solid #D9D9D9;
-    position: absolute;
-    top: 0;
-    left: 0;
     background-color: rgb(246, 246, 246);
     padding: 0 15px;
     font-size: 14px;
@@ -505,18 +502,39 @@ body {
 }
 
 .sidebar-container .chat-container .chat-content {
-    height: 100%;
-    padding: 50px 0 150px 0;
     display: block;
+    overflow-y: auto;
+}
+
+.sidebar-container .chat-container .chat-content > div {
+    margin: 5px 0;
+    padding: 0 10px;
+}
+
+.sidebar-container .chat-container .chat-content > div > span {
+    color: #2cbeff;
+}
+
+.sidebar-container .chat-container .chat-content > div.me > span {
+    color: #008800;
+}
+
+.sidebar-container .chat-container .chat-content > div > span.name {
+
+}
+
+.sidebar-container .chat-container .chat-content > div > span.time {
+
+}
+
+.sidebar-container .chat-container .chat-content > div > p {
+    padding: 10px 15px;
 }
 
 .sidebar-container .chat-container .chat-footer {
     width: 100%;
     height: 150px;
     border-top: 1px solid #D9D9D9;
-    position: absolute;
-    bottom: 0;
-    left: 0;
 }
 
 .sidebar-container .chat-container .chat-footer .chat-menu-bar {
