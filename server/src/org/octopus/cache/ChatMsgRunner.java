@@ -44,6 +44,7 @@ public class ChatMsgRunner extends NutRunner {
                     cu.setHistoryId(ch.getId());
                     cu.setUser(cuser);
                     dao.insert(cu);
+                    ChatCache.setUnread(cuser, true);
                 }
             }
             catch (Exception e) {

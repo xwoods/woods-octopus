@@ -2,20 +2,6 @@
  * Created by pw on 14-7-16.
  */
 
-var isDebug = false;
-
-function afterLoadReady() {
-    var blr = $("#before-load-ready");
-    if (!isDebug && blr.length > 0) {
-        setTimeout(function () {
-            // blr.animate({top: -1 * blr.height()}, 300, function(){
-            blr.animate({opacity: 0}, 300, function () {
-                blr.remove();
-            });
-        }, 1200);
-    }
-}
-
 var tmpl_li = '';
 tmpl_li += '<li>';
 tmpl_li += '    <a href="#{{url}}">';
@@ -106,7 +92,11 @@ if (!window.myConf) {
         'user': '',
         'friends': [],
         'friendsOnline': {},
-        'friendsName': ''
+        'friendsName': '',
+        'friendsChat': {},
+        // 部分控制页面的元素
+        'isDebug': false,
+        'mini': true
     }
 }
 
@@ -116,7 +106,7 @@ $(document).ready(function () {
     window.myConf.domain = $(document.body).attr('dmnNm');
     window.myConf.user = $(document.body).attr('userNm');
 
-    if (isDebug) {
+    if (window.myConf.isDebug) {
         var blr = $("#before-load-ready");
         blr.remove();
     }
@@ -128,6 +118,10 @@ $(document).ready(function () {
         console.log("Map Name-Alias Ready");
     });
 
+
+    // 调整.main-sidebar的高度
+    var mainSidebar = $('.main-sidebar');
+
     // 调整.container的min-height
     var containerJq = $('.container');
     var winHeight = $z.browser.winsz().height;
@@ -137,6 +131,18 @@ $(document).ready(function () {
     containerJq.css({
         'min-height': winHeight - headerHeight - footerHeight
     });
+
+
+    function sidebarResize() {
+        var wh = $z.browser.winsz().height;
+        mainSidebar.css('height', wh - 47);
+    }
+
+    sidebarResize();
+
+    window.onresize = function () {
+        sidebarResize();
+    }
 
     // 基本信息
     var dmnNm = $(document.body).attr('dmnNm');
@@ -205,6 +211,18 @@ $(document).ready(function () {
         }
     });
 
+    function afterLoadReady() {
+        var blr = $("#before-load-ready");
+        if (!window.myConf.isDebug && blr.length > 0) {
+            setTimeout(function () {
+                // blr.animate({top: -1 * blr.height()}, 300, function(){
+                blr.animate({opacity: 0}, 300, function () {
+                    blr.remove();
+                });
+            }, 1200);
+        }
+    }
+
     // 加载后台nav配置
     $z.http.get("/ui/nav/get/" + dmnNm, function (re) {
         // 加载nav
@@ -234,6 +252,9 @@ $(document).ready(function () {
         });
     });
 
+    if (window.myConf.mini) {
+        navMenu.find(".nav-mini-toogle").click();
+    }
 });
 
 // 控制module跳转
@@ -287,8 +308,121 @@ mainApp.controller('NoImplCtl', function ($scope) {
 
 mainApp.controller('MyFriendsCtrl', function ($scope) {
 
+    // ===================== chat
+    var mainContainer = $('.main-container');
+    var headFriends = $('.header .header-module .myfriends');
+    var mainSidebar = $('.main-sidebar');
+    var chatList = mainSidebar.find('.chat-list');
+    var chatContainer = mainSidebar.find('.chat-container');
+    var noChat = mainSidebar.find('.no-chat');
+
+    // 切换sidebar
+    mainSidebar.delegate(".main-sidebar-switch i", 'click', function () {
+        var sbtn = $(this);
+        if (sbtn.hasClass('mode-sidebar')) {
+            sbtn.removeClass('mode-sidebar');
+            sbtn.removeClass('fa-angle-double-right');
+            sbtn.addClass('fa-angle-double-left');
+            mainContainer.removeClass("sidebar");
+        } else {
+            sbtn.addClass('mode-sidebar');
+            sbtn.removeClass('fa-angle-double-left');
+            sbtn.addClass('fa-angle-double-right');
+            mainContainer.addClass("sidebar");
+        }
+    });
+
+    function addNewChat(chatMember) {
+        if(!noChat.hasClass('hdn')){
+            noChat.addClass('hdn')
+        }
+        var chatId = chatMember.chatId;
+        var chatTitle = chatMember.chatAlias;
+        var chatUser = chatMember.toUser;
+        var chatItem = chatList.find('#chat-' + chatId);
+        if (chatItem.length <= 0) {
+            var html = '';
+            html += '<li id="chat-' + chatId + '" chatId="' + chatId + '">';
+            html += '   <i class="fa fa-1x fa-times-circle"></i>';
+            html += '   <div class="chat-thumb"></div>';
+            html += '   <div class="chat-user">' + chatUser + '</div>';
+            html += '   <div class="chat-unread">0</div>';
+            html += '</li>'
+            chatList.append(html);
+            var chtml = '';
+            chtml += '<div id="chat-container-' + chatId + '">';
+            chtml += '  <div class="chat-header">' + chatTitle + '</div>';
+            chtml += '  <ul class="chat-content"></ul>';
+            chtml += '  <div class="chat-footer">';
+            chtml += '      <div class="chat-menu-bar">';
+            chtml += '      </div>';
+            chtml += '      <div class="chat-submit">';
+            chtml += '          <textarea placeholder="写点什么吧...."></textarea>';
+            chtml += '          <span>发送</span>';
+            chtml += '      </div>';
+            chtml += '  </div>';
+            chtml += '</div>';
+            chatContainer.append(chtml);
+            // 最新的切换
+            chatList.children().last().click();
+        } else {
+            // 切换
+            chatItem.click();
+        }
+    }
+
+    // 激活chat
+    chatList.delegate('li', 'click', function () {
+        var cli = $(this);
+        if (!cli.hasClass('active')) {
+            cli.siblings().removeClass('active');
+            cli.addClass('active');
+
+            var ccontainer = chatContainer.find('#chat-container-' + cli.attr('chatId'));
+            ccontainer.siblings().removeClass('active');
+            ccontainer.addClass('active');
+            // 判断未读数量
+
+        }
+    });
+
+    // 删除chat
+    chatList.delegate('li > i.fa', 'click', function (e) {
+        e.stopPropagation();
+        var cli = $(this).parent();
+        var cprev = cli.prev();
+        var cnext = cli.next();
+        if (cprev.length > 0) {
+            cprev.click();
+        } else if (cnext.length > 0) {
+            cnext.click();
+        } else {
+            noChat.removeClass('hdn');
+        }
+        var chatId = cli.attr('chatId');
+        cli.remove();
+        chatContainer.find('#chat-container-' + chatId).remove();
+    });
 
     $scope.users = [];
+
+    $scope.chatWithFriend = function (name) {
+        var cm = window.myConf.friendsChat[name];
+        var swbtn = mainSidebar.find('.main-sidebar-switch i');
+        if (!swbtn.hasClass('mode-sidebar')) {
+            swbtn.click();
+        }
+        addNewChat(cm)
+    }
+
+    $scope.myFriendsChat = function () {
+        $z.http.get("/chat/friends", {
+            'friends': window.myConf.friendsName
+        }, function (re) {
+            window.myConf.friendsChat = re.data;
+            $scope.$apply();
+        });
+    }
 
     $scope.myFriends = function () {
         $z.http.get("/user/friends", function (re) {
@@ -302,12 +436,13 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
                 }
                 window.myConf.friendsName = fnms.join(',');
                 $scope.users = window.myConf.friends;
+                $scope.myFriendsChat();
                 $scope.myFriendsOnline();
             }
         });
     }
     $scope.myFriends();
-    // 10分钟
+    // 15分钟
     setInterval($scope.myFriends, 600000);
 
     $scope.myFriendsOnline = function () {
@@ -324,8 +459,8 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             $scope.$apply();
         });
     }
-    // 1分钟
-    setInterval($scope.myFriendsOnline, 60000);
+    //  20s
+    setInterval($scope.myFriendsOnline, 20000);
 
     // 长ping
     function ping() {

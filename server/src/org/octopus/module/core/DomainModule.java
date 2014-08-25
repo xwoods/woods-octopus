@@ -29,6 +29,7 @@ import org.octopus.bean.DomainConf;
 import org.octopus.bean.core.Domain;
 import org.octopus.bean.core.DomainUser;
 import org.octopus.bean.core.User;
+import org.octopus.cache.ChatCache;
 import org.octopus.module.AbstractBaseModule;
 import org.octopus.module.core.query.DomainCndMaker;
 
@@ -124,6 +125,8 @@ public class DomainModule extends AbstractBaseModule {
                 dao.insert(du);
             }
         }
+        // 绑定完了用户, 需要检查chat
+        ChatCache.afterAddNewUser(domain);
         return Ajax.ok();
     }
 

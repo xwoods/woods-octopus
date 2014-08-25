@@ -11,12 +11,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
+import org.nutz.lang.ContinueLoop;
+import org.nutz.lang.Each;
+import org.nutz.lang.ExitLoop;
+import org.nutz.lang.LoopException;
 import org.nutz.lang.Strings;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.octopus.bean.core.Chat;
 import org.octopus.bean.core.ChatHistory;
 import org.octopus.bean.core.ChatMember;
+import org.octopus.bean.core.ChatUnread;
 import org.octopus.bean.core.Domain;
 import org.octopus.bean.core.DomainUser;
 
@@ -24,16 +29,23 @@ public class ChatCache {
 
     private static Log log = Logs.get();
     private static Dao dao;
-    private static Map<Long, ArrayBlockingQueue<ChatHistory>> chatMap = new ConcurrentHashMap<Long, ArrayBlockingQueue<ChatHistory>>();
+    // chatId -> chatHistoryList
+    private static Map<Long, ArrayBlockingQueue<ChatHistory>> chatHistoryMap = new ConcurrentHashMap<Long, ArrayBlockingQueue<ChatHistory>>();
+    // chatId -> Runner
     private static Map<Long, ChatMsgRunner> chatRunnerMap = new ConcurrentHashMap<Long, ChatMsgRunner>();
+    // chatId -> Receiver
     private static Map<Long, Set<String>> chatUserMap = new ConcurrentHashMap<Long, Set<String>>();
+    // user -> hasUnread
+    private static Map<String, Boolean> userHasUnreadMap = new ConcurrentHashMap<String, Boolean>();
+    // chatId.user -> chat(name更换为alias)
+    private static Map<String, Chat> chatMap = new ConcurrentHashMap<String, Chat>();
 
     public static void init(Dao ndao) {
         dao = ndao;
         // 检查所有的域成员间的chat
         List<Domain> dList = dao.query(Domain.class, null);
         for (Domain dmn : dList) {
-            checkChatMember(dmn.getName());
+            checkChatMember(dmn.getName(), false);
         }
         // 初始化所有chat队列
         List<Chat> cList = dao.query(Chat.class, null);
@@ -42,9 +54,33 @@ public class ChatCache {
             addRunner(chat.getId(), false);
             addChatUser(chat.getId(), null);
         }
+        // 检查unread
+        dao.each(ChatUnread.class, null, new Each<ChatUnread>() {
+            @Override
+            public void invoke(int index, ChatUnread ele, int length) throws ExitLoop,
+                    ContinueLoop, LoopException {
+                setUnread(ele.getUser(), true);
+            }
+        });
     }
 
-    public static void addChatUser(long chatId, String userName) {
+    public static void afterAddNewUser(String domainName) {
+        checkChatMember(domainName, true);
+    }
+
+    public static Chat getChatByIdAndUser(long chatId, String toUserName) {
+        return chatMap.get(chatId + toUserName);
+    }
+
+    public static void setUnread(String userName, boolean hasUnread) {
+        userHasUnreadMap.put(userName, hasUnread);
+    }
+
+    public static boolean hasUnread(String userName) {
+        return userHasUnreadMap.get(userName);
+    }
+
+    private static void addChatUser(long chatId, String userName) {
         Set<String> users = chatUserMap.get(chatId);
         if (users == null) {
             users = new HashSet<String>();
@@ -54,9 +90,42 @@ public class ChatCache {
             List<ChatMember> cmList = dao.query(ChatMember.class, Cnd.where("chatId", "=", chatId));
             for (ChatMember cm : cmList) {
                 users.add(cm.getToUser());
+                // 添加chat
+                Chat fc = new Chat();
+                fc.setId(chatId);
+                fc.setName(cm.getChatAlias());
+                chatMap.put(chatId + cm.getToUser(), fc);
             }
         } else {
             users.add(userName);
+            ChatMember cm = dao.fetch(ChatMember.class,
+                                      Cnd.where("chatId", "=", chatId).and("fromUser",
+                                                                           "=",
+                                                                           userName));
+            if (cm != null) {
+                users.add(cm.getToUser());
+                // 添加chat
+                Chat fc = new Chat();
+                fc.setId(chatId);
+                fc.setName(cm.getChatAlias());
+                chatMap.put(chatId + cm.getToUser(), fc);
+            } else {
+                log.errorf("Can't Find ChatMember[%d, From %s]", chatId, userName);
+            }
+
+            ChatMember cm2 = dao.fetch(ChatMember.class,
+                                       Cnd.where("chatId", "=", chatId)
+                                          .and("toUser", "=", userName));
+            if (cm2 != null) {
+                users.add(cm2.getFromUser());
+                // 添加chat
+                Chat fc = new Chat();
+                fc.setId(chatId);
+                fc.setName(cm2.getChatAlias());
+                chatMap.put(chatId + cm2.getToUser(), fc);
+            } else {
+                log.errorf("Can't Find ChatMember[%d, To %s]", chatId, userName);
+            }
         }
     }
 
@@ -81,14 +150,14 @@ public class ChatCache {
     }
 
     public static void addRunner(long chatId, boolean startRun) {
-        ChatMsgRunner cr = new ChatMsgRunner(chatId, chatMap.get(chatId), dao);
+        ChatMsgRunner cr = new ChatMsgRunner(chatId, chatHistoryMap.get(chatId), dao);
         chatRunnerMap.put(chatId, cr);
         if (startRun && !cr.isRunning()) {
             new Thread(cr).start();
         }
     }
 
-    public static void checkChatMember(String domainName) {
+    public static void checkChatMember(String domainName, boolean startRun) {
         List<DomainUser> duList = dao.query(DomainUser.class, Cnd.where("domain", "=", domainName));
         for (DomainUser du1 : duList) {
             for (DomainUser du2 : duList) {
@@ -98,14 +167,14 @@ public class ChatCache {
                     if (dao.count(ChatMember.class,
                                   Cnd.where("fromUser", "=", u1).and("toUser", "=", u2)) == 0) {
                         // 建立两者的对话关系
-                        createChat(u1, u2);
+                        createChat(u1, u2, startRun);
                     }
                 }
             }
         }
     }
 
-    public static void createChat(String u1, String u2) {
+    private static void createChat(String u1, String u2, boolean startRun) {
         log.infof("Create new Chat[ %s <-> %s]", u1, u2);
         Chat chat = new Chat();
         chat.setName(u1 + "," + u2);
@@ -123,14 +192,19 @@ public class ChatCache {
         cm2.setToUser(u1);
         dao.insert(cm2);
 
-        initChatQueue(chat);
-
+        if (startRun) {
+            initChatQueue(chat);
+            addRunner(chat.getId(), true);
+            addChatUser(chat.getId(), u1); // u1跟u2都可以
+            setUnread(u1, true);
+            setUnread(u2, true);
+        }
     }
 
     public static void initChatQueue(Chat ct) {
-        if (!chatMap.containsKey(ct.getId())) {
+        if (!chatHistoryMap.containsKey(ct.getId())) {
             ArrayBlockingQueue<ChatHistory> historyQueue = new ArrayBlockingQueue<ChatHistory>(500);
-            chatMap.put(ct.getId(), historyQueue);
+            chatHistoryMap.put(ct.getId(), historyQueue);
         }
     }
 
@@ -141,8 +215,8 @@ public class ChatCache {
         ch.setCreateTime(new Date());
         ch.setContent(content);
         dao.insert(ch);
-        if (chatMap.containsKey(chatId)) {
-            Queue<ChatHistory> historyQueue = chatMap.get(chatId);
+        if (chatHistoryMap.containsKey(chatId)) {
+            Queue<ChatHistory> historyQueue = chatHistoryMap.get(chatId);
             historyQueue.add(ch);
         } else {
             log.errorf("Chat[%d] Not Inited!, Lost Message!", chatId);

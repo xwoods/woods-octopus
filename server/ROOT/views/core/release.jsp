@@ -2,6 +2,36 @@
 <%@include file="/WEB-INF/jsp/_setup.jsp" %>
 <div class="module-content module-me">
     <div>
+        <div class="release-date">2014-08-25</div>
+        <div class="release-note">
+            <ul>
+                <li>
+                    "线上监控"模块更新
+                    <ol>
+                        <li>自动保存更加完善, 包括排序信息</li>
+                        <li>备注单独一列显示</li>
+                        <li>添加重点关注功能(显示指定某些box)</li>
+                    </ol>
+                </li>
+                <li>
+                    "聊天功能"上线
+                    <ol>
+                        <li>可以查询好友的在线状态</li>
+                        <li>可以与好友进行聊天或留言</li>
+                    </ol>
+                </li>
+                <li>
+                    布局添加了侧边栏功能
+                    <ol>
+                        <li>侧边栏可以随时打开或隐藏</li>
+                        <li>目前侧边栏只有聊天功能, 稍后将添加其他模块</li>
+                    </ol>
+                </li>
+                <li>
+                    布局默认启用"mini"模式, 可以显示更多内容
+                </li>
+            </ul>
+        </div>
         <div class="release-date">2014-08-18</div>
         <div class="release-note">
             <ul>

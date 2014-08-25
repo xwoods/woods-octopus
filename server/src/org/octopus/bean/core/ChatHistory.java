@@ -2,6 +2,8 @@ package org.octopus.bean.core;
 
 import java.util.Date;
 
+import org.nutz.dao.entity.annotation.ColDefine;
+import org.nutz.dao.entity.annotation.ColType;
 import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.entity.annotation.Index;
 import org.nutz.dao.entity.annotation.Table;
@@ -22,6 +24,7 @@ public class ChatHistory {
 
     private String user;
 
+    @ColDefine(type = ColType.TEXT)
     private String content;
 
     public long getId() {

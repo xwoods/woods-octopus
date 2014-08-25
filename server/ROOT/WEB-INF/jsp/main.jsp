@@ -25,29 +25,34 @@
     <span>Oct</span><img class="logo" src="${rs}/core/img/octopus-logo.png"><span>pus</span>
     <ol class="header-menu">
         <li class="header-module">
-            <i class="fa fa-users fa-2x header-icon"><span class="check-list-tip">20</span></i>
-            <ul class="sub-menu">
+            <i class="fa fa-comments fa-2x header-icon"><span class="check-list-tip">0</span></i>
+            <ul class="sub-menu sub-menu-right">
                 <li class="title">${msg['page.header.friends']}</li>
                 <li class="myfriends" ng-controller="MyFriendsCtrl">
                     <input type="text" ng-model="friendFilter">
                     <ul>
-                        <li ng-repeat="user in  users | filter:friendFilter | orderBy:'isOnline':true" class="friend-info online-{{user.isOnline}}">
+                        <li ng-repeat="user in  users | filter:friendFilter | orderBy:'isOnline':true"
+                            class="friend-info online-{{user.isOnline}}" ng-click="chatWithFriend(user.name)">
                             <img src="/user/face/{{user.name}}" class="user-face"/>
+
                             <div>
                                 <div class="friend-name">{{user.alias}}</div>
                                 <div class="friend-stat">
                                     <em></em>
-                                    <span class="on">在线</span>
-                                    <span class="off">离线</span>
+                                    <span class="on">${msg['page.header.friends.online']}</span>
+                                    <span class="off">${msg['page.header.friends.offline']}</span>
                                 </div>
                             </div>
                         </li>
                     </ul>
                 </li>
+                <li class="bottom-bar">
+                    <span>${msg['page.header.checkall']}</span><i class="fa fa-chevron-circle-right fa-1x"></i>
+                </li>
             </ul>
         </li>
         <li class="header-module">
-            <i class="fa fa-tasks fa-2x header-icon"><span class="check-list-tip">20</span></i>
+            <i class="fa fa-tasks fa-2x header-icon"><span class="check-list-tip">0</span></i>
             <ul class="sub-menu">
                 <li class="title">${msg['page.header.task']}</li>
                 <li class="bottom-bar">
@@ -56,18 +61,9 @@
             </ul>
         </li>
         <li class="header-module">
-            <i class="fa fa-exclamation-circle fa-2x header-icon"><span class="check-list-tip">20</span></i>
+            <i class="fa fa-exclamation-circle fa-2x header-icon"><span class="check-list-tip">0</span></i>
             <ul class="sub-menu">
                 <li class="title">${msg['page.header.notice']}</li>
-                <li class="bottom-bar">
-                    <span>${msg['page.header.checkall']}</span><i class="fa fa-chevron-circle-right fa-1x"></i>
-                </li>
-            </ul>
-        </li>
-        <li class="header-module">
-            <i class="fa fa-comments fa-2x header-icon"><span class="check-list-tip">20</span></i>
-            <ul class="sub-menu">
-                <li class="title">${msg['page.header.message']}</li>
                 <li class="bottom-bar">
                     <span>${msg['page.header.checkall']}</span><i class="fa fa-chevron-circle-right fa-1x"></i>
                 </li>
@@ -126,6 +122,24 @@
             </div>
             <div class="row">
                 <div ng-view></div>
+            </div>
+        </div>
+    </div>
+    <div class="main-sidebar">
+        <div class="sidebar-container">
+            <div class="main-sidebar-switch">
+                <i class="fa fa-2x fa-angle-double-left"></i>
+            </div>
+            <ul class="chat-list">
+            </ul>
+            <div class="chat-list-filter">
+                <input type="text" placeholder="">
+            </div>
+            <div class="chat-container">
+            </div>
+            <div class="no-chat">
+                <img src="${rs}/core/img/baozou/bz001.png">
+                <span>No Chat Selected</span>
             </div>
         </div>
     </div>
