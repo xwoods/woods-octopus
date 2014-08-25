@@ -4,8 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.nutz.dao.Cnd;
+import org.nutz.lang.Lang;
 import org.nutz.lang.util.NutMap;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
 import org.nutz.mvc.Scope;
 import org.nutz.mvc.annotation.At;
 import org.nutz.mvc.annotation.Attr;
@@ -15,6 +21,7 @@ import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.annotation.Param;
 import org.nutz.web.ajax.Ajax;
 import org.nutz.web.ajax.AjaxReturn;
+import org.nutz.web.comet.Comet;
 import org.nutz.web.fliter.CheckNotLogin;
 import org.octopus.Keys;
 import org.octopus.bean.core.ChatHistory;
@@ -28,6 +35,8 @@ import org.octopus.module.AbstractBaseModule;
 @At("/chat")
 @Ok("ajax")
 public class ChatModule extends AbstractBaseModule {
+
+    private Log log = Logs.get();
 
     @At("/friends")
     public AjaxReturn getFriendChat(@Param("friends") String fsNames,
@@ -44,16 +53,36 @@ public class ChatModule extends AbstractBaseModule {
         return Ajax.ok().setData(reuslt);
     }
 
+    // 使用comet进行长连接
+    @At("/unread/longcheck")
+    @Ok("void")
+    public void checkUnread(@Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me,
+                            HttpServletResponse resp,
+                            HttpSession session) {
+        String myName = me.getName();
+        try {
+            while (session.getAttribute(Keys.SESSION_USER) != null
+                   && Comet.replyByES(resp, String.valueOf(ChatCache.hasUnread(myName)))) {
+                Lang.quiteSleep(1000);
+            }
+        }
+        catch (Exception e) {
+            log.errorf("LongCheck %s's Unread-Number, Has Error", myName);
+            log.error(e);
+        }
+    }
+
     @At("/unread/check")
     public AjaxReturn checkUnread(@Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
         String myName = me.getName();
-        if (ChatCache.hasUnread(myName)) {
+        if (ChatCache.hasUnread(myName) > 0) {
             // FIXME 这里可能有bug, 同步问题, 但是减少了一次读取数据库, 可以经常访问
             List<ChatUnread> cu = dao.query(ChatUnread.class,
                                             Cnd.where("user", "=", myName)
                                                .desc("chatId")
                                                .asc("historyId"));
-            ChatCache.setUnread(myName, false);
+            // 清零
+            ChatCache.setUnread(myName, true);
             // 这里返回对应的数量
             // Map<Long, Chat> chatMap = new HashMap<Long, Chat>();
             Map<Long, Integer> unreadMap = new HashMap<Long, Integer>();
@@ -65,7 +94,10 @@ public class ChatModule extends AbstractBaseModule {
                 // chatUnread.getUser());
                 // chatMap.put(chatId, tChat);
                 // }
-                int unum = unreadMap.get(chatId);
+                Integer unum = unreadMap.get(chatId);
+                if (unum == null) {
+                    unum = 0;
+                }
                 unreadMap.put(chatId, unum + 1);
             }
             //

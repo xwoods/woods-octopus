@@ -305,6 +305,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
     // ===================== chat
     var mainContainer = $('.main-container');
     var headFriends = $('.header .header-module .myfriends');
+    var headModule = headFriends.parents('.header-module');
     var mainSidebar = $('.main-sidebar');
     var chatList = mainSidebar.find('.chat-list');
     var chatContainer = mainSidebar.find('.chat-container');
@@ -401,11 +402,65 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
                         html += '</div>';
                         chBody.append(html);
                     }
+                    chBody[0].scrollTop = chBody[0].scrollHeight;
                 }
                 isGetChatMsg = false;
             });
         }
     }
+
+    // 启动一个轮训机制
+    var lastUnread = 0;
+
+    $z.http.cometES({
+        url: "/chat/unread/longcheck",
+        onChange: function (respTxt, opt) {
+            var unreadNum = parseInt(respTxt);
+            if (!isNaN(unreadNum)) {
+                // 说明是数字, 那就尝试读取吧
+                if (lastUnread !== unreadNum) {
+                    lastUnread = unreadNum;
+                    getUnread();
+                }
+            }
+        },
+        onFinish: function () {
+        }
+    });
+
+
+    function getUnread() {
+        $z.http.get('/chat/unread/check', function (re) {
+            if (re.data) {
+                var totalUnread = 0;
+                for (var unm in window.myConf.friendsChat) {
+                    var cm = window.myConf.friendsChat[unm];
+                    var cid = cm.chatId;
+                    var cun = re.data[cid];
+                    if (cun == null) {
+                        cun = 0;
+                    }
+                    var finfo = headFriends.find('.friend-chat-' + cid);
+                    var fur = finfo.find('.friend-unread');
+                    fur.html(cun);
+                    if (cun > 0) {
+                        fur.removeClass('hdn');
+                    } else {
+                        fur.addClass('hdn');
+                    }
+                    totalUnread += cun;
+                }
+                if (totalUnread > 0) {
+                    headModule.addClass('hasCheck');
+                    headModule.find('.check-list-tip').html(totalUnread);
+                } else {
+                    headModule.removeClass('hasCheck');
+                }
+            }
+        });
+    }
+
+    getUnread();
 
     // 发送
     chatContainer.delegate('.chat-footer .chat-submit span', 'click', function () {
@@ -475,6 +530,11 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             'friends': window.myConf.friendsName
         }, function (re) {
             window.myConf.friendsChat = re.data;
+            for (var i = 0; i < $scope.users.length; i++) {
+                var su = $scope.users[i];
+                var cm = window.myConf.friendsChat[su.name];
+                su.chatId = cm.chatId;
+            }
             $scope.$apply();
         });
     }

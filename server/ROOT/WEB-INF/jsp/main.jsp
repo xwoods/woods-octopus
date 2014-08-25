@@ -32,10 +32,12 @@
                     <input type="text" ng-model="friendFilter">
                     <ul>
                         <li ng-repeat="user in  users | filter:friendFilter | orderBy:'isOnline':true"
-                            class="friend-info online-{{user.isOnline}}" ng-click="chatWithFriend(user.name)">
+                            chatId="{{user.chatId}}"
+                            class="friend-info online-{{user.isOnline}} friend-chat-{{user.chatId}}"
+                            ng-click="chatWithFriend(user.name)">
                             <img src="/user/face/{{user.name}}" class="user-face"/>
 
-                            <div>
+                            <div class="friend-base">
                                 <div class="friend-name">{{user.alias}}</div>
                                 <div class="friend-stat">
                                     <em></em>
@@ -43,6 +45,7 @@
                                     <span class="off">${msg['page.header.friends.offline']}</span>
                                 </div>
                             </div>
+                            <div class="friend-unread hdn">0</div>
                         </li>
                     </ul>
                 </li>

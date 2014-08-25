@@ -36,7 +36,7 @@ public class ChatCache {
     // chatId -> Receiver
     private static Map<Long, Set<String>> chatUserMap = new ConcurrentHashMap<Long, Set<String>>();
     // user -> hasUnread
-    private static Map<String, Boolean> userHasUnreadMap = new ConcurrentHashMap<String, Boolean>();
+    private static Map<String, Integer> userHasUnreadMap = new ConcurrentHashMap<String, Integer>();
     // chatId.user -> chat(name更换为alias)
     private static Map<String, Chat> chatMap = new ConcurrentHashMap<String, Chat>();
 
@@ -59,7 +59,7 @@ public class ChatCache {
             @Override
             public void invoke(int index, ChatUnread ele, int length) throws ExitLoop,
                     ContinueLoop, LoopException {
-                setUnread(ele.getUser(), true);
+                setUnread(ele.getUser(), false);
             }
         });
     }
@@ -72,11 +72,19 @@ public class ChatCache {
         return chatMap.get(chatId + toUserName);
     }
 
-    public static void setUnread(String userName, boolean hasUnread) {
-        userHasUnreadMap.put(userName, hasUnread);
+    public static void setUnread(String userName, boolean clear) {
+        if (clear) {
+            userHasUnreadMap.put(userName, 0);
+        } else {
+            Integer cum = userHasUnreadMap.get(userName);
+            if (cum == null) {
+                cum = 0;
+            }
+            userHasUnreadMap.put(userName, cum + 1);
+        }
     }
 
-    public static boolean hasUnread(String userName) {
+    public static int hasUnread(String userName) {
         return userHasUnreadMap.get(userName);
     }
 
@@ -196,8 +204,8 @@ public class ChatCache {
             initChatQueue(chat);
             addRunner(chat.getId(), true);
             addChatUser(chat.getId(), u1); // u1跟u2都可以
-            setUnread(u1, true);
-            setUnread(u2, true);
+            setUnread(u1, false);
+            setUnread(u2, false);
         }
     }
 
