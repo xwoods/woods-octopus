@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +23,9 @@ import org.nutz.lang.Strings;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
+import org.nutz.mvc.Scope;
 import org.nutz.mvc.annotation.At;
+import org.nutz.mvc.annotation.Attr;
 import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.annotation.Param;
 import org.nutz.web.ajax.Ajax;
@@ -33,6 +36,7 @@ import org.octopus.Octopus;
 import org.octopus.bean.core.Domain;
 import org.octopus.bean.core.DomainUser;
 import org.octopus.bean.core.User;
+import org.octopus.cache.UserCache;
 import org.octopus.module.AbstractBaseModule;
 import org.octopus.module.core.query.DomainCndMaker;
 
@@ -81,7 +85,10 @@ public class UserModule extends AbstractBaseModule {
         user.setPassword(password(user.getPassword()));
         user.setCreateTime(new Date());
         user.setEnable(true);
+
         Octopus.createUser(dao, user);
+        UserCache.addUser(user);
+
         return Ajax.ok().setMsg(Msg.USER_REGISTER_OK);
     }
 
@@ -167,6 +174,24 @@ public class UserModule extends AbstractBaseModule {
     @At("/logout")
     public void logout(HttpSession sess) {
         sess.removeAttribute(Keys.SESSION_USER);
+    }
+
+    @At("/ping")
+    public void ping(@Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        if (me != null) {
+            UserCache.ping(me);
+        }
+    }
+
+    @At("/friends")
+    public Object myFriends(@Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        return UserCache.getMyFriends(me);
+    }
+
+    @At("/friends/online")
+    public Object myFriendsOnline(@Param("friends") String fsNames) {
+        String[] nms = fsNames.split(",");
+        return UserCache.getMyFriendsOnline(Arrays.asList(nms));
     }
 
     @At("/face/?")

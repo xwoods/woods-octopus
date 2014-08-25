@@ -25,6 +25,28 @@
     <span>Oct</span><img class="logo" src="${rs}/core/img/octopus-logo.png"><span>pus</span>
     <ol class="header-menu">
         <li class="header-module">
+            <i class="fa fa-users fa-2x header-icon"><span class="check-list-tip">20</span></i>
+            <ul class="sub-menu">
+                <li class="title">${msg['page.header.friends']}</li>
+                <li class="myfriends" ng-controller="MyFriendsCtrl">
+                    <input type="text" ng-model="friendFilter">
+                    <ul>
+                        <li ng-repeat="user in  users | filter:friendFilter | orderBy:'isOnline':true" class="friend-info online-{{user.isOnline}}">
+                            <img src="/user/face/{{user.name}}" class="user-face"/>
+                            <div>
+                                <div class="friend-name">{{user.alias}}</div>
+                                <div class="friend-stat">
+                                    <em></em>
+                                    <span class="on">在线</span>
+                                    <span class="off">离线</span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li class="header-module">
             <i class="fa fa-tasks fa-2x header-icon"><span class="check-list-tip">20</span></i>
             <ul class="sub-menu">
                 <li class="title">${msg['page.header.task']}</li>

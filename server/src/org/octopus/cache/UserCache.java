@@ -22,7 +22,8 @@ public class UserCache {
     private static Map<String, User> users = new ConcurrentHashMap<String, User>();
     private static Map<String, Boolean> isOnline = new ConcurrentHashMap<String, Boolean>();
     private static Map<String, Date> lastPing = new ConcurrentHashMap<String, Date>();
-    private static long srDration = 1000 * 60;
+    private static long srDration = 1000 * 5;
+    private static long pingDration = 1000 * 30;
     private static NutLock statusLock;
     private static NutRunner statusRunner = new NutRunner("r.user.status") {
         @Override
@@ -30,7 +31,7 @@ public class UserCache {
             long now = System.currentTimeMillis();
             for (String unm : users.keySet()) {
                 long lp = lastPing.get(unm).getTime();
-                boolean online = (now - lp <= srDration);
+                boolean online = (now - lp <= pingDration);
                 if (isOnline.get(unm) != online) {
                     log.infof("User[%s] is %s", unm, online ? "Online" : "Offline");
                     isOnline.put(unm, online);
@@ -42,15 +43,14 @@ public class UserCache {
 
     public static void init(Dao ndao) {
         dao = ndao;
-        userList = dao.query(User.class, null);
-        for (User u : userList) {
+        for (User u : dao.query(User.class, null)) {
             addUser(u);
         }
     }
 
     public static void startRunner() {
         statusLock = statusRunner.getLock();
-        new Thread(statusRunner).run();
+        new Thread(statusRunner).start();
     }
 
     public static void stopRunner() {
@@ -69,6 +69,7 @@ public class UserCache {
 
     public static void addUser(User user) {
         if (!users.containsKey(user.getName())) {
+            user.setPassword("U Want Know ?!");
             users.put(user.getName(), user);
             userList.add(user);
             isOnline.put(user.getName(), false);

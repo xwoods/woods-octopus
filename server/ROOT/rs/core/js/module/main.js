@@ -100,12 +100,21 @@ function crumbHtml(route) {
     return chtml;
 }
 
+if (!window.myConf) {
+    window.myConf = {
+        'domain': '',
+        'user': '',
+        'friends': [],
+        'friendsOnline': {},
+        'friendsName': ''
+    }
+}
+
 $(document).ready(function () {
 
-    window.myConf = {
-        'domain' : $(document.body).attr('dmnNm'),
-        'user' : $(document.body).attr('userNm')
-    }
+    // 我的配置
+    window.myConf.domain = $(document.body).attr('dmnNm');
+    window.myConf.user = $(document.body).attr('userNm');
 
     if (isDebug) {
         var blr = $("#before-load-ready");
@@ -276,11 +285,65 @@ var mainApp = angular.module('mainApp', ['ngRoute']);
 mainApp.controller('NoImplCtl', function ($scope) {
 });
 
+mainApp.controller('MyFriendsCtrl', function ($scope) {
+
+
+    $scope.users = [];
+
+    $scope.myFriends = function () {
+        $z.http.get("/user/friends", function (re) {
+            var nfriends = re.data;
+            if (nfriends.length != window.myConf.friends.length) {
+                console.log("Load Friend List, At " + new Date());
+                window.myConf.friends = nfriends;
+                var fnms = [];
+                for (var i = 0; i < nfriends.length; i++) {
+                    fnms.push(nfriends[i].name);
+                }
+                window.myConf.friendsName = fnms.join(',');
+                $scope.users = window.myConf.friends;
+                $scope.myFriendsOnline();
+            }
+        });
+    }
+    $scope.myFriends();
+    // 10分钟
+    setInterval($scope.myFriends, 600000);
+
+    $scope.myFriendsOnline = function () {
+        $z.http.post("/user/friends/online", {
+            'friends': window.myConf.friendsName
+        }, function (re) {
+            console.log("Check Friend Online, At " + new Date());
+            var fonlineMap = re.data;
+            for (var i = 0; i < window.myConf.friends.length; i++) {
+                var fri = window.myConf.friends[i];
+                fri.isOnline = fonlineMap[fri.name];
+            }
+            $scope.users = window.myConf.friends;
+            $scope.$apply();
+        });
+    }
+    // 1分钟
+    setInterval($scope.myFriendsOnline, 60000);
+
+    // 长ping
+    function ping() {
+        $z.http.get("/user/ping", function (re) {
+            console.log("Ping Server, At " + new Date());
+        });
+    }
+
+    ping();
+    // 30s
+    setInterval(ping, 30000);
+});
+
 mainApp.config(['$routeProvider', function ($routeProvider) {
     var routeList = [].concat(coreRoute).concat(appRoute);
     for (var i = 0; i < routeList.length; i++) {
         var route = routeList[i];
-        console.log("reg route : " + route.url);
+        console.log("Reg Route : " + route.url);
         $routeProvider.when(route.url, {
             templateUrl: "views" + route.page,
             controller: route.ctrl

@@ -16,6 +16,8 @@ import org.nutz.log.Logs;
 import org.nutz.mvc.NutConfig;
 import org.nutz.mvc.Setup;
 import org.octopus.bean.core.User;
+import org.octopus.cache.ChatCache;
+import org.octopus.cache.UserCache;
 import org.octopus.fs.FS;
 
 public class OctopusSetup implements Setup {
@@ -70,6 +72,14 @@ public class OctopusSetup implements Setup {
             }
         });
 
+        // 用户缓存
+        UserCache.init(dao);
+        UserCache.startRunner();
+
+        // 聊天缓存
+        ChatCache.init(dao);
+        ChatCache.startRunner();
+
         // setupChain
         if (ioc.has("setupChain")) {
             setupChain = ioc.get(OctopusSetupChain.class, "setupChain");
@@ -79,6 +89,10 @@ public class OctopusSetup implements Setup {
 
     @Override
     public void destroy(NutConfig nc) {
+
+        UserCache.stopRunner();
+        ChatCache.stopRunner();
+
         if (setupChain != null) {
             setupChain.destroyEach(nc);
         }
