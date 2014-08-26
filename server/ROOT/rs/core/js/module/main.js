@@ -413,6 +413,9 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
     }
 
     function getUnread() {
+        if ($.isEmptyObject(window.myConf.friendsChat)) {
+            return;
+        }
         $z.http.get('/chat/unread/check', function (re) {
             if (!re.data) {
                 re.data = {};
@@ -555,7 +558,9 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             }
         });
     }
+
     $scope.myFriends();
+
     // 15分钟
     setInterval($scope.myFriends, 600000);
 

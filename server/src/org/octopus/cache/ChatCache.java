@@ -76,16 +76,18 @@ public class ChatCache {
         if (mnum == 0) {
             userHasUnreadMap.put(userName, mnum);
         } else {
-            Integer cum = userHasUnreadMap.get(userName);
-            if (cum == null) {
-                cum = 0;
-            }
+            Integer cum = hasUnread(userName);
             userHasUnreadMap.put(userName, cum + mnum);
         }
     }
 
     public static int hasUnread(String userName) {
-        return userHasUnreadMap.get(userName);
+        Integer cum = userHasUnreadMap.get(userName);
+        if (cum == null) {
+            cum = 0;
+            userHasUnreadMap.put(userName, cum);
+        }
+        return cum;
     }
 
     private static void addChatUser(long chatId, String userName) {
