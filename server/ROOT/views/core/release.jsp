@@ -2,14 +2,17 @@
 <%@include file="/WEB-INF/jsp/_setup.jsp" %>
 <div class="module-content module-me">
     <div>
-        <div class="release-date">2014-08-25</div>
+        <div class="release-date">2014-08-27</div>
         <div class="release-note">
             <ul>
                 <li>
                     "线上监控"模块更新
                     <ol>
+                        <li>监控数据根据准确,与服务器误差缩短为1分钟以内</li>
+                        <li>显示每个域的概括信息</li>
                         <li>自动保存更加完善, 包括排序信息</li>
                         <li>备注单独一列显示</li>
+                        <li>调整备注框位置到坐下,防止被聊天功能遮挡</li>
                         <li>添加重点关注功能(显示指定某些box)</li>
                     </ol>
                 </li>
