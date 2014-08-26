@@ -398,7 +398,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
                         html += '<div class="' + (ch.user == window.myConf.user ? "me" : "") + '">';
                         html += '   <span class="name">' + window.myConf.friendsNameMap[ch.user] + "</span>";
                         html += '   <span class="time">' + ch.createTime + "</span>";
-                        html += '   <p>' + ch.content + "</p>";
+                        html += '   <p>' + $z.util.replaceAll(ch.content, "\n", "<br>") + "</p>";
                         html += '</div>';
                         chBody.append(html);
                     }
