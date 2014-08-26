@@ -22,13 +22,13 @@ public class Comet {
             out = resp.getOutputStream();
             wr = new OutputStreamWriter(out);
             String data = respTxt;
-            log.infof("send by xhr [%s]", respTxt);
+            log.debugf("Comet-Send By XHR : [%s]", respTxt);
             wr.write(data);
             wr.flush();
             Lang.quiteSleep(1 * 1000);
         }
         catch (IOException e) {
-            e.printStackTrace();
+            log.warn("Comet-Send Has Stoped");
             return false;
         }
         return true;
@@ -43,12 +43,12 @@ public class Comet {
             out = resp.getOutputStream();
             wr = new OutputStreamWriter(out);
             String data = "data:" + respTxt + "\n\n";
-            log.infof("send by es [%s]", respTxt);
+            log.debugf("Comet-Send By EventSource : [%s]", respTxt);
             wr.write(data);
             wr.flush();
         }
         catch (IOException e) {
-            e.printStackTrace();
+            log.warn("Comet-Send Has Stoped");
             return false;
         }
         return true;
