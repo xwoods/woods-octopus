@@ -36,6 +36,7 @@ import org.octopus.Octopus;
 import org.octopus.bean.core.Domain;
 import org.octopus.bean.core.DomainUser;
 import org.octopus.bean.core.User;
+import org.octopus.cache.ChatCache;
 import org.octopus.cache.UserCache;
 import org.octopus.module.AbstractBaseModule;
 import org.octopus.module.core.query.DomainCndMaker;
@@ -88,6 +89,7 @@ public class UserModule extends AbstractBaseModule {
 
         Octopus.createUser(dao, user);
         UserCache.addUser(user);
+        ChatCache.setUnread(user.getName(), 0);
 
         return Ajax.ok().setMsg(Msg.USER_REGISTER_OK);
     }

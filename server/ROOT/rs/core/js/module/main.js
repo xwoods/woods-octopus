@@ -457,6 +457,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             } else {
                 headModule.removeClass('hasCheck');
             }
+            lastUnread = totalUnread;
         });
     }
 
@@ -603,7 +604,6 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             if (!isNaN(unreadNum)) {
                 // 说明是数字, 那就尝试读取吧
                 if (lastUnread !== unreadNum) {
-                    lastUnread = unreadNum;
                     getUnread();
                 }
             }

@@ -24,6 +24,7 @@ import org.octopus.bean.core.ChatMember;
 import org.octopus.bean.core.ChatUnread;
 import org.octopus.bean.core.Domain;
 import org.octopus.bean.core.DomainUser;
+import org.octopus.bean.core.User;
 
 public class ChatCache {
 
@@ -55,6 +56,14 @@ public class ChatCache {
             addChatUser(chat.getId(), null);
         }
         // 检查unread
+        dao.each(User.class, null, new Each<User>() {
+            @Override
+            public void invoke(int index, User ele, int length) throws ExitLoop, ContinueLoop,
+                    LoopException {
+                setUnread(ele.getName(), 0);
+            }
+
+        });
         dao.each(ChatUnread.class, null, new Each<ChatUnread>() {
             @Override
             public void invoke(int index, ChatUnread ele, int length) throws ExitLoop,
