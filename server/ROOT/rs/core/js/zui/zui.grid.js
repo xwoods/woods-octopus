@@ -128,13 +128,22 @@
 
             // columns
             var cols = opt.table.columns;
-            colset[0].innerHTML = dom.setHtml(cols);
-            rhead[0].innerHTML = dom.headHtml(cols);
+            colset[0].innerHTML = dom.setHtml(cols, opt);
+            rhead[0].innerHTML = dom.headHtml(cols, opt);
             layout.tableResize(selection);
 
             selection.find('.pager-size').val(opt.table.pager.pgsz);
+            if (!$z.util.isBlank(opt.table.order.by)) {
+                var oth = selection.find('.right-panel .zgrid-table-head .zgrid-th[field=' + opt.table.order.by + ']');
+                oth.addClass('sort');
+                if (opt.table.order.asc) {
+                    oth.addClass('asc');
+                } else {
+                    oth.addClass('desc');
+                }
+            }
         },
-        setHtml: function (cols) {
+        setHtml: function (cols, opt) {
             var html = '';
             html += '{{#each cols}}';
             html += '<li>';
@@ -155,7 +164,7 @@
             var template = Handlebars.compile(html);
             return template({'cols': cols});
         },
-        headHtml: function (cols) {
+        headHtml: function (cols, opt) {
             var html = '';
             html += '{{#each cols}}';
             html += '<div class="zgrid-th" field="{{fieldName}}" colwidth="{{width}}"';
@@ -420,6 +429,9 @@
                 }
             }
             data.refresh(sel);
+            if (opt.table.afterChangeOrderBy) {
+                opt.table.afterChangeOrderBy();
+            }
         },
         stopPropagation: function (e) {
             e.stopPropagation();
