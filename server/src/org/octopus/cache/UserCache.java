@@ -67,6 +67,10 @@ public class UserCache {
         return false;
     }
 
+    public static User getUser(String userName) {
+        return users.get(userName);
+    }
+
     public static void addUser(User user) {
         if (!users.containsKey(user.getName())) {
             user.setPassword("U Want Know ?!");

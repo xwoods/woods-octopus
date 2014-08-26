@@ -81,8 +81,6 @@ public class ChatModule extends AbstractBaseModule {
                                             Cnd.where("user", "=", myName)
                                                .desc("chatId")
                                                .asc("historyId"));
-            // 清零
-            ChatCache.setUnread(myName, true);
             // 这里返回对应的数量
             // Map<Long, Chat> chatMap = new HashMap<Long, Chat>();
             Map<Long, Integer> unreadMap = new HashMap<Long, Integer>();
@@ -112,29 +110,34 @@ public class ChatModule extends AbstractBaseModule {
     @At("/msg/get")
     public AjaxReturn getUnread(@Param("chatId") long chatId,
                                 @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
-        List<ChatUnread> cu = dao.query(ChatUnread.class,
-                                        Cnd.where("user", "=", me.getName())
-                                           .and("chatId", "=", chatId)
-                                           .asc("historyId"));
-        // 因为historyId是升序, 所以拿到的第一个就是最早的一个未读的
-        if (cu.size() > 0) {
-            ChatUnread firstUr = cu.get(0);
-            ChatHistory firstCh = dao.fetch(ChatHistory.class,
-                                            Cnd.where("id", "=", firstUr.getHistoryId()));
-            List<ChatHistory> chList = dao.query(ChatHistory.class,
-                                                 Cnd.where("chatId", "=", firstCh.getChatId())
-                                                    .and("createTime",
-                                                         ">=",
-                                                         firstCh.getCreateTime())
-                                                    .asc("createTime"));
-            // 依次删除chlist里面的history的unread
-            for (ChatHistory ch : chList) {
-                dao.clear(ChatUnread.class,
-                          Cnd.where("user", "=", me.getName())
-                             .and("chatId", "=", chatId)
-                             .and("historyId", "=", ch.getId()));
+        Integer unread = ChatCache.hasUnread(me.getName());
+        if (unread != null && unread > 0) {
+            log.infof("User [%s] Still Has %d Unread Message", me.getName(), unread);
+            List<ChatUnread> cu = dao.query(ChatUnread.class, Cnd.where("user", "=", me.getName())
+                                                                 .and("chatId", "=", chatId)
+                                                                 .asc("historyId"));
+            // 因为historyId是升序, 所以拿到的第一个就是最早的一个未读的
+            if (cu.size() > 0) {
+                ChatUnread firstUr = cu.get(0);
+                ChatHistory firstCh = dao.fetch(ChatHistory.class,
+                                                Cnd.where("id", "=", firstUr.getHistoryId()));
+                List<ChatHistory> chList = dao.query(ChatHistory.class,
+                                                     Cnd.where("chatId", "=", firstCh.getChatId())
+                                                        .and("createTime",
+                                                             ">=",
+                                                             firstCh.getCreateTime())
+                                                        .asc("createTime"));
+                // 依次删除chlist里面的history的unread
+                for (ChatHistory ch : chList) {
+                    dao.clear(ChatUnread.class,
+                              Cnd.where("user", "=", me.getName())
+                                 .and("chatId", "=", chatId)
+                                 .and("historyId", "=", ch.getId()));
+                }
+                // 清零
+                ChatCache.setUnread(me.getName(), -cu.size());
+                return Ajax.ok().setData(chList);
             }
-            return Ajax.ok().setData(chList);
         }
         return Ajax.ok();
     }

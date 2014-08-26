@@ -59,7 +59,7 @@ public class ChatCache {
             @Override
             public void invoke(int index, ChatUnread ele, int length) throws ExitLoop,
                     ContinueLoop, LoopException {
-                setUnread(ele.getUser(), false);
+                setUnread(ele.getUser(), 1);
             }
         });
     }
@@ -72,15 +72,15 @@ public class ChatCache {
         return chatMap.get(chatId + toUserName);
     }
 
-    public static void setUnread(String userName, boolean clear) {
-        if (clear) {
-            userHasUnreadMap.put(userName, 0);
+    public static void setUnread(String userName, int mnum) {
+        if (mnum == 0) {
+            userHasUnreadMap.put(userName, mnum);
         } else {
             Integer cum = userHasUnreadMap.get(userName);
             if (cum == null) {
                 cum = 0;
             }
-            userHasUnreadMap.put(userName, cum + 1);
+            userHasUnreadMap.put(userName, cum + mnum);
         }
     }
 
@@ -189,13 +189,13 @@ public class ChatCache {
         dao.insert(chat);
         ChatMember cm1 = new ChatMember();
         cm1.setChatId(chat.getId());
-        cm1.setChatAlias(String.format("与%s的对话", u2));
+        cm1.setChatAlias(String.format("与 %s 的对话", UserCache.getUser(u2).getAlias()));
         cm1.setFromUser(u1);
         cm1.setToUser(u2);
         dao.insert(cm1);
         ChatMember cm2 = new ChatMember();
         cm2.setChatId(chat.getId());
-        cm2.setChatAlias(String.format("与%s的对话", u1));
+        cm2.setChatAlias(String.format("与 %s 的对话", UserCache.getUser(u1).getAlias()));
         cm2.setFromUser(u2);
         cm2.setToUser(u1);
         dao.insert(cm2);
@@ -204,8 +204,6 @@ public class ChatCache {
             initChatQueue(chat);
             addRunner(chat.getId(), true);
             addChatUser(chat.getId(), u1); // u1跟u2都可以
-            setUnread(u1, false);
-            setUnread(u2, false);
         }
     }
 

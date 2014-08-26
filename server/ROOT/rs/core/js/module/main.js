@@ -352,7 +352,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             html += '<li id="chat-' + chatId + '" chatId="' + chatId + '">';
             html += '   <i class="fa fa-1x fa-times-circle"></i>';
             html += '   <div class="chat-thumb"></div>';
-            html += '   <div class="chat-user">' + chatUser + '</div>';
+            html += '   <div class="chat-user">' + window.myConf.friendsNameMap[chatUser] + '</div>';
             html += '   <div class="chat-unread">0</div>';
             html += '</li>'
             chatList.append(html);
@@ -403,64 +403,59 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
                         chBody.append(html);
                     }
                     chBody[0].scrollTop = chBody[0].scrollHeight;
+                    // 调整侧边栏
+                    chatList.find('#chat-' + chatId).removeClass('hasUnread');
+                    // 调整顶部栏
                 }
                 isGetChatMsg = false;
             });
         }
     }
 
-    // 启动一个轮训机制
-    var lastUnread = 0;
-
-    $z.http.cometES({
-        url: "/chat/unread/longcheck",
-        onChange: function (respTxt, opt) {
-            var unreadNum = parseInt(respTxt);
-            if (!isNaN(unreadNum)) {
-                // 说明是数字, 那就尝试读取吧
-                if (lastUnread !== unreadNum) {
-                    lastUnread = unreadNum;
-                    getUnread();
-                }
-            }
-        },
-        onFinish: function () {
-        }
-    });
-
-
     function getUnread() {
         $z.http.get('/chat/unread/check', function (re) {
-            if (re.data) {
-                var totalUnread = 0;
-                for (var unm in window.myConf.friendsChat) {
-                    var cm = window.myConf.friendsChat[unm];
-                    var cid = cm.chatId;
-                    var cun = re.data[cid];
-                    if (cun == null) {
-                        cun = 0;
-                    }
-                    var finfo = headFriends.find('.friend-chat-' + cid);
-                    var fur = finfo.find('.friend-unread');
-                    fur.html(cun);
-                    if (cun > 0) {
-                        fur.removeClass('hdn');
-                    } else {
-                        fur.addClass('hdn');
-                    }
-                    totalUnread += cun;
+            if (!re.data) {
+                re.data = {};
+            }
+            var totalUnread = 0;
+            for (var unm in window.myConf.friendsChat) {
+                var cm = window.myConf.friendsChat[unm];
+                var cid = cm.chatId;
+                var cun = re.data[cid];
+                if (cun == null) {
+                    cun = 0;
                 }
-                if (totalUnread > 0) {
-                    headModule.addClass('hasCheck');
-                    headModule.find('.check-list-tip').html(totalUnread);
+                totalUnread += cun;
+                // 顶部
+                var finfo = headFriends.find('.friend-chat-' + cid);
+                var fur = finfo.find('.friend-unread');
+                fur.html(cun);
+                if (cun > 0) {
+                    fur.removeClass('hdn');
                 } else {
-                    headModule.removeClass('hasCheck');
+                    fur.addClass('hdn');
                 }
+                // 侧边栏
+                var citem = chatList.find('#chat-' + cid);
+                citem.find('.chat-unread').html(cun);
+                if (cun > 0) {
+                    citem.addClass('hasUnread');
+                } else {
+                    citem.removeClass('hasUnread');
+                }
+                // 长查询
+                if (cid == currentChat) {
+                    currentChatUnread = cun;
+                }
+            }
+            if (totalUnread > 0) {
+                headModule.addClass('hasCheck');
+                headModule.find('.check-list-tip').html(totalUnread);
+            } else {
+                headModule.removeClass('hasCheck');
             }
         });
     }
-
-    getUnread();
 
     // 发送
     chatContainer.delegate('.chat-footer .chat-submit span', 'click', function () {
@@ -484,16 +479,18 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
     // 激活chat
     chatList.delegate('li', 'click', function () {
         var cli = $(this);
+        var chatId = cli.attr('chatId');
         if (!cli.hasClass('active')) {
             cli.siblings().removeClass('active');
             cli.addClass('active');
-
             var ccontainer = chatContainer.find('#chat-container-' + cli.attr('chatId'));
             ccontainer.siblings().removeClass('active');
             ccontainer.addClass('active');
-            // 判断未读数量
-
         }
+        // 加载对应的数据
+        getChatMsg(chatId);
+
+        currentChat = chatId;
     });
 
     // 删除chat
@@ -508,6 +505,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             cnext.click();
         } else {
             noChat.removeClass('hdn');
+            currentChat = 0;
         }
         var chatId = cli.attr('chatId');
         cli.remove();
@@ -588,6 +586,35 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
     ping();
     // 30s
     setInterval(ping, 30000);
+
+    getUnread();
+
+    // 启动一个轮训机制
+    var lastUnread = 0;
+    $z.http.cometES({
+        url: "/chat/unread/longcheck",
+        onChange: function (respTxt, opt) {
+            var unreadNum = parseInt(respTxt);
+            if (!isNaN(unreadNum)) {
+                // 说明是数字, 那就尝试读取吧
+                if (lastUnread !== unreadNum) {
+                    lastUnread = unreadNum;
+                    getUnread();
+                }
+            }
+        },
+        onFinish: function () {
+        }
+    });
+
+    var currentChat = 0;
+    var currentChatUnread = 0;
+    setInterval(function () {
+        if (currentChat != 0 && currentChatUnread > 0) {
+            // 判断一下当前chat的unread数量
+            getChatMsg(currentChat);
+        }
+    }, 1000);
 });
 
 mainApp.config(['$routeProvider', function ($routeProvider) {
