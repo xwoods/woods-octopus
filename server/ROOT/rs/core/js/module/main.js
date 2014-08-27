@@ -460,6 +460,9 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
                 headModule.removeClass('hasCheck');
             }
             lastUnread = totalUnread;
+            if (lastUnread == 0) {
+                document.title = "八爪鱼";
+            }
         });
     }
 
@@ -608,6 +611,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             if (!isNaN(unreadNum)) {
                 if (lastUnread < unreadNum) {
                     playAlertAudio();
+                    document.title = " 您有 " + unreadNum + " 条新消息未读";
                 }
                 // 说明是数字, 那就尝试读取吧
                 if (lastUnread !== unreadNum) {
