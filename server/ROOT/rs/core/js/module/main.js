@@ -91,6 +91,7 @@ if (!window.myConf) {
         'domain': '',
         'user': '',
         'alias': '',
+        'alertAudio': '',
         'friends': [],
         'friendsNameMap': {},
         'friendsOnline': {},
@@ -108,6 +109,7 @@ $(document).ready(function () {
     window.myConf.domain = $(document.body).attr('dmnNm');
     window.myConf.user = $(document.body).attr('userNm');
     window.myConf.alias = $(document.body).attr('userAlias');
+    window.myConf.alertAudio = $(document.body).attr('alertAudio');
 
     window.myConf.friendsNameMap[window.myConf.user] = window.myConf.alias;
 
@@ -490,6 +492,8 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             var ccontainer = chatContainer.find('#chat-container-' + cli.attr('chatId'));
             ccontainer.siblings().removeClass('active');
             ccontainer.addClass('active');
+            var chBody = chatContainer.find('.chat-content');
+            chBody[0].scrollTop = chBody[0].scrollHeight;
         }
         // 加载对应的数据
         getChatMsg(chatId);
@@ -602,6 +606,9 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
         onChange: function (respTxt, opt) {
             var unreadNum = parseInt(respTxt);
             if (!isNaN(unreadNum)) {
+                if (lastUnread < unreadNum) {
+                    playAlertAudio();
+                }
                 // 说明是数字, 那就尝试读取吧
                 if (lastUnread !== unreadNum) {
                     getUnread();
@@ -620,6 +627,18 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             getChatMsg(currentChat);
         }
     }, 1000);
+
+    // 播放提示音
+    var isPlayAlertAudio = false;
+
+    function playAlertAudio() {
+        if (!isPlayAlertAudio) {
+            isPlayAlertAudio = true;
+            var vod = new Audio(window.myConf.alertAudio);
+            vod.play();
+            isPlayAlertAudio = false;
+        }
+    };
 });
 
 mainApp.config(['$routeProvider', function ($routeProvider) {

@@ -19,7 +19,8 @@
     <link rel="stylesheet" href="${rs}/core/css/module/issue.css">
     <link rel="stylesheet" href="${rs}/core/css/module/release.css">
 </head>
-<body dmnNm="${domain.name}" userNm="${user.name}" userAlias="${user.alias}" ng-app="mainApp">
+<body dmnNm="${domain.name}" userNm="${user.name}" userAlias="${user.alias}"
+      alertAudio="${rs}/core/audio/msg_iphone.mp3" ng-app="mainApp">
 <%@include file="_msg.jsp" %>
 <div class="header">
     <span>Oct</span><img class="logo" src="${rs}/core/img/octopus-logo.png"><span>pus</span>
