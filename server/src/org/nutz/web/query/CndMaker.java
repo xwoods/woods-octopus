@@ -17,6 +17,17 @@ public abstract class CndMaker {
     public abstract void analysisQueryStr(SimpleCriteria sc, String kwd, String... otherQCnd);
 
     public Cnd makeQCnd(String orderby, boolean asc, String kwd, String... otherQCnd) {
+        if (otherQCnd != null) {
+            List<String> realotherQCnd = new ArrayList<String>();
+            for (String otcnd : otherQCnd) {
+                if (!Strings.isBlank(otcnd)) {
+                    realotherQCnd.add(otcnd);
+                }
+            }
+            if (otherQCnd.length != realotherQCnd.size()) {
+                otherQCnd = realotherQCnd.toArray(new String[0]);
+            }
+        }
         SimpleCriteria sc = new SimpleCriteria();
         if (!Strings.isBlank(kwd) || otherQCnd != null) {
             analysisQueryStr(sc, kwd, otherQCnd);

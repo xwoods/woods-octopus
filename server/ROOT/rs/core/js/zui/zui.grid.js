@@ -236,7 +236,9 @@
             if (cusQA) {
                 var pjqs = [];
                 for (var i = 0; i < cusQA.length; i++) {
-                    pjqs.push(cusQA[i].val(selection.find("." + cusQA[i].clz)));
+                    if (!$z.util.isBlank(cusQA[i].clz)) {
+                        pjqs.push(cusQA[i].val(selection.find("." + cusQA[i].clz)));
+                    }
                 }
                 cusParams = opt.header.queryParam(pjqs);
             }
@@ -270,11 +272,12 @@
             if (cusQA) {
                 var pjqs = [];
                 for (var i = 0; i < cusQA.length; i++) {
-                    pjqs.push(cusQA[i].val(selection.find("." + cusQA[i].clz)));
+                    if (cusQA[i].val && cusQA[i].clz) {
+                        pjqs.push(cusQA[i].val(selection.find("." + cusQA[i].clz)));
+                    }
                 }
                 cusParams = opt.header.queryParam(pjqs);
             }
-
             opt.status.loading = true;
             loadingTip.show();
             var startTime = new Date().getTime();
@@ -343,16 +346,19 @@
             var cusQA = opt.header.queryArea;
             if (cusQA) {
                 for (var i = 0; i < cusQA.length; i++) {
-                    selection.delegate("." + cusQA[i].clz, cusQA[i].eventType, events.dataRefresh);
+                    if (cusQA[i].eventType == 'change') {
+                        selection.delegate("." + cusQA[i].clz, cusQA[i].eventType, events.dataRefresh);
+                    }
+                    // TODO 这里需要好好想想怎么做
                 }
             }
-
             if (opt.table.row && opt.table.row.hover) {
                 selection.delegate('.left-panel .zgrid-td .row-hover', 'click', function (e) {
+                    var rh = $(this);
                     e.stopPropagation();
-                    var no = parseInt($(this).parent().attr('no'));
+                    var no = parseInt(rh.parent().attr('no'));
                     var rowData = opt.rows[no];
-                    opt.table.row.hover.click(rowData);
+                    opt.table.row.hover.click(rowData, rh);
                 });
             }
         },
