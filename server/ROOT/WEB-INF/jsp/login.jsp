@@ -14,21 +14,21 @@
 <body>
 <div class="reg-content" ng-controller="RegCtrl">
     <form ng-submit="reg()" class="reg-form">
-        <div class="form-title">用户名</div>
+        <div class="form-title">邮箱</div>
         <div class="form-item">
-            <input type="text" name="regname" placeholder="2-20位(字母+数字)">
+            <input type="text" name="regemail" placeholder="常用的工作邮箱地址">
             <i class="fa fa-check-circle fa-lg chk-i chk-ok"></i>
             <i class="fa fa fa-spinner fa-spin-1s fa-lg chk-i chk-ing"></i>
             <i class="fa fa-times-circle fa-lg chk-i chk-fail"></i>
-            <span class="fail-tip">2-20位(字母+数字)</span>
+            <span class="fail-tip">不符合邮件格式, 或已被使用</span>
         </div>
         <div class="form-title">昵称</div>
         <div class="form-item">
-            <input type="text" name="regalias" placeholder="2-10位(字母+数字+中文字符)">
+            <input type="text" name="regname" placeholder="2-10位(字母+数字+中文字符)">
             <i class="fa fa-check-circle fa-lg chk-i chk-ok"></i>
             <i class="fa fa fa-spinner fa-spin-1s fa-lg chk-i chk-ing"></i>
             <i class="fa fa-times-circle fa-lg chk-i chk-fail"></i>
-            <span class="fail-tip">2-10位(字母+数字+中文字符)</span>
+            <span class="fail-tip">不符合2-10位(字母+数字+中文字符), 或已被使用</span>
         </div>
         <div class="form-title">密码</div>
         <div class="form-item">
@@ -36,7 +36,7 @@
             <i class="fa fa-check-circle fa-lg chk-i chk-ok"></i>
             <i class="fa fa fa-spinner fa-spin-1s fa-lg chk-i chk-ing"></i>
             <i class="fa fa-times-circle fa-lg chk-i chk-fail"></i>
-            <span class="fail-tip">6-20位(字母+数字+@)</span>
+            <span class="fail-tip">不符合6-20位(字母+数字+@)</span>
         </div>
         <div class="form-title">邀请码</div>
         <div class="form-item">
@@ -57,12 +57,12 @@
             <i class="fa fa-home fa-2x login-input-tip"></i>
         </div>
         <div class="login-input">
-            <input placeholder="用户名" ng-model="name" name="username"/>
-            <i class="fa fa-user fa-2x login-input-tip"></i>
+            <input placeholder="邮箱" ng-model="email" name="email"/>
+            <i class="fa fa-envelope-o fa-2x login-input-tip"></i>
         </div>
         <div class="login-input">
             <input placeholder="密码" type="password" ng-model="password" name="password"/>
-            <i class="fa fa-lock fa-2x login-input-tip"></i>
+            <i class="fa fa-key fa-2x login-input-tip"></i>
         </div>
         <input type="submit" class="login-submit" value="登 陆"/>
 

@@ -55,10 +55,11 @@ body {
 .login-input-tip {
     position: absolute;
     right: 9px;
-    top: 9px;
+    top: 8px;
     width: 24px;
     height: 24px;
-    opacity: 0.3;
+    opacity: 0.2;
+    text-align: center;
 }
 
 .login-submit {

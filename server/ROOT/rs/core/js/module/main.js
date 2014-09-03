@@ -57,14 +57,6 @@ function navConf(nc) {
 
 window.namap = {};
 
-window.getAlias = function (name) {
-    var alias = window.namap[name];
-    if ($z.util.isBlank(alias)) {
-        return name;
-    }
-    return alias;
-}
-
 var navUrlNameMap = {};
 
 var tmpl_crumb_li = '<li><span>{{value}}</span></li>';
@@ -90,7 +82,6 @@ if (!window.myConf) {
     window.myConf = {
         'domain': '',
         'user': '',
-        'alias': '',
         'alertAudio': '',
         'friends': [],
         'friendsNameMap': {},
@@ -108,10 +99,9 @@ $(document).ready(function () {
     // 我的配置
     window.myConf.domain = $(document.body).attr('dmnNm');
     window.myConf.user = $(document.body).attr('userNm');
-    window.myConf.alias = $(document.body).attr('userAlias');
     window.myConf.alertAudio = $(document.body).attr('alertAudio');
 
-    window.myConf.friendsNameMap[window.myConf.user] = window.myConf.alias;
+    window.myConf.friendsNameMap[window.myConf.user] = window.myConf.user;
 
     if (window.myConf.isDebug) {
         var blr = $("#before-load-ready");
@@ -557,7 +547,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
                 var fnms = [];
                 for (var i = 0; i < nfriends.length; i++) {
                     fnms.push(nfriends[i].name);
-                    window.myConf.friendsNameMap[nfriends[i].name] = nfriends[i].alias;
+                    window.myConf.friendsNameMap[nfriends[i].name] = nfriends[i].name;
                 }
                 window.myConf.friendsName = fnms.join(',');
                 $scope.users = window.myConf.friends;

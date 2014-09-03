@@ -117,7 +117,7 @@ public class Octopus {
         if (god == null) {
             god = new User();
             god.setName(godName);
-            god.setAlias(godName);
+            god.setEmail("god@octopus.com");
             god.setPassword(encrypt(godPassword));
             god.setCreateTime(new Date());
             god.setCreateUser(godName); // 自己创造自己
@@ -131,7 +131,7 @@ public class Octopus {
         if (admin == null) {
             admin = new User();
             admin.setName(adminStr);
-            admin.setAlias(adminStr);
+            admin.setEmail("admin@octopus.com");
             admin.setPassword(encrypt(godPassword));
             admin.setCreateTime(new Date());
             admin.setCreateUser(god.getName());

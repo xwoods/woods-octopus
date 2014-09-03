@@ -37,7 +37,7 @@ function IssueCtl($scope) {
                 uhtml += '<li class="' + (issue.createUser == userNm ? "my-issue" : "") + '">';
                 uhtml += '    <div class="ct-user">';
                 uhtml += '        <img src="/user/face/' + issue.createUser + '">';
-                uhtml += '        <p>' + window.getAlias(issue.createUser) + '</p>';
+                uhtml += '        <p>' + issue.createUser + '</p>';
                 uhtml += '    </div>';
                 uhtml += '    <div class="ct-issue">';
                 uhtml += '        <span>' + issue.createTime + '</span>';
@@ -62,7 +62,7 @@ function IssueCtl($scope) {
                 uhtml += '<li class="ct-user-right ' + (issueReply.createUser == userNm ? "my-issue" : "") + '">';
                 uhtml += '    <div class="ct-user">';
                 uhtml += '        <img src="/user/face/' + issueReply.createUser + '">';
-                uhtml += '        <p>' + window.getAlias(issueReply.createUser) + '</p>';
+                uhtml += '        <p>' + issueReply.createUser + '</p>';
                 uhtml += '    </div>';
                 uhtml += '    <div class="ct-issue">';
                 uhtml += '        <span>' + issueReply.createTime + '</span>';

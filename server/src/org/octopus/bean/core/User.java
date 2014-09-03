@@ -9,21 +9,22 @@ import org.nutz.dao.entity.annotation.TableIndexes;
 import org.octopus.bean.CreateModify;
 
 @Table("t_user")
-@TableIndexes({@Index(name = "t_user_alias", fields = {"alias"}, unique = true),
-               @Index(name = "t_user_phone", fields = {"phone"}, unique = true),
+@TableIndexes({@Index(name = "t_user_phone", fields = {"phone"}, unique = true),
                @Index(name = "t_user_email", fields = {"email"}, unique = true)})
 public class User extends CreateModify {
 
+    // emial作为登陆用的主键
+    private String email;
+
+    // name跟alias合并, 方便在整个系统中不用同步修改显示问题
     @Name
     private String name;
 
-    private String alias;
+    // private String alias;
 
     private String password;
 
     private String phone;
-
-    private String email;
 
     // 逻辑上的删除, 默认是true, 一旦设置为false则不用使用了
     private boolean enable;
@@ -48,14 +49,6 @@ public class User extends CreateModify {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getAlias() {
-        return alias;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
     }
 
     public String getPassword() {

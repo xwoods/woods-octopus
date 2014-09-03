@@ -40,8 +40,8 @@ public class DomainModule extends AbstractBaseModule {
 
     private Log log = Logs.get();
 
-    @At("/checkExist/?/?")
-    public boolean checkExist(String field, String value) {
+    @At("/checkExist")
+    public boolean checkExist(@Param("field") String field, @Param("value") String value) {
         return dao.count(Domain.class, Cnd.where(field, "=", value)) >= 1;
     }
 

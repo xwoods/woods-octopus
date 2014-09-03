@@ -19,7 +19,6 @@ import org.nutz.dao.sql.Sql;
 import org.nutz.dao.sql.SqlCallback;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.lang.Lang;
-import org.nutz.lang.Strings;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
@@ -51,12 +50,10 @@ public class UserModule extends AbstractBaseModule {
         return Octopus.encrypt(password);
     }
 
-    @At("/checkExist/?/?")
-    public boolean checkExist(String field, String value) {
-        if (Strings.isBlank(value)) {
-            return false;
-        }
-        return dao.count(User.class, Cnd.where(field, "=", value)) >= 1;
+    @At("/checkExist")
+    public boolean checkExist(@Param("field") String field, @Param("value") String value) {
+        int en = dao.count(User.class, Cnd.where(field, "=", value));
+        return en > 0;
     }
 
     @Inject("java:$conf.get('invite-code', '123456')")
@@ -68,20 +65,11 @@ public class UserModule extends AbstractBaseModule {
             log.warnf("UserIC[%s] Not Match ServerIC[%s]", inviteCode, this.inviteCode);
             return Ajax.fail().setMsg(Msg.USER_INVITE_CODE_EXPIRED);
         }
+        if (checkExist("email", user.getEmail())) {
+            return Ajax.fail().setMsg(Msg.USER_EXIST_EMAIL);
+        }
         if (checkExist("name", user.getName())) {
             return Ajax.fail().setMsg(Msg.USER_EXIST_NAME);
-        }
-        if (checkExist("alias", user.getAlias())) {
-            return Ajax.fail().setMsg(Msg.USER_EXIST_ALIAS);
-        }
-        // if (checkExist("email", user.getEmail())) {
-        // return Ajax.fail().setMsg(Msg.USER_EXIST_EMAIL);
-        // }
-        // if (checkExist("phone", user.getPhone())) {
-        // return Ajax.fail().setMsg(Msg.USER_EXIST_PHONE);
-        // }
-        if (Strings.isBlank(user.getAlias())) {
-            user.setAlias(user.getName());
         }
         user.setPassword(password(user.getPassword()));
         user.setCreateTime(new Date());
@@ -113,7 +101,7 @@ public class UserModule extends AbstractBaseModule {
 
     @At("/login")
     public AjaxReturn login(@Param("domain") String dmnName,
-                            @Param("name") String lname,
+                            @Param("email") String email,
                             @Param("password") String password,
                             HttpServletRequest req,
                             HttpSession sess) {
@@ -122,19 +110,10 @@ public class UserModule extends AbstractBaseModule {
         if (null == dmn) {
             ar = Ajax.fail().setMsg(Msg.DOMAIN_NOT_EXIST);
         } else {
-            User u = null;
-            if (dmnName.equals(lname)) {
-                // 说明是域管理员
-                u = dao.fetch(User.class,
-                              Cnd.where("password", "=", password(password))
-                                 .and("name", "=", lname));
-            } else {
-                // lname 可以是 name, phone, email
-                // TODO 暂时仅仅检查name吧
-                u = dao.fetch(User.class,
-                              Cnd.where("password", "=", password(password))
-                                 .and("name", "=", lname));
-            }
+            User u = dao.fetch(User.class,
+                               Cnd.where("password", "=", password(password)).and("email",
+                                                                                  "=",
+                                                                                  email));
             if (null != u) {
                 if (u.isEnable()) {
                     DomainUser du = dao.fetch(DomainUser.class,
@@ -176,6 +155,8 @@ public class UserModule extends AbstractBaseModule {
     @At("/logout")
     public void logout(HttpSession sess) {
         sess.removeAttribute(Keys.SESSION_USER);
+        sess.removeAttribute(Keys.SESSION_DOMAIN);
+        sess.removeAttribute(Keys.SESSION_USER_INFO);
     }
 
     @At("/ping")

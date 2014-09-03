@@ -28,25 +28,19 @@ mainApp.controller('UsersCtl', function ($scope) {
                     "fieldName": "name",
                     "columnName": "用户名",
                     "show": true,
-                    "width": 120
-                },
-                {
-                    "fieldName": "alias",
-                    "columnName": "昵称",
-                    "show": true,
                     "width": 150
                 },
                 {
                     "fieldName": "phone",
                     "columnName": "电话",
-                    "show": true,
+                    "show": false,
                     "width": 120
                 },
                 {
                     "fieldName": "email",
                     "columnName": "邮箱",
                     "show": true,
-                    "width": 150
+                    "width": 250
                 },
                 {
                     "fieldName": "lastDomain",
@@ -82,7 +76,6 @@ mainApp.controller('UsersCtl', function ($scope) {
             for (var i = 0; i < ulist.length; i++) {
                 uhtml += '<li unm="' + ulist[i].name + '">';
                 uhtml += '  <span>' + ulist[i].name + '</span>';
-                uhtml += '  <span>' + $z.msg(ulist[i].alias) + '</span>';
                 uhtml += '</li>';
             }
             userSel.empty().append(uhtml);

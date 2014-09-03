@@ -200,13 +200,13 @@ public class ChatCache {
         dao.insert(chat);
         ChatMember cm1 = new ChatMember();
         cm1.setChatId(chat.getId());
-        cm1.setChatAlias(String.format("与 %s 的对话", UserCache.getUser(u2).getAlias()));
+        cm1.setChatAlias(String.format("与 %s 的对话", UserCache.getUser(u2).getName()));
         cm1.setFromUser(u1);
         cm1.setToUser(u2);
         dao.insert(cm1);
         ChatMember cm2 = new ChatMember();
         cm2.setChatId(chat.getId());
-        cm2.setChatAlias(String.format("与 %s 的对话", UserCache.getUser(u1).getAlias()));
+        cm2.setChatAlias(String.format("与 %s 的对话", UserCache.getUser(u1).getName()));
         cm2.setFromUser(u2);
         cm2.setToUser(u1);
         dao.insert(cm2);

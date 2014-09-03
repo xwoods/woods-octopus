@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="${rs}/core/css/module/issue.css">
     <link rel="stylesheet" href="${rs}/core/css/module/release.css">
 </head>
-<body dmnNm="${domain.name}" userNm="${user.name}" userAlias="${user.alias}"
+<body dmnNm="${domain.name}" userNm="${user.name}"
       alertAudio="${rs}/core/audio/msg_iphone.mp3" ng-app="mainApp">
 <%@include file="_msg.jsp" %>
 <div class="header">
@@ -37,9 +37,8 @@
                             class="friend-info online-{{user.isOnline}} friend-chat-{{user.chatId}}"
                             ng-click="chatWithFriend(user.name)">
                             <img src="/user/face/{{user.name}}" class="user-face"/>
-
                             <div class="friend-base">
-                                <div class="friend-name">{{user.alias}}</div>
+                                <div class="friend-name">{{user.name}}</div>
                                 <div class="friend-stat">
                                     <em></em>
                                     <span class="on">${msg['page.header.friends.online']}</span>
@@ -76,7 +75,7 @@
         <li class="header-module hm-user">
             <img src="/user/face/${userInfo.userFace}" class="user-face">
 
-            <p class="user-name">${msg[user.alias]}</p>
+            <p class="user-name">${user.name}</p>
             <i class="fa fa-lg fa-angle-down"></i>
             <ul class="sub-menu">
                 <li>
