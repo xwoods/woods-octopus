@@ -2,6 +2,23 @@
 <%@include file="/WEB-INF/jsp/_setup.jsp" %>
 <div class="module-content module-me">
     <div>
+        <div class="release-date">2014-09-04</div>
+        <div class="release-note">
+            <ul>
+                <li>
+                    "线上监控"模块更新
+                    <ol>
+                        <li>后台数据获取方式更新</li>
+                    </ol>
+                </li>
+                <li>
+                    "登陆注册"模块更新
+                    <ol>
+                        <li>更新登陆方式为 "电子邮箱" + "密码" 进行登陆</li>
+                    </ol>
+                </li>
+            </ul>
+        </div>
         <div class="release-date">2014-08-28</div>
         <div class="release-note">
             <ul>
