@@ -19,10 +19,11 @@ import org.nutz.lang.Strings;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.resource.Scans;
-import org.octopus.bean.DomainConf;
-import org.octopus.bean.core.Domain;
-import org.octopus.bean.core.DomainUser;
-import org.octopus.bean.core.User;
+import org.octopus.core.Keys;
+import org.octopus.core.bean.Domain;
+import org.octopus.core.bean.DomainConf;
+import org.octopus.core.bean.DomainUser;
+import org.octopus.core.bean.User;
 
 public class Octopus {
 
@@ -30,7 +31,7 @@ public class Octopus {
 
     private final static Log log = Logs.get();
 
-    public final static String VERSION = "0.0.1";
+    public final static String VERSION = "0.2";
 
     private static String secretKey = "1234567890";
 
@@ -91,19 +92,13 @@ public class Octopus {
      * @param dao
      * @param conf
      */
+    @SuppressWarnings("unchecked")
     public static void initDatabase(Dao dao, OctopusConfig conf) {
-        String[] tables = Strings.splitIgnoreBlank(conf.get("$db-table-pkg"), "\n");
+        List<String> tables = conf.getDBTablePkg();
         log.infof("Database : %s", conf.get("db-dbname"));
         log.infof("Tables   : %s", Strings.join(",", tables));
-
-        // 建数据库
-        // FIXME 这里暂时仅仅测试了mysql
-        // Sql createDatabase = Sqls.create("create database " +
-        // conf.get("db-dbname"));
-        // dao.execute(createDatabase);
-
         // 建核心表
-        createTableByPKG(dao, "org.octopus.bean.core");
+        createTableByPKG(dao, "org.octopus.core.bean");
         // 建项目表
         for (String tbPkg : tables) {
             createTableByPKG(dao, tbPkg);
@@ -165,7 +160,7 @@ public class Octopus {
             if (anTable != null) {
                 String tbName = anTable.value();
                 if (tbName.indexOf("${") != -1) {
-                    log.warnf("Find Class(%s) has Dynamic-Table-Name(%s), Can't Create Table",
+                    log.warnf("Class(%s) Has Dynamic-Table-Name(%s), Can't Create Table",
                               clz.getName(),
                               tbName);
                 } else {

@@ -14,9 +14,11 @@ import org.nutz.lang.util.NutMap;
 
 public abstract class CndMaker {
 
-    public abstract void analysisQueryStr(SimpleCriteria sc, String kwd, String... otherQCnd);
-
-    public Cnd makeQCnd(String orderby, boolean asc, String kwd, String... otherQCnd) {
+    private static Cnd makeQCnd(QueryStr qs2c,
+                                String orderby,
+                                boolean asc,
+                                String kwd,
+                                String[] otherQCnd) {
         if (otherQCnd != null) {
             List<String> realotherQCnd = new ArrayList<String>();
             for (String otcnd : otherQCnd) {
@@ -30,7 +32,7 @@ public abstract class CndMaker {
         }
         SimpleCriteria sc = new SimpleCriteria();
         if (!Strings.isBlank(kwd) || otherQCnd != null) {
-            analysisQueryStr(sc, kwd, otherQCnd);
+            qs2c.analysisQueryStr(sc, kwd, otherQCnd);
         }
         if (!Strings.isBlank(orderby)) {
             if (asc) {
@@ -42,17 +44,31 @@ public abstract class CndMaker {
         return Cnd.byCri(sc);
     }
 
+    public static QueryResult queryResult(QueryStr qs2c, Query q) {
+        return queryResult(qs2c,
+                           q.dao,
+                           q.clz,
+                           q.refer,
+                           q.pgnm,
+                           q.pgsz,
+                           q.orderby,
+                           q.asc,
+                           q.kwd,
+                           q.otherQCnd);
+    }
+
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public QueryResult queryResult(final Dao dao,
-                                   final Class<?> clz,
-                                   NutMap refer,
-                                   int pgnm,
-                                   int pgsz,
-                                   String orderby,
-                                   boolean asc,
-                                   String kwd,
-                                   String... otherQCnd) {
-        final Cnd qcnd = makeQCnd(orderby, asc, kwd, otherQCnd);
+    public static QueryResult queryResult(QueryStr qs2c,
+                                          final Dao dao,
+                                          final Class<?> clz,
+                                          NutMap refer,
+                                          int pgnm,
+                                          int pgsz,
+                                          String orderby,
+                                          boolean asc,
+                                          String kwd,
+                                          String... otherQCnd) {
+        final Cnd qcnd = makeQCnd(qs2c, orderby, asc, kwd, otherQCnd);
         final Pager pager = new Pager().setPageNumber(pgnm).setPageSize(pgsz);
         final List qlist = new ArrayList();
         if (pgsz > 0) {

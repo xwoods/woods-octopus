@@ -3,21 +3,51 @@
 <!DOCTYPE html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>${msg['page.main.title']}</title>
     <link rel="shortcut icon" href="${rs}/core/img/favicon.ico"/>
-    <link rel="stylesheet" href="${rs}/core/css/font-awesome.css">
+    <title>${msg['page.main.title']}</title>
+
+    <!-- ############ 依赖 ############ -->
+    <link rel="stylesheet" href="${rs}/deps/font-awesome/css/font-awesome.css">
+
+    <script language="JavaScript" src="${rs}/deps/jquery.js"></script>
+    <script language="JavaScript" src="${rs}/deps/jquery-ui.js"></script>
+
+    <script language="JavaScript" src="${rs}/deps/handlebars.js"></script>
+
+    <script language="JavaScript" src="${rs}/deps/zlib/core.js"></script>
+    <script language="JavaScript" src="${rs}/deps/zlib/log.js"></script>
+    <script language="JavaScript" src="${rs}/deps/zlib/err.js"></script>
+    <script language="JavaScript" src="${rs}/deps/zlib/browser.js"></script>
+    <script language="JavaScript" src="${rs}/deps/zlib/http.js"></script>
+
+    <script language="JavaScript" src="${rs}/deps/zui/zui.grid.js"></script>
+    <link rel="stylesheet" href="${rs}/deps/zui/zui.grid.css">
+
+    <script language="JavaScript" src="${rs}/deps/underscore.js"></script>
+    <script language="JavaScript" src="${rs}/deps/angular/angular.js"></script>
+    <script language="JavaScript" src="${rs}/deps/angular/angular-route.js"></script>
+
+    <!-- ############ 路由 ############ -->
+    <script language="JavaScript" src="/ui/route"></script>
+
+    <!-- ############ 模块 ############ -->
     <link rel="stylesheet" href="${rs}/core/css/reset.css"/>
     <link rel="stylesheet" href="${rs}/core/css/octopus.css">
+    <link rel="stylesheet" href="${rs}/core/css/main.css">
+    <link rel="stylesheet" href="${rs}/core/css/me.css">
+    <link rel="stylesheet" href="${rs}/core/css/users.css">
+    <link rel="stylesheet" href="${rs}/core/css/domains.css">
+    <link rel="stylesheet" href="${rs}/core/css/setting.css">
+    <link rel="stylesheet" href="${rs}/core/css/issue.css">
+    <link rel="stylesheet" href="${rs}/core/css/release.css">
 
-    <link rel="stylesheet" href="${rs}/core/css/zui/zui.grid.css">
-
-    <link rel="stylesheet" href="${rs}/core/css/module/main.css">
-    <link rel="stylesheet" href="${rs}/core/css/module/me.css">
-    <link rel="stylesheet" href="${rs}/core/css/module/users.css">
-    <link rel="stylesheet" href="${rs}/core/css/module/domains.css">
-    <link rel="stylesheet" href="${rs}/core/css/module/setting.css">
-    <link rel="stylesheet" href="${rs}/core/css/module/issue.css">
-    <link rel="stylesheet" href="${rs}/core/css/module/release.css">
+    <script language="JavaScript" src="${rs}/core/js/main.js"></script>
+    <script language="JavaScript" src="${rs}/core/js/me.js"></script>
+    <script language="JavaScript" src="${rs}/core/js/users.js"></script>
+    <script language="JavaScript" src="${rs}/core/js/domains.js"></script>
+    <script language="JavaScript" src="${rs}/core/js/setting.js"></script>
+    <script language="JavaScript" src="${rs}/core/js/issue.js"></script>
+    <script language="JavaScript" src="${rs}/core/js/release.js"></script>
 </head>
 <body dmnNm="${domain.name}" userNm="${user.name}"
       alertAudio="${rs}/core/audio/msg_iphone.mp3" ng-app="mainApp">
@@ -37,6 +67,7 @@
                             class="friend-info online-{{user.isOnline}} friend-chat-{{user.chatId}}"
                             ng-click="chatWithFriend(user.name)">
                             <img src="/user/face/{{user.name}}" class="user-face"/>
+
                             <div class="friend-base">
                                 <div class="friend-name">{{user.name}}</div>
                                 <div class="friend-stat">
@@ -156,28 +187,5 @@
         <span>${msg['page.loading.tip']}</span>
     </div>
 </div>
-<!-- 库 -->
-<script language="JavaScript" src="${rs}/core/js/jquery.js"></script>
-<script language="JavaScript" src="${rs}/core/js/jquery-ui.js"></script>
-<script language="JavaScript" src="${rs}/core/js/handlebars.js"></script>
-<script language="JavaScript" src="${rs}/core/js/zlib/core.js"></script>
-<script language="JavaScript" src="${rs}/core/js/zlib/log.js"></script>
-<script language="JavaScript" src="${rs}/core/js/zlib/err.js"></script>
-<script language="JavaScript" src="${rs}/core/js/zlib/browser.js"></script>
-<script language="JavaScript" src="${rs}/core/js/zlib/http.js"></script>
-<script language="JavaScript" src="${rs}/core/js/underscore.js"></script>
-<script language="JavaScript" src="${rs}/core/js/angular.js"></script>
-<script language="JavaScript" src="${rs}/core/js/angular-route.js"></script>
-<!-- 控件 -->
-<script language="JavaScript" src="${rs}/core/js/zui/zui.grid.js"></script>
-<!-- module -->
-<script language="JavaScript" src="${rs}/module/route.js"></script>
-<script language="JavaScript" src="${rs}/core/js/module/main.js"></script>
-<script language="JavaScript" src="${rs}/core/js/module/me.js"></script>
-<script language="JavaScript" src="${rs}/core/js/module/users.js"></script>
-<script language="JavaScript" src="${rs}/core/js/module/domains.js"></script>
-<script language="JavaScript" src="${rs}/core/js/module/setting.js"></script>
-<script language="JavaScript" src="${rs}/core/js/module/issue.js"></script>
-<script language="JavaScript" src="${rs}/core/js/module/release.js"></script>
 </body>
 </html>

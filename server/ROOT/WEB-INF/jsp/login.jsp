@@ -4,12 +4,29 @@
 <html ng-app>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>${msg['page.login.title']}</title>
     <link rel="shortcut icon" href="${rs}/core/img/favicon.ico"/>
+    <title>${msg['page.login.title']}</title>
+    <!-- ############ 依赖 ############ -->
+    <link rel="stylesheet" href="${rs}/deps/font-awesome/css/font-awesome.css">
+
+    <script language="JavaScript" src="${rs}/deps/jquery.js"></script>
+
+    <script language="JavaScript" src="${rs}/deps/handlebars.js"></script>
+
+    <script language="JavaScript" src="${rs}/deps/zlib/core.js"></script>
+    <script language="JavaScript" src="${rs}/deps/zlib/log.js"></script>
+    <script language="JavaScript" src="${rs}/deps/zlib/err.js"></script>
+    <script language="JavaScript" src="${rs}/deps/zlib/browser.js"></script>
+    <script language="JavaScript" src="${rs}/deps/zlib/http.js"></script>
+
+    <script language="JavaScript" src="${rs}/deps/underscore.js"></script>
+    <script language="JavaScript" src="${rs}/deps/angular/angular.js"></script>
+
+    <!-- ############ 模块 ############ -->
     <link rel="stylesheet" href="${rs}/core/css/reset.css"/>
     <link rel="stylesheet" href="${rs}/core/css/octopus.css"/>
-    <link rel="stylesheet" href="${rs}/core/css/font-awesome.css">
-    <link rel="stylesheet" href="${rs}/core/css/module/login.css">
+    <script language="JavaScript" src="${rs}/core/js/login.js"></script>
+    <link rel="stylesheet" href="${rs}/core/css/login.css">
 </head>
 <body>
 <div class="reg-content" ng-controller="RegCtrl">
@@ -70,14 +87,5 @@
     </form>
 </div>
 <%@include file="_msg.jsp" %>
-<script language="JavaScript" src="${rs}/core/js/jquery.js"></script>
-<script language="JavaScript" src="${rs}/core/js/underscore.js"></script>
-<script language="JavaScript" src="${rs}/core/js/angular.js"></script>
-<script language="JavaScript" src="${rs}/core/js/zlib/core.js"></script>
-<script language="JavaScript" src="${rs}/core/js/zlib/log.js"></script>
-<script language="JavaScript" src="${rs}/core/js/zlib/err.js"></script>
-<script language="JavaScript" src="${rs}/core/js/zlib/browser.js"></script>
-<script language="JavaScript" src="${rs}/core/js/zlib/http.js"></script>
-<script language="JavaScript" src="${rs}/core/js/module/login.js"></script>
 </body>
 </html>

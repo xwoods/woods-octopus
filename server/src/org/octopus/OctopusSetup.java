@@ -1,6 +1,7 @@
 package org.octopus;
 
 import java.io.File;
+import java.util.List;
 
 import org.nutz.dao.Dao;
 import org.nutz.ioc.Ioc;
@@ -15,10 +16,12 @@ import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.mvc.NutConfig;
 import org.nutz.mvc.Setup;
-import org.octopus.bean.core.User;
-import org.octopus.cache.ChatCache;
-import org.octopus.cache.UserCache;
-import org.octopus.fs.FS;
+import org.octopus.core.Keys;
+import org.octopus.core.NavController;
+import org.octopus.core.bean.User;
+import org.octopus.core.chat.ChatCache;
+import org.octopus.core.chat.UserCache;
+import org.octopus.core.fs.FS;
 
 public class OctopusSetup implements Setup {
 
@@ -40,7 +43,7 @@ public class OctopusSetup implements Setup {
 
         // 初始化fs
         FS.loadConf();
-        String fsHomePath = conf.get("fs-home");
+        String fsHomePath = conf.getFSHome();
         if (Strings.isBlank(fsHomePath)) {
             fsHomePath = Lang.runRootPath() + "/fs";
         }
@@ -54,11 +57,8 @@ public class OctopusSetup implements Setup {
         Octopus.initDatabase(dao, conf);
         Octopus.initUserAndDomain(dao);
 
-        // 全局对象初始化
-        Global.init(dao);
-
-        // 开启msg文件监控
-        // MsgWatcher.startWatch(OctopusMainModule.class, ioc);
+        // 侧边导航初始化
+        NavController.init(dao);
 
         // 用户目录初始化
         dao.each(User.class, null, new Each<User>() {
@@ -80,9 +80,10 @@ public class OctopusSetup implements Setup {
         ChatCache.init(dao);
         ChatCache.startRunner();
 
-        // setupChain
-        if (ioc.has("setupChain")) {
-            setupChain = ioc.get(OctopusSetupChain.class, "setupChain");
+        // setupChain初始化
+        List<String> setupChainList = conf.getSetupChain();
+        if (setupChainList != null && setupChainList.size() > 0) {
+            setupChain = new OctopusSetupChain(setupChainList);
             setupChain.initEach(nc);
         }
     }

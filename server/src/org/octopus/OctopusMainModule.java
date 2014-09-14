@@ -15,7 +15,7 @@ import org.nutz.web.error.ErrPageViewMaker;
 @IocBy(type = ComboIocProvider.class, args = {"*org.nutz.ioc.loader.json.JsonLoader",
                                               "ioc",
                                               "*org.nutz.ioc.loader.annotation.AnnotationIocLoader",
-                                              "org.octopus.module"})
+                                              "org.octopus"})
 @SetupBy(OctopusSetup.class)
 @Views(value = {AjaxViewMaker.class, ErrPageViewMaker.class})
 @Fail("errpage")

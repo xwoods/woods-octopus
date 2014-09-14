@@ -16,7 +16,7 @@ public class OctopusSetupChain {
     private List<Setup> setupList;
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public OctopusSetupChain(String... setupClzList) {
+    public OctopusSetupChain(List<String> setupClzList) {
         setupList = new ArrayList<Setup>();
         // 生成所有的setup对象
         for (String clzNm : setupClzList) {

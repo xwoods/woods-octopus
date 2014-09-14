@@ -4,7 +4,7 @@ var ioc = {
 		type : 'org.octopus.OctopusConfig',
 		args : [ 'web.properties' ]
 	},
-	// 数据库
+	// 数据源
 	dataSource : {
 		type : "com.alibaba.druid.pool.DruidDataSource",
 		events : {
@@ -30,6 +30,7 @@ var ioc = {
 			filters : "stat"
 		}
 	},
+	// Dao
 	dao : {
 		type : 'org.nutz.dao.impl.NutDao',
 		args : [ {
