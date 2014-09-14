@@ -352,7 +352,9 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             var chtml = '';
             chtml += '<div id="chat-container-' + chatId + '">';
             chtml += '  <div class="chat-header">' + chatTitle + '</div>';
-            chtml += '  <div class="chat-content"></div>';
+            chtml += '  <div class="chat-content">';
+            chtml += '      <div class="chat-readmore" chatId="' + chatId + '">加载更多历史信息...</div>';
+            chtml += '  </div>';
             chtml += '  <div class="chat-footer">';
             chtml += '      <div class="chat-menu-bar">';
             chtml += '      </div>';
@@ -456,6 +458,52 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             }
         });
     }
+
+    // 加载历史信息
+    chatContainer.delegate('.chat-readmore', 'click', function () {
+        var rmBtn = $(this);
+        if (rmBtn.hasClass('reading') || rmBtn.hasClass('readdone')) {
+            return;
+        } else {
+            rmBtn.addClass('reading');
+            rmBtn.html("努力加载中....");
+
+            var time = '';
+            var chatId = rmBtn.attr('chatId');
+
+            var oldMsg = rmBtn.next();
+            if (oldMsg.length > 0) {
+                time = oldMsg.find('.time').html();
+            }
+
+            $z.http.post('/chat/msg/history', {
+                'chatId': chatId,
+                'time': time
+            }, function (re) {
+                if (re.data) {
+                    var chlist = re.data;
+                    // 拿到的新的数据
+                    for (var i = chlist.length - 1; i >= 0; i--) {
+                        var ch = chlist[i];
+                        var html = '';
+                        html += '<div class="' + (ch.user == window.myConf.user ? "me" : "") + '">';
+                        html += '   <span class="name">' + window.myConf.friendsNameMap[ch.user] + "</span>";
+                        html += '   <span class="time">' + ch.createTime + "</span>";
+                        html += '   <p>' + $z.util.replaceAll(ch.content, "\n", "<br>") + "</p>";
+                        html += '</div>';
+                        rmBtn.after(html);
+                    }
+                    if (chlist.length > 0) {
+                        rmBtn.html("加载更多历史信息...");
+                    } else {
+                        rmBtn.addClass('readdone');
+                        rmBtn.html("没有更多的历史信息了");
+                    }
+                }
+                rmBtn.removeClass('reading');
+            });
+        }
+    });
 
     // 发送
     chatContainer.delegate('.chat-footer .chat-submit span', 'click', function () {

@@ -1,5 +1,7 @@
 package org.octopus.core.module;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import org.nutz.dao.Cnd;
 import org.nutz.lang.Lang;
+import org.nutz.lang.Strings;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
@@ -139,6 +142,24 @@ public class ChatModule extends AbstractBaseModule {
             }
         }
         return Ajax.ok();
+    }
+
+    @At("/msg/history")
+    public AjaxReturn getHistory(@Param("chatId") long chatId,
+                                 @Param("time") String time,
+                                 @Param("limit") int limit,
+                                 @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        if (Strings.isBlank(time)) {
+            time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        }
+        if (limit <= 0) {
+            limit = 30;
+        }
+        List<ChatHistory> chList = dao.query(ChatHistory.class, Cnd.where("chatId", "=", chatId)
+                                                                   .and("createTime", "<", time)
+                                                                   .limit(limit)
+                                                                   .asc("createTime"));
+        return Ajax.ok().setData(chList);
     }
 
     @At("/msg/check")
