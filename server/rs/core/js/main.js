@@ -339,6 +339,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
         var chatTitle = chatMember.chatAlias;
         var chatUser = chatMember.toUser;
         var chatItem = chatList.find('#chat-' + chatId);
+
         if (chatItem.length <= 0) {
             var html = '';
             html += '<li id="chat-' + chatId + '" chatId="' + chatId + '">';
@@ -483,8 +484,8 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             cli.siblings().removeClass('active');
             cli.addClass('active');
             var ccontainer = chatContainer.find('#chat-container-' + cli.attr('chatId'));
-            ccontainer.siblings().removeClass('active');
-            ccontainer.addClass('active');
+            ccontainer.siblings().removeClass('active').addClass('hdn');
+            ccontainer.addClass('active').removeClass('hdn');
             var chBody = chatContainer.find('.chat-content');
             chBody[0].scrollTop = chBody[0].scrollHeight;
         }
@@ -498,6 +499,11 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
     chatList.delegate('li > i.fa', 'click', function (e) {
         e.stopPropagation();
         var cli = $(this).parent();
+        var chatId = cli.attr('chatId');
+
+        // 隐藏
+        chatContainer.find('#chat-container-' + chatId).removeClass('active').addClass('hdn');
+
         var cprev = cli.prev();
         var cnext = cli.next();
         if (cprev.length > 0) {
@@ -508,9 +514,9 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             noChat.removeClass('hdn');
             currentChat = 0;
         }
-        var chatId = cli.attr('chatId');
+
+        // 删除
         cli.remove();
-        chatContainer.find('#chat-container-' + chatId).remove();
     });
 
     $scope.users = [];
