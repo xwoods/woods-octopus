@@ -1,7 +1,74 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/jsp/_setup.jsp" %>
-<div class="module-content module-me">
-    <div>
+<div class="module-content module-release">
+    <div class="feture-list">
+        <div class="feture-title">新功能列表</div>
+        <ul>
+            <li>
+                "网盘"模块实现, 可以读取,存放各类文件
+            </li>
+            <li>
+                "矩阵-素材管理"
+            </li>
+            <li>
+                "矩阵-素材转换服务", 对已上传素材进行二次转换(比如将视频按照3x5屏幕进行再转换)
+            </li>
+            <li>
+                "矩阵-播放器配置", 配置盒子ip, 布局等
+            </li>
+            <li>
+                "矩阵-屏幕制作", 讲素材摆按照播放要求进行摆放与设置(大小, 跨屏)
+            </li>
+            <li>
+                "聊天" 文件传输(图片, 视频, 文档等等)
+            </li>
+            <li>
+                "播放器comment" 支持文件传输(图片, 视频, 文档等等)
+            </li>
+            <li>
+                "播放器comment" 支持微信或email等其他方式添加
+            </li>
+            <li>
+                "邀请注册", 方便让一个新用户完成注册并加入到对应的域中
+            </li>
+            <li>
+                "单域monitor", 方便用户查看自己的域的monitor信息
+            </li>
+        </ul>
+    </div>
+    <div class="release-log">
+        <div class="release-date">2014-09-15</div>
+        <div class="release-note">
+            <ul>
+                <li>
+                    "更新日志"模块更新
+                    <ol>
+                        <li>内容分成2栏, "发布日志" 与 "新功能列表"</li>
+                        <li>"新功能列表" 为接下来要实现的功能, 部分功能点来自"问与答"中用户提出的问题</li>
+                    </ol>
+                </li>
+                <li>
+                    "聊天功能"模块更新
+                    <ol>
+                        <li>不刷新页面, 当前聊天信息不会消失</li>
+                        <li>可以查看历史聊天记录</li>
+                    </ol>
+                </li>
+                <li>
+                    "问与答"模块更新
+                    <ol>
+                        <li>显示每个问题的 "回复"数</li>
+                    </ol>
+                </li>
+                <li>
+                    整体代码架构更新
+                    <ol>
+                        <li>route.js通过后台配置读取,不再配置在前端代码目录中</li>
+                        <li>views, rs目录更新位置, 更加合理, 方便开发与debug</li>
+                    </ol>
+                </li>
+            </ul>
+        </div>
         <div class="release-date">2014-09-04</div>
         <div class="release-note">
             <ul>

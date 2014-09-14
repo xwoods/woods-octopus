@@ -42,7 +42,7 @@ function IssueCtl($scope) {
                 uhtml += '    <div class="ct-issue">';
                 uhtml += '        <span>' + issue.createTime + '</span>';
                 uhtml += '        <p>' + $z.util.replaceAll(issue.content, "\n", "<br>") + '</p>';
-                uhtml += '        <em issueId="' + issue.id + '">查看回复</em>';
+                uhtml += '        <em issueId="' + issue.id + '"><b>查看回复</b> <i>' + issue.replyNum + '</i></em>';
                 uhtml += '    </div>';
                 uhtml += '</li>';
             }
@@ -84,7 +84,7 @@ function IssueCtl($scope) {
         var cul = cli.parent();
         if (emJq.hasClass('reply')) {
             // 收起状态
-            emJq.html('查看回复');
+            emJq.find('b').html('查看回复');
             emJq.removeClass('reply');
             cli.removeClass('reply');
             cul.removeClass('check-reply');
@@ -94,7 +94,7 @@ function IssueCtl($scope) {
             issueId = 0;
         } else {
             // 打开
-            emJq.html('收起回复');
+            emJq.find('b').html('收起回复');
             emJq.addClass('reply');
             cli.addClass('reply');
             cul.addClass('check-reply');

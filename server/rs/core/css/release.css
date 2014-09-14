@@ -43,3 +43,46 @@
     left: -20px;
 }
 
+
+.release-log {
+    margin-right: 50%;
+    width: 50%;
+}
+
+.module-release {
+    position: relative;
+}
+
+.feture-list {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 40%;
+}
+
+.feture-title {
+    padding: 15px 0;
+    font-size: 15px;
+    color: #008800;
+    text-align: center;
+}
+
+.feture-list > ul > li {
+    min-height: 30px;
+    line-height: 30px;
+    margin-left: 25px;
+    position: relative;
+    font-size: 15px;
+}
+
+.feture-list > ul > li:before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    display: block;
+    position: absolute;
+    background: #ff0000;
+    top: 10px;
+    left: -20px;
+}

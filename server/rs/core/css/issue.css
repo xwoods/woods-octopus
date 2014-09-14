@@ -52,6 +52,7 @@
     text-align: center;
     width: 60px;
     font-size: 12px;
+    overflow: hidden;
 }
 
 .ct-issue {
@@ -114,6 +115,7 @@
     font-size: 12px;
     color: #ffffff;
     text-decoration: underline;
+    text-shadow: 1px 1px 2px #888;
 }
 
 .ct-issue > em {
@@ -123,7 +125,12 @@
     font-size: 11px;
     color: #007AFF;
     cursor: pointer;
-    text-decoration: underline;
+
+}
+
+.ct-issue > em > i {
+    color: #008800;
+    text-decoration: none;
 }
 
 .ct-issue > p {

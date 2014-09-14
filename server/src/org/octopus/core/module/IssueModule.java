@@ -2,6 +2,7 @@ package org.octopus.core.module;
 
 import java.util.Date;
 
+import org.nutz.dao.Chain;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.QueryResult;
 import org.nutz.dao.util.cri.SimpleCriteria;
@@ -77,6 +78,8 @@ public class IssueModule extends AbstractBaseModule {
         issueReply.setCreateTime(new Date());
         issueReply.setCreateUser(me.getName());
         dao.insert(issueReply);
+        int replyNum = dao.count(IssueReply.class, Cnd.where("issueId", "=", issueId));
+        dao.update(Issue.class, Chain.make("replyNum", replyNum), Cnd.where("id", "=", issueId));
         return Ajax.ok();
     }
 
