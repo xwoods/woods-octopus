@@ -16,5 +16,5 @@ done
 export CLASSPATH=$cp:$APP_HOME/$APP_JAR.jar
 
 # 运行吧, 把log打出
-nohup java $JAVA_OPTS $APP_LAUNCHER $APP_HOME >> $APP_HOME/server.log 2>&1
+nohup java $JAVA_OPTS $APP_LAUNCHER >> $APP_HOME/server.log 2>&1
 
