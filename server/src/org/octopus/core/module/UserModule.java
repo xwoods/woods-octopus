@@ -168,6 +168,9 @@ public class UserModule extends AbstractBaseModule {
 
     @At("/friends")
     public Object myFriends(@Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        if (me == null) {
+            return null;
+        }
         return UserCache.getMyFriends(me);
     }
 
