@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="woods-octopus" default="run" basedir=".">
+	<description>
+       Woods-Octopus Framework build file
+    </description>
+	<!-- set global properties for this build -->
+	<property environment="env" />
+
+	<property name="JAVA_HOME" value="${env.JAVA_HOME}" />
+	<property name="OP" value="${env.BUILD_OUT}" />
+	<property name="SRC" location="${env.BUILD_SRC}" />
+	<property name="TMP" value="${env.BUILD_TMP}" />
+	<property name="JDK_VERSION" value="1.6" />
+
+	<path id="CLASSPATH">
+		<fileset dir="${env.BUILD_DEPS}" casesensitive="no">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${JAVA_HOME}/lib/rt.jar" />
+	</path>
+
+	<target name="init">
+		<mkdir dir="${TMP}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="${SRC}" destdir="${TMP}" debuglevel="lines,vars,source" debug="true" 
+			source="${JDK_VERSION}" target="${JDK_VERSION}" encoding="UTF-8" listfiles="off"
+			includeantruntime="false" fork="true">  
+			<compilerarg value="-Xlint:all" /> 
+			<classpath refid="CLASSPATH" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<echo message="TMP: ${TMP}" />
+		<copy todir="${TMP}">
+			<fileset dir="${SRC}">
+				<exclude name="**/*.java"/>
+		    </fileset>
+	  	</copy>
+		<jar destfile="${OP}/woods-octopus.jar" basedir="${TMP}" includes="**" index="true"/>
+	</target>
+
+	<target name="run" depends="jar">
+		<delete dir="${TMP}" />
+	</target>
+</project>
