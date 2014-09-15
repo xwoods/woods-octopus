@@ -687,6 +687,77 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             isPlayAlertAudio = false;
         }
     };
+
+    // 文件上传
+    $(document.body).delegate('.user-face', 'click', function () {
+        $.masker({
+            title: '上传头像',
+            width: '50%',
+            height: '50%',
+            closeBtn: true,
+            btns: [
+                {
+                    clz: 'btn-upload-file',
+                    label: "上传",
+                    event: {
+                        type: 'click',
+                        handle: function (sele) {
+
+                        }
+                    }
+                }
+            ],
+            body: function () {
+                var html = '';
+                html += '<div class="upload-file-form">'
+                html += '   <ul class="upload-file-list"></ul>';
+                html += '   <div class="upload-file-tip">';
+                html += '       <div>把文件<b>拖拽到这里</b>, 然后点上传即可</div>'
+                html += '   </div>'
+                html += '</div>'
+                return html;
+            }
+        });
+        var mdiv = $.masker('get');
+        var dropArea = $(".upload-file-form", mdiv);
+        var upArea = $(".upload-file-list", mdiv);
+        var events = {
+            dragOver: function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                dropArea.addClass("dragover");
+            },
+            dragLeave: function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                dropArea.removeClass("dragover");
+            },
+            dropFile: function (e) {
+                dropArea.removeClass("dragover");
+                e.stopPropagation();
+                e.preventDefault();
+                if (e.dataTransfer) {
+                    var tfiles = e.dataTransfer.files;
+                    for (var i = 0; i < tfiles.length; i++) {
+                        upArea.append(events.upHtml(tfiles[i]));
+                    }
+                }
+                return this;
+            },
+            upHtml: function (file) {
+                var upH = '';
+                upH += '<li>';
+                upH += '    <div class="file-type">' + ($z.util.isBlank(file.type) ? "bin" : file.type) + '</div>';
+                upH += '    <div class="file-nm">' + file.name + '</div>';
+                upH += '    <div class="file-size">' + file.size + '</div>';
+                upH += '</li>';
+                return upH;
+            }
+        };
+        mdiv.delegate(".upload-file-form", "dragover", events.dragOver);
+        mdiv.delegate(".upload-file-form", "dragleave", events.dragLeave);
+        dropArea[0].addEventListener("drop", events.dropFile, false);
+    });
 });
 
 mainApp.config(['$routeProvider', function ($routeProvider) {
