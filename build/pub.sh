@@ -52,3 +52,7 @@ cp -rf $OCT_PATH/build/app_* $BUILD_PATH
 rm -r $BUILD_PATH/src
 
 # 打包
+CD=`date +%Y%m%d`
+cd $BUILD_PATH
+tar zcvf octopus2-$CD.tar.gz *
+

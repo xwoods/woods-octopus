@@ -1,0 +1,7 @@
+#!/bin/bash
+
+. ./pub.sh
+
+cd $BUILD_PATH
+
+scp *.tar.gz strato@192.168.2.201:/home/strato/octopus2/
