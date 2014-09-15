@@ -689,7 +689,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
     };
 
     // 文件上传
-    $(document.body).delegate('.user-face', 'click', function () {
+    $(document.body).delegate('.hm-user .user-face', 'click', function () {
         $.masker({
             title: '上传头像',
             width: '50%',
