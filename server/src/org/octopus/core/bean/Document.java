@@ -1,18 +1,26 @@
 package org.octopus.core.bean;
 
 import org.nutz.dao.entity.annotation.ColDefine;
+import org.nutz.dao.entity.annotation.ColType;
 import org.nutz.dao.entity.annotation.Index;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.entity.annotation.TableIndexes;
-import org.octopus.Octopus;
-import org.octopus.core.fs.FileAs;
+import org.octopus.core.fs.FsAs;
 
 @Table("t_document")
-@TableIndexes({@Index(name = "t_document_name", fields = {"name"}, unique = false),
-               @Index(name = "t_document_type", fields = {"type"}, unique = false),
-               @Index(name = "t_document_cate", fields = {"cate"}, unique = false),
-               @Index(name = "t_document_ctuser", fields = {"createUser"}, unique = false)})
+@TableIndexes({@Index(name = "i_document_name", fields = {"name"}, unique = false),
+               @Index(name = "i_document_type", fields = {"type"}, unique = false),
+               @Index(name = "i_document_cate", fields = {"cate"}, unique = false),
+               @Index(name = "i_document_fileAs", fields = {"fileAs"}, unique = false),
+               @Index(name = "i_document_parentId", fields = {"parentId"}, unique = false),
+               @Index(name = "i_document_mf_time", fields = {"modifyTime"}, unique = false),
+               @Index(name = "i_document_mf_user", fields = {"modifyUser"}, unique = false),
+               @Index(name = "i_document_ct_time", fields = {"createTime"}, unique = false),
+               @Index(name = "i_document_ct_user", fields = {"createUser"}, unique = false)})
 public class Document extends BeanCreateModify {
+
+    // 父节点id (如果是根节点的话, 那就是用户的唯一标示, email)
+    private String parentId;
     // 文件名
     @ColDefine(width = 512)
     private String name;
@@ -21,13 +29,12 @@ public class Document extends BeanCreateModify {
     // 文件分类 (音乐, 视频, 压缩包等, 各种文件类型归为一类)
     private String cate;
     // 文件mime
+    @ColDefine(type = ColType.VARCHAR, width = 256)
     private String mime;
     // 文件读取类型
-    private FileAs fileAs;
+    private FsAs fileAs;
     // 文件大小
     private long size;
-    // 父节点id (如果是根节点的话, 那就是用户的id)
-    private String parentId;
     // 是否私有(不公开时只有自己可以访问)
     private boolean isPrivate;
     // ----------------------------- 可读,可写,可删除是针对公开文件设置的权限, 文件创造者访问本文件不存在权限问题
@@ -37,10 +44,20 @@ public class Document extends BeanCreateModify {
     private boolean canWrite;
     // 可删除
     private boolean canRemove;
-    // 可预览(图片与视频生成对应缩略图)
-    private boolean canPreview;
-    // 预览文件id
-    private String previewlId;
+    // 有预览(图片与视频生成对应缩略图)
+    private boolean hasPreview;
+    // 有额外信息
+    private boolean hasInfo;
+    // 有转换后文件
+    private boolean hasTrans;
+    // 转换进度 0-100
+    private int transRate;
+    // 是否转换完成
+    private boolean transDone;
+    // -----------------------------
+    // 元数据
+    @ColDefine(type = ColType.TEXT)
+    private String meta;
     // 文件备注
     @ColDefine(width = 512)
     private String remark;
@@ -69,11 +86,11 @@ public class Document extends BeanCreateModify {
         this.mime = mime;
     }
 
-    public FileAs getFileAs() {
+    public FsAs getFileAs() {
         return fileAs;
     }
 
-    public void setFileAs(FileAs fileAs) {
+    public void setFileAs(FsAs fileAs) {
         this.fileAs = fileAs;
     }
 
@@ -133,22 +150,6 @@ public class Document extends BeanCreateModify {
         this.canRemove = canRemove;
     }
 
-    public boolean isCanPreview() {
-        return canPreview;
-    }
-
-    public void setCanPreview(boolean canPreview) {
-        this.canPreview = canPreview;
-    }
-
-    public String getPreviewlId() {
-        return previewlId;
-    }
-
-    public void setPreviewlId(String previewlId) {
-        this.previewlId = previewlId;
-    }
-
     public String getRemark() {
         return remark;
     }
@@ -157,7 +158,52 @@ public class Document extends BeanCreateModify {
         this.remark = remark;
     }
 
-    public String evalPath() {
-        return Octopus.evalPath(id);
+    public boolean isHasPreview() {
+        return hasPreview;
     }
+
+    public void setHasPreview(boolean hasPreview) {
+        this.hasPreview = hasPreview;
+    }
+
+    public boolean isHasInfo() {
+        return hasInfo;
+    }
+
+    public void setHasInfo(boolean hasInfo) {
+        this.hasInfo = hasInfo;
+    }
+
+    public boolean isHasTrans() {
+        return hasTrans;
+    }
+
+    public void setHasTrans(boolean hasTrans) {
+        this.hasTrans = hasTrans;
+    }
+
+    public String getMeta() {
+        return meta;
+    }
+
+    public void setMeta(String meta) {
+        this.meta = meta;
+    }
+
+    public int getTransRate() {
+        return transRate;
+    }
+
+    public void setTransRate(int transRate) {
+        this.transRate = transRate;
+    }
+
+    public boolean isTransDone() {
+        return transDone;
+    }
+
+    public void setTransDone(boolean transDone) {
+        this.transDone = transDone;
+    }
+
 }

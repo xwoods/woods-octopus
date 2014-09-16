@@ -9,7 +9,6 @@ import org.nutz.lang.ContinueLoop;
 import org.nutz.lang.Each;
 import org.nutz.lang.ExitLoop;
 import org.nutz.lang.Files;
-import org.nutz.lang.Lang;
 import org.nutz.lang.LoopException;
 import org.nutz.lang.Strings;
 import org.nutz.log.Log;
@@ -22,6 +21,7 @@ import org.octopus.core.bean.User;
 import org.octopus.core.chat.ChatCache;
 import org.octopus.core.chat.UserCache;
 import org.octopus.core.fs.FS;
+import org.octopus.core.fs.FsPath;
 
 public class OctopusSetup implements Setup {
 
@@ -44,11 +44,9 @@ public class OctopusSetup implements Setup {
         // 初始化fs
         FS.loadConf();
         String fsHomePath = conf.getFSHome();
-        if (Strings.isBlank(fsHomePath)) {
-            fsHomePath = Lang.runRootPath() + "/fs";
+        if (!Strings.isBlank(fsHomePath)) {
+            FsPath.setRoot(fsHomePath);
         }
-        Files.createDirIfNoExists(fsHomePath);
-        Octopus.setFsHome(fsHomePath);
 
         // 设置RS, 可以使用其他服务器来提供静态文件
         nc.setAttribute(Keys.RS, Strings.sBlank(conf.getAppRs(), "/rs"));
@@ -68,7 +66,7 @@ public class OctopusSetup implements Setup {
                 if (log.isDebugEnabled()) {
                     log.debugf("Create User-Home : %s", ele.getName());
                 }
-                Files.createDirIfNoExists(new File(Octopus.getFsHome(), ele.getName()));
+                Files.createDirIfNoExists(new File(FsPath.usersPath(), ele.getName()));
             }
         });
 

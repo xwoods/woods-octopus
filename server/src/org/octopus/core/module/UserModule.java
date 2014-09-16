@@ -42,6 +42,7 @@ import org.octopus.core.bean.DomainUser;
 import org.octopus.core.bean.User;
 import org.octopus.core.chat.ChatCache;
 import org.octopus.core.chat.UserCache;
+import org.octopus.core.fs.FsPath;
 
 @At("/user")
 @Ok("ajax")
@@ -191,12 +192,32 @@ public class UserModule extends AbstractBaseModule {
         catch (UnsupportedEncodingException e) {
             throw Lang.wrapThrow(e);
         }
-        File uface = new File(Octopus.getFsHome() + "/" + uname + "/face");
+        File uface = new File(FsPath.userFace(uname));
         if (uface.exists()) {
             return uface;
         } else {
             log.warnf("User[%s] Face Not Found!", uname);
-            return this.getClass().getResourceAsStream("/face.png");
+            return this.getClass().getResourceAsStream("/fs/user/face.png");
+        }
+    }
+
+    @At("/profile/?")
+    @Ok("raw")
+    public Object userProfile(String uname, HttpServletResponse resp) {
+        try {
+            String encode = new String(uname.getBytes("UTF-8"), "ISO8859-1");
+            resp.setHeader("Content-Disposition", "attachment; filename=" + encode);
+            resp.setHeader("Content-Type", "image/jpg");
+        }
+        catch (UnsupportedEncodingException e) {
+            throw Lang.wrapThrow(e);
+        }
+        File uprofile = new File(FsPath.userProfile(uname));
+        if (uprofile.exists()) {
+            return uprofile;
+        } else {
+            log.warnf("User[%s] Face Not Found!", uname);
+            return this.getClass().getResourceAsStream("/fs/user/profile.json");
         }
     }
 

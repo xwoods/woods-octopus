@@ -22,11 +22,10 @@ import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.annotation.Param;
 import org.nutz.mvc.view.HttpStatusView;
 import org.nutz.web.fliter.CheckNotLogin;
-import org.octopus.Octopus;
 import org.octopus.core.Keys;
 import org.octopus.core.bean.Document;
 import org.octopus.core.bean.User;
-import org.octopus.core.fs.FileAs;
+import org.octopus.core.fs.FsAs;
 
 @Filters({@By(type = CheckNotLogin.class, args = {Keys.SESSION_USER, "/login"})})
 @At("/ex")
@@ -71,7 +70,7 @@ public class ExchangeModule extends AbstractBaseModule {
         }
         // 检查是不是文件夹 FIXME 默认是检查是不是文件类型的
         boolean checkIsFile = true;
-        if (checkIsFile && doc.getFileAs() == FileAs.DIR) {
+        if (checkIsFile && doc.getFileAs() == FsAs.DIR) {
             log.warnf("Dir[%s](Create by %s) Can't As File by %s",
                       doc.getName(),
                       doc.getCreateUser(),
@@ -108,6 +107,7 @@ public class ExchangeModule extends AbstractBaseModule {
     @At("/r/bin")
     @Ok("raw")
     public Object readBinary(@Param("fid") String fid,
+                             @Param("useTrans") boolean useTrans,
                              HttpServletResponse resp,
                              @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
         Document doc = dao.fetch(Document.class, Cnd.where("id", "=", fid));
@@ -125,7 +125,8 @@ public class ExchangeModule extends AbstractBaseModule {
             throw Lang.wrapThrow(e);
         }
         // 用户目录 + 文件目录
-        return new File(Octopus.fullPath(me.getName(), fid));
+        // FIXME 这里要重新实现一下了
+        return null;
     }
 
     @At("/r/txt")
@@ -133,7 +134,7 @@ public class ExchangeModule extends AbstractBaseModule {
     public Object readTxt(@Param("fid") String fid,
                           HttpServletResponse resp,
                           @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
-        Object tf = readBinary(fid, resp, me);
+        Object tf = readBinary(fid, false, resp, me);
         if (tf instanceof HttpStatusView) {
             return tf;
         }
