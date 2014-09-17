@@ -18,7 +18,6 @@ import org.nutz.dao.Sqls;
 import org.nutz.dao.sql.Sql;
 import org.nutz.dao.sql.SqlCallback;
 import org.nutz.dao.util.cri.SimpleCriteria;
-import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
 import org.nutz.lang.util.NutMap;
@@ -39,6 +38,7 @@ import org.octopus.core.Keys;
 import org.octopus.core.Msg;
 import org.octopus.core.bean.Domain;
 import org.octopus.core.bean.DomainUser;
+import org.octopus.core.bean.InviteRegister;
 import org.octopus.core.bean.User;
 import org.octopus.core.chat.ChatCache;
 import org.octopus.core.chat.UserCache;
@@ -54,19 +54,61 @@ public class UserModule extends AbstractBaseModule {
         return Octopus.encrypt(password);
     }
 
+    /**
+     * @param field
+     * @param value
+     * @return 存在, 返回true
+     */
     @At("/checkExist")
     public boolean checkExist(@Param("field") String field, @Param("value") String value) {
         int en = dao.count(User.class, Cnd.where(field, "=", value));
         return en > 0;
     }
 
-    @Inject("java:$conf.get('invite-code', '123456')")
-    protected String inviteCode;
+    /**
+     * @param inviteCode
+     * @return 没有使用,返回true
+     */
+    @At("/invite/ok")
+    public boolean checkInviteCode(@Param("ic") String inviteCode) {
+        return dao.count(InviteRegister.class,
+                         Cnd.where("id", "=", inviteCode).and("hasReg", "=", false)) == 1;
+    }
+
+    @At("/invite/get")
+    public InviteRegister getInviteInfo(@Param("ic") String inviteCode) {
+        InviteRegister ir = dao.fetch(InviteRegister.class,
+                                      Cnd.where("id", "=", inviteCode).and("hasReg", "=", false));
+        return ir;
+    }
+
+    @At("/invite/add")
+    public void addInviteInfo(@Param("..") InviteRegister ir,
+                              @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        ir.setCreateUser(me.getName());
+        dao.insert(ir);
+    }
+
+    @At("/invite/list")
+    public AjaxReturn listInviteInfo(@Param("..") Query q) {
+        q.dao = dao;
+        q.clz = InviteRegister.class;
+        QueryResult qr = CndMaker.queryResult(new QueryStr() {
+            public void analysisQueryStr(SimpleCriteria sc, String kwd, String... otherQCnd) {
+                if (!Strings.isBlank(kwd)) {
+                    sc.where().and("userName", "like", "%" + kwd + "%");
+                    sc.where().or("domainList", "like", "%" + kwd + "%");
+                    sc.where().or("domainNameList", "like", "%" + kwd + "%");
+                }
+            }
+        }, q);
+        return Ajax.ok().setData(qr);
+    }
 
     @At("/register")
     public AjaxReturn register(@Param("..") User user, @Param("ic") String inviteCode) {
-        if (!this.inviteCode.equals(inviteCode)) {
-            log.warnf("UserIC[%s] Not Match ServerIC[%s]", inviteCode, this.inviteCode);
+        if (!checkInviteCode(inviteCode)) {
+            log.warnf("UserIC[%s] Has Used Or Not Right", inviteCode);
             return Ajax.fail().setMsg(Msg.USER_INVITE_CODE_EXPIRED);
         }
         if (checkExist("email", user.getEmail())) {
@@ -75,6 +117,15 @@ public class UserModule extends AbstractBaseModule {
         if (checkExist("name", user.getName())) {
             return Ajax.fail().setMsg(Msg.USER_EXIST_NAME);
         }
+
+        // 注册到域里
+        InviteRegister ir = dao.fetch(InviteRegister.class,
+                                      Cnd.where("id", "=", inviteCode).and("hasReg", "=", false));
+        if (ir == null) {
+            log.errorf("Same Time, SomeOne Use InviteCode [%s]", inviteCode);
+            return Ajax.fail().setMsg(Msg.USER_INVITE_CODE_EXPIRED);
+        }
+        // 注册用户信息
         user.setPassword(password(user.getPassword()));
         user.setCreateTime(new Date());
         user.setEnable(true);
@@ -82,6 +133,17 @@ public class UserModule extends AbstractBaseModule {
         Octopus.createUser(dao, user);
         UserCache.addUser(user);
         ChatCache.setUnread(user.getName(), 0);
+
+        // 根据邀请信息, 注册到域
+        String[] dlist = Strings.splitIgnoreBlank(ir.getDomainList(), ",");
+        for (String dnm : dlist) {
+            Octopus.addUser2Domain(dao, dnm, user.getName(), null, ir.getCreateUser());
+        }
+        // 邀请信息更新
+        ir.setHasReg(true);
+        ir.setUseTime(new Date());
+        ir.setRegName(user.getName());
+        dao.update(ir, "hasReg|useTime|regName");
 
         return Ajax.ok().setMsg(Msg.USER_REGISTER_OK);
     }

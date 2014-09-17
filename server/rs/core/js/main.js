@@ -256,6 +256,11 @@ var coreRoute = [
         ctrl: 'UsersCtl'
     },
     {
+        url: '/invite',
+        page: '/core/invite.jsp',
+        ctrl: 'InviteCtl'
+    },
+    {
         url: '/setting',
         page: '/core/setting.jsp',
         ctrl: 'SettingCtl'

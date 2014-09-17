@@ -45,6 +45,7 @@
     <link rel="stylesheet" href="${rs}/core/css/setting.css">
     <link rel="stylesheet" href="${rs}/core/css/issue.css">
     <link rel="stylesheet" href="${rs}/core/css/release.css">
+    <link rel="stylesheet" href="${rs}/core/css/invite.css">
 
     <script language="JavaScript" src="${rs}/core/js/main.js"></script>
     <script language="JavaScript" src="${rs}/core/js/me.js"></script>
@@ -53,6 +54,7 @@
     <script language="JavaScript" src="${rs}/core/js/setting.js"></script>
     <script language="JavaScript" src="${rs}/core/js/issue.js"></script>
     <script language="JavaScript" src="${rs}/core/js/release.js"></script>
+    <script language="JavaScript" src="${rs}/core/js/invite.js"></script>
 </head>
 <body dmnNm="${domain.name}" userNm="${user.name}"
       alertAudio="${rs}/core/audio/msg_iphone.mp3" ng-app="mainApp">

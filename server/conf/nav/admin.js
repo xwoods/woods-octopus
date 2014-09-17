@@ -1,11 +1,7 @@
 [ {
-	url : "/issue",
-	icon : "fa-bug",
-	name : "page.main.nav.issue"
-}, {
-	url : "/me",
-	icon : "fa-meh-o",
-	name : "page.main.nav.me"
+	url : "/invite",
+	icon : "fa-angellist",
+	name : "page.main.nav.invite"
 }, {
 	url : "/domains",
 	icon : "fa-cubes",
@@ -15,7 +11,7 @@
 	icon : "fa-users",
 	name : "page.main.nav.user"
 }, {
-	url : "/setting",
-	icon : "fa-cog",
-	name : "page.main.nav.setting"
-} ]
+	url : "/issue",
+	icon : "fa-bug",
+	name : "page.main.nav.issue"
+},]

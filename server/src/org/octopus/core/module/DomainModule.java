@@ -26,14 +26,13 @@ import org.nutz.web.query.CndMaker;
 import org.nutz.web.query.Query;
 import org.nutz.web.query.QueryStr;
 import org.octopus.Octopus;
-import org.octopus.core.NavController;
 import org.octopus.core.Keys;
 import org.octopus.core.Msg;
+import org.octopus.core.NavController;
 import org.octopus.core.bean.Domain;
 import org.octopus.core.bean.DomainConf;
 import org.octopus.core.bean.DomainUser;
 import org.octopus.core.bean.User;
-import org.octopus.core.chat.ChatCache;
 
 @Filters({@By(type = CheckNotLogin.class, args = {Keys.SESSION_USER, "/login"})})
 @At("/domain")
@@ -62,6 +61,11 @@ public class DomainModule extends AbstractBaseModule {
         // 更新nav
         NavController.me().updateDomainNav();
         return Ajax.ok().setMsg(Msg.USER_REGISTER_OK);
+    }
+
+    @At("/list")
+    public Object listDomain() {
+        return dao.query(Domain.class, null);
     }
 
     @At("/query")
@@ -99,35 +103,8 @@ public class DomainModule extends AbstractBaseModule {
                               @Param("userType") String userType,
                               HttpSession session) {
         User me = ME(session);
-        if (Strings.isBlank(userType)) {
-            userType = Keys.DMN_USER_TYPE_NORMAL;
-        }
-        Domain dmn = dao.fetch(Domain.class, domain);
-        if (dmn == null) {
-            log.errorf("Domain[%s] Not Exist, Can't Add Users", domain);
-            return Ajax.fail();
-        }
-        String[] userNames = Strings.splitIgnoreBlank(users, ",");
-        for (String user : userNames) {
-            if (dao.fetch(User.class, user) == null) {
-                log.warnf("User[%s] Not Exist, Can't Add to Domain[%s]", user, domain);
-                continue;
-            }
-            DomainUser du = dao.fetch(DomainUser.class,
-                                      Cnd.where("domain", "=", domain).and("user", "=", user));
-            if (null == du) {
-                du = new DomainUser();
-                du.setDomain(domain);
-                du.setUser(user);
-                du.setUserType(userType);
-                du.setCreateTime(new Date());
-                du.setCreateUser(me.getName());
-                dao.insert(du);
-            }
-        }
-        // 绑定完了用户, 需要检查chat
-        ChatCache.afterAddNewUser(domain);
-        return Ajax.ok();
+        return Octopus.addUser2Domain(dao, domain, users, userType, me.getName()) ? Ajax.ok()
+                                                                                 : Ajax.fail();
     }
 
     @At("/user/remove")

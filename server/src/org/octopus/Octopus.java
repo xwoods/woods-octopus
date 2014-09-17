@@ -24,6 +24,7 @@ import org.octopus.core.bean.Domain;
 import org.octopus.core.bean.DomainConf;
 import org.octopus.core.bean.DomainUser;
 import org.octopus.core.bean.User;
+import org.octopus.core.chat.ChatCache;
 import org.octopus.core.fs.FsPath;
 
 public class Octopus {
@@ -237,6 +238,45 @@ public class Octopus {
                 }
             }
         }
+    }
+
+    public static boolean addUser2Domain(Dao dao,
+                                         String domain,
+                                         String users,
+                                         String userType,
+                                         String createUser) {
+        if (Strings.isBlank(users) || Strings.isBlank(domain)) {
+            return false;
+        }
+        Domain dmn = dao.fetch(Domain.class, domain);
+        if (dmn == null) {
+            log.errorf("Domain[%s] Not Exist, Can't Add Users", domain);
+            return false;
+        }
+        if (Strings.isBlank(userType)) {
+            userType = Keys.DMN_USER_TYPE_NORMAL;
+        }
+        String[] userNames = Strings.splitIgnoreBlank(users, ",");
+        for (String user : userNames) {
+            if (dao.fetch(User.class, user) == null) {
+                log.warnf("User[%s] Not Exist, Can't Add to Domain[%s]", user, domain);
+                continue;
+            }
+            DomainUser du = dao.fetch(DomainUser.class,
+                                      Cnd.where("domain", "=", domain).and("user", "=", user));
+            if (null == du) {
+                du = new DomainUser();
+                du.setDomain(domain);
+                du.setUser(user);
+                du.setUserType(userType);
+                du.setCreateTime(new Date());
+                du.setCreateUser(createUser);
+                dao.insert(du);
+            }
+        }
+        // 绑定完了用户, 需要检查chat
+        ChatCache.afterAddNewUser(domain);
+        return true;
     }
 
 }

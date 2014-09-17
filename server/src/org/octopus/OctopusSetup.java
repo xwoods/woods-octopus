@@ -20,7 +20,6 @@ import org.octopus.core.NavController;
 import org.octopus.core.bean.User;
 import org.octopus.core.chat.ChatCache;
 import org.octopus.core.chat.UserCache;
-import org.octopus.core.fs.FS;
 import org.octopus.core.fs.FsPath;
 
 public class OctopusSetup implements Setup {
@@ -41,8 +40,7 @@ public class OctopusSetup implements Setup {
         Octopus.setSecretKey(conf.get("password-key"));
         Octopus.setGodPassword(conf.get("password-superuser"));
 
-        // 初始化fs
-        FS.loadConf();
+        // 初始化FileSystem(fs)
         String fsHomePath = conf.getFSHome();
         if (!Strings.isBlank(fsHomePath)) {
             FsPath.setRoot(fsHomePath);
