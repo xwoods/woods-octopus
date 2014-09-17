@@ -93,7 +93,15 @@ function RegCtrl($scope) {
             ric.parent().removeClass('ing').removeClass('ok').removeClass('fail');
             return;
         }
-        ric.parent().removeClass('ing').removeClass('fail').addClass('ok');
+        $z.http.get("/user/invite/ok", {
+            'ic': val
+        }, function (re) {
+            if (!re.data) {
+                ric.parent().removeClass('ing').removeClass('ok').addClass('fail');
+            } else {
+                ric.parent().removeClass('ing').removeClass('fail').addClass('ok');
+            }
+        });
     });
 
 
@@ -169,5 +177,47 @@ $(document).ready(function () {
 //            });
 //        }
 //    })
+
+    // 获取icode
+    var urlAfter = $z.http.urlAfter();
+    if (!$z.util.isBlank(urlAfter)) {
+        var ii = urlAfter.indexOf('icode=');
+        if (ii != -1) {
+            var icode = urlAfter.substr(ii + 'icode='.length);
+            $z.http.post('/user/invite/get', {
+                'ic': icode
+            }, function (re) {
+                var ivreg = re.data;
+                if (ivreg) {
+                    $.masker({
+                        width: 800,
+                        height: 300,
+                        body: function () {
+                            var html = '';
+                            html += '<div class="invite-welcome">'
+                            html += '      <div class="invite-title">欢迎 <b>' + ivreg.userName + '</b> ' + (ivreg.isMale ? "先生" : "女士") + ' 使用本系统</div>';
+                            html += '      <div class="invite-dmnlist">你被邀请加入以下域 : <b>' + ivreg.domainList + '</b></div>';
+                            html += '      <ul class="invite-step">';
+                            html += '           <li>1. 下载并使用最新的Chrome浏览器, 您将获得最佳的使用体验. <a target="_blank" href="http://www.google.cn/intl/zh-CN/chrome/">官网下载</a> <a target="_blank" href="http://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd=chrome&rsv_enter=0&rsv_sug3=6&rsv_sug4=135&rsv_sug1=6&rsv_sug2=0&inputT=1930">百度下载</a></li>';
+                            html += '           <li>2. 已经使用了Chrome浏览器, 直接进入 <b class="goto-reg">"注册流程"</b></li>';
+                            html += '      </ul>';
+                            html += '</div>'
+                            return html;
+                        }
+                    });
+
+                    $(document.body).delegate('.goto-reg', 'click', function () {
+                        $.masker('close');
+                        // 跳转
+                        $('.switch-form').click();
+                        // 填充
+                        $('.reg-content input[name=regname]').val(ivreg.userName).change();
+                        $('.reg-content input[name=reginviteCode]').val(ivreg.id).change();
+                        $('.reg-content input[name=regemail]').focus();
+                    });
+                }
+            });
+        }
+    }
 
 });

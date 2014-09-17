@@ -19,6 +19,9 @@
     <script language="JavaScript" src="${rs}/deps/zlib/browser.js"></script>
     <script language="JavaScript" src="${rs}/deps/zlib/http.js"></script>
 
+    <script language="JavaScript" src="${rs}/deps/zui/zui.masker.js"></script>
+    <link rel="stylesheet" href="${rs}/deps/zui/zui.masker.css">
+
     <script language="JavaScript" src="${rs}/deps/underscore.js"></script>
     <script language="JavaScript" src="${rs}/deps/angular/angular.js"></script>
 

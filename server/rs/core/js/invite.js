@@ -96,43 +96,43 @@ mainApp.controller('InviteCtl', function ($scope) {
                     "fieldName": "hasReg",
                     "columnName": "已使用",
                     "show": true,
-                    "width": 80
+                    "width": 50
                 },
                 {
                     "fieldName": "useTime",
                     "columnName": "使用时间",
                     "show": true,
-                    "width": 200
+                    "width": 150
                 },
                 {
                     "fieldName": "regName",
                     "columnName": "注册名称",
                     "show": true,
-                    "width": 150
+                    "width": 100
                 },
                 {
                     "fieldName": "userName",
                     "columnName": "邀请对象",
                     "show": true,
-                    "width": 150
+                    "width": 100
                 },
                 {
                     "fieldName": "isMale",
                     "columnName": "性别",
                     "show": true,
-                    "width": 100
+                    "width": 50
                 },
                 {
                     "fieldName": "domainList",
                     "columnName": "加入域",
                     "show": true,
-                    "width": 300
+                    "width": 200
                 },
                 {
                     "fieldName": "domainNameList",
                     "columnName": "加入域(显示)",
                     "show": true,
-                    "width": 300
+                    "width": 200
                 },
                 {
                     "fieldName": "createUser",
