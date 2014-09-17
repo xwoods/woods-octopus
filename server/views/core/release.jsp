@@ -35,12 +35,6 @@
             "播放器comment" 支持微信或email等其他方式添加
         </li>
         <li>
-            "邀请注册", 方便让一个新用户完成注册并加入到对应的域中
-        </li>
-        <li>
-            "单域monitor", 方便用户查看自己的域的monitor信息
-        </li>
-        <li>
             "问与答", 支持问题分类, 方便统计或完成后续工作
         </li>
         <li>
@@ -49,6 +43,17 @@
     </ul>
 </div>
 <div class="release-log">
+    <div class="release-date">2014-09-17</div>
+    <div class="release-note">
+        <ul>
+            <li>
+                "邀请注册"模块实现, 方便让一个新用户完成注册并加入到对应的域中
+            </li>
+            <li>
+                "单域monitor"功能实现, 方便用户查看自己的域的monitor信息
+            </li>
+        </ul>
+    </div>
     <div class="release-date">2014-09-15</div>
     <div class="release-note">
         <ul>

@@ -3,11 +3,12 @@
  */
 
 .zgrid-menu-bar {
-    height: 30px;
-    line-height: 30px;
+
 }
 
 .zgrid-header {
+    float: left;
+    width: 100%;
 }
 
 .zgrid-footer {
@@ -18,6 +19,7 @@
     margin: 5px 0;
     position: relative;
     overflow: hidden;
+    /* float: left; */
 }
 
 .left-panel {
@@ -197,6 +199,7 @@
     display: inline-block;
     float: right;
     color: #333;
+    padding-bottom: 5px;
 }
 
 .pager-area > li {
@@ -239,6 +242,7 @@
 .query-area {
     display: inline-block;
     float: left;
+    padding-bottom: 5px;
 }
 
 .query-area > li {

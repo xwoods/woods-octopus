@@ -1,4 +1,7 @@
 mainApp.controller('InviteCtl', function ($scope) {
+
+    var octserver = "octopus.danoolive.com:9577";
+
     $scope.userName = "";
     $scope.isMale = "true";
     $scope.domainList = "";
@@ -58,8 +61,7 @@ mainApp.controller('InviteCtl', function ($scope) {
         var rid = cu.attr('rid');
         var unm = cu.html();
         iurl.find('b').html(unm);
-//        iurl.find('span').html("http://octopus.danoolive.com:9577/login#icode=" + rid);
-        iurl.find('span').html("http://127.0.0.1:9577/login#icode=" + rid);
+        iurl.find('span').html("http://" + octserver + "/login#icode=" + rid);
     });
 
     inviteJq.zgrid({
