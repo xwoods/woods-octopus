@@ -47,6 +47,13 @@
     <div class="release-note">
         <ul>
             <li>
+                "线上监控"模块更新
+                <ol>
+                    <li>在小屏幕上(宽度1000px以内) monitor界面不再显示错行</li>
+                    <li>monitor的tab切换改为自动缩小, 为monitor提供更多空间</li>
+                </ol>
+            </li>
+            <li>
                 "邀请注册"模块实现, 方便让一个新用户完成注册并加入到对应的域中
             </li>
             <li>
