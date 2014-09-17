@@ -1,0 +1,19 @@
+{
+	"email_01" : "",
+	"email_02" : "",
+	"email_03" : "",
+	"phone_01" : "",
+	"phone_02" : "",
+	"phone_03" : "",
+	"address_01" : {
+		"post" : "",
+		"path" : ""
+	},
+	"address_02" : {
+		"post" : "",
+		"path" : ""
+	},	
+	"qq" : "",
+	"weixin" : "",
+	"weibo"	 : ""
+}

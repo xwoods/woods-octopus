@@ -1,0 +1,83 @@
+/**
+ * Created by pw on 14-9-17.
+ */
+
+.invite-add-form {
+
+}
+
+.invite-add-form > div {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.invite-add-form > div > b {
+    width: 100px;
+    text-align: right;
+    color: #008800;
+    margin-right: 15px;
+    display: inline-block;
+}
+
+.invite-add-form > div > input {
+    width: 300px;
+    height: 24px;
+    padding: 0 10px;
+}
+
+.invite-add-form > div > select {
+    width: 100px;
+    height: 24px;
+    padding: 0 10px;
+}
+
+.invite-add-form > div > button {
+    padding: 0 5px;
+    border: none;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    background: #008800;
+    color: #ffffff;
+    border-radius: 6px;
+}
+
+.invite-add-form > div > button:hover {
+    color: #D9D9D9;
+}
+
+
+.invite-add-form > div > button.invite-add {
+    background: #007AFF;
+    height: 30px;
+    line-height: 30px;
+    font-size: 14px;
+    margin-left: 115px;
+}
+
+.invite-url {
+    margin: 15px 0;
+    background: #007AFF;
+    height: 50px;
+    line-height: 50px;
+    font-size: 20px;
+    padding-left: 15px;
+}
+
+.invite-url > b {
+    display: inline-block;
+    width: 100px;
+    text-align: center;
+    color: #ff0000;
+}
+
+.invite-url > span {
+    display: inline-block;
+    padding: 0 15px;
+    color: #ffffff;
+}
+
+.show-invite-url:hover {
+    cursor: pointer;
+    color: #ff0000;
+}
