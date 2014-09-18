@@ -1,8 +1,13 @@
 package org.octopus.core.fs;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.nutz.lang.Strings;
 import org.nutz.lang.util.Disks;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
 import org.octopus.core.bean.Document;
-import org.octopus.core.bean.User;
 
 /**
  * 文件系统路径管理
@@ -12,25 +17,9 @@ import org.octopus.core.bean.User;
  */
 public class FsPath {
 
+    private static Log log = Logs.get();
+
     private static String root = Disks.normalize("~/fs");
-
-    private static final String users = "/users";
-
-    private static final String chat = "/chat";
-
-    /**
-     * @return 用户文件存放目录
-     */
-    public static String usersPath() {
-        return root + users;
-    }
-
-    /**
-     * @return 聊天文件存放目录
-     */
-    public static String chatPath() {
-        return root + chat;
-    }
 
     /**
      * 设置文件系统的根目录
@@ -39,92 +28,51 @@ public class FsPath {
      */
     public static void setRoot(String rpath) {
         root = Disks.normalize(rpath);
+        log.infof("FsPath Set Root [%s]", root);
     }
 
+    private static Map<String, String> modulePathMap = new HashMap<String, String>();
+
     /**
-     * 用户目录, 使用用户名称作为目录名称
+     * 设置模块目录
      * 
-     * @param u
-     * @return
+     * @param moduleName
      */
-    public static String userHome(User u) {
-        return userHome(u.getName());
+    public static void addModulePath(String moduleName) {
+        addModulePath(moduleName, moduleName);
     }
 
     /**
-     * 用户目录, 使用用户名称作为目录名称
+     * 设置模块目录
      * 
-     * @param uname
-     * @return
+     * @param moduleName
+     * @param modulePath
      */
-    public static String userHome(String uname) {
-        return usersPath() + "/" + uname;
+    public static void addModulePath(String moduleName, String modulePath) {
+        if (!modulePath.startsWith("/")) {
+            modulePath += modulePath + "/";
+        }
+        log.infof("ModulePath Add [%s - %s]", moduleName, modulePath);
+        modulePathMap.put(moduleName, modulePath);
     }
 
     /**
-     * 用户目录, 使用用户名称作为目录名称
-     * 
-     * @param doc
-     * @return
+     * @param moduleName
+     * @return 返回对应的目录
      */
-    public static String filePath(Document doc) {
-        String filePath = userHome(doc.getCreateUser()) + evalPath(doc.getId());
-        return filePath;
-    }
-
-    /**
-     * @param doc
-     * @return 文件预览目录的路径
-     */
-    public static String filePreview(Document doc) {
-        return filePath(doc) + ".preview";
-    }
-
-    /**
-     * @param doc
-     * @return 文件信息文件的路径
-     */
-    public static String fileInfo(Document doc) {
-        return filePath(doc) + ".info";
-    }
-
-    /**
-     * @param u
-     * @return 用户头像
-     */
-    public static String userFace(User u) {
-        return userHome(u) + "/face";
-    }
-
-    /**
-     * @param uname
-     * @return 用户头像
-     */
-    public static String userFace(String uname) {
-        return userHome(uname) + "/face";
-    }
-
-    /**
-     * @param u
-     * @return 用户头像
-     */
-    public static String userProfile(User u) {
-        return userHome(u) + "/profile";
-    }
-
-    /**
-     * @param uname
-     * @return 用户头像
-     */
-    public static String userProfile(String uname) {
-        return userHome(uname) + "/profile";
+    public static String getModulePath(String moduleName) {
+        String modulePath = modulePathMap.get(moduleName);
+        if (!Strings.isBlank(modulePath)) {
+            return root + modulePath;
+        }
+        throw new RuntimeException(String.format("Module[%s] Not Reg, Not Found Path", moduleName));
     }
 
     /**
      * @param uu16
      * @return 根据id进行转换后得到目录
      */
-    public static String evalPath(String uu16) {
+    private static String evalPath(String uu16) {
         // 默认针对R.UU16(), 共32位, 2位一分割
         // d10b7a95db034927887c6b78ff3a7de8
         // /d1/0b/7a/95/db/03/49/27/88/7c/6b/78/ff/3a/7d/e8
@@ -136,6 +84,74 @@ public class FsPath {
             sb.append(uu16.charAt(i));
         }
         return sb.toString();
+    }
+
+    // -------------------------------------------- 文件相关
+
+    public static final String EXTRA_PREVIEW = "preview";
+    public static final String EXTRA_INFO = "info";
+    public static final String EXTRA_TRANS = "trans";
+
+    public static String file(Document doc) {
+        String pd = doc.getDefine();
+        if (!pd.startsWith("/")) {
+            pd += "/" + pd;
+        }
+        return getModulePath(doc.getModule()) + pd + evalPath(doc.getId());
+    }
+
+    /**
+     * 文件额外附属文件
+     * 
+     * @param doc
+     * @param extra
+     * @return
+     */
+    public static String fileExtra(Document doc, String extra) {
+        return file(doc) + "." + extra;
+    }
+
+    /**
+     * 内置模块 - 用户个人网盘
+     */
+    public final static String M_USERS = "users";
+
+    /**
+     * 内置模块 - 聊天附件
+     */
+    public final static String M_CHAT = "chat";
+
+    /**
+     * 内置模块 - 域共享文件
+     */
+    public final static String M_DOMAINS = "domains";
+
+    static {
+        addModulePath(M_USERS);
+        addModulePath(M_CHAT);
+        addModulePath(M_DOMAINS);
+    }
+
+    // ------------------------------------ 特殊文件目录, 不在document结构中的
+
+    public static String usersPath() {
+        return getModulePath(M_USERS);
+    }
+
+    /**
+     * @param uname
+     * @return 用户头像
+     */
+    public static String userFace(String uname) {
+        return getModulePath(M_USERS) + "/" + uname + "/face";
+    }
+
+    /**
+     * @param uname
+     * @return 用户的profile
+     */
+    public static String userProfile(String uname) {
+        return getModulePath(M_USERS) + "/" + uname + "/profile";
     }
 
 }

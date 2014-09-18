@@ -4,7 +4,7 @@ import org.nutz.dao.entity.annotation.ColDefine;
 import org.nutz.dao.entity.annotation.ColType;
 import org.nutz.dao.entity.annotation.Name;
 import org.nutz.dao.entity.annotation.Table;
-import org.octopus.core.fs.FsAs;
+import org.octopus.core.fs.ReadType;
 
 @Table("t_document_type")
 public class DocumentType {
@@ -12,7 +12,7 @@ public class DocumentType {
     @Name
     private String name;
 
-    private FsAs fileAs;
+    private ReadType readAs;
 
     private boolean hasPreview;
 
@@ -31,12 +31,12 @@ public class DocumentType {
         this.name = name;
     }
 
-    public FsAs getFileAs() {
-        return fileAs;
+    public ReadType getReadAs() {
+        return readAs;
     }
 
-    public void setFileAs(FsAs fileAs) {
-        this.fileAs = fileAs;
+    public void setReadAs(ReadType readAs) {
+        this.readAs = readAs;
     }
 
     public boolean isHasPreview() {

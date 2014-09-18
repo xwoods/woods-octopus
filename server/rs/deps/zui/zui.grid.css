@@ -62,12 +62,12 @@
     max-height: 300px;
     padding: 5px 0;
     overflow: auto;
-    left: 35px;
+    left: 0px;
     background: #fff;
     border-width: 0 1px 1px 0;
     border-style: solid;
     border-color: #D9D9D9;
-    border-radius: 0 0 4px 4px;
+    border-radius: 0 0 4px 0px;
 }
 
 .left-panel .zgrid-table-head.open .zgrid-column-setting {

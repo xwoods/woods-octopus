@@ -1,17 +1,23 @@
 package org.octopus.core.bean;
 
+import java.util.Map;
+
 import org.nutz.dao.entity.annotation.ColDefine;
 import org.nutz.dao.entity.annotation.ColType;
 import org.nutz.dao.entity.annotation.Index;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.entity.annotation.TableIndexes;
-import org.octopus.core.fs.FsAs;
+import org.nutz.json.Json;
+import org.octopus.core.fs.FsHelper;
+import org.octopus.core.fs.ReadType;
 
 @Table("t_document")
 @TableIndexes({@Index(name = "i_document_name", fields = {"name"}, unique = false),
+               @Index(name = "i_document_module", fields = {"module"}, unique = false),
+               @Index(name = "i_document_define", fields = {"define"}, unique = false),
                @Index(name = "i_document_type", fields = {"type"}, unique = false),
                @Index(name = "i_document_cate", fields = {"cate"}, unique = false),
-               @Index(name = "i_document_fileAs", fields = {"fileAs"}, unique = false),
+               @Index(name = "i_document_readAs", fields = {"readAs"}, unique = false),
                @Index(name = "i_document_parentId", fields = {"parentId"}, unique = false),
                @Index(name = "i_document_mf_time", fields = {"modifyTime"}, unique = false),
                @Index(name = "i_document_mf_user", fields = {"modifyUser"}, unique = false),
@@ -19,7 +25,11 @@ import org.octopus.core.fs.FsAs;
                @Index(name = "i_document_ct_user", fields = {"createUser"}, unique = false)})
 public class Document extends BeanCreateModify {
 
-    // 父节点id (如果是根节点的话, 那就是用户的唯一标示, email)
+    // 属于什么模块
+    private String module;
+    // 目录定义
+    private String define;
+    // 父节点id (如果是根节点的话)
     private String parentId;
     // 文件名
     @ColDefine(width = 512)
@@ -32,7 +42,7 @@ public class Document extends BeanCreateModify {
     @ColDefine(type = ColType.VARCHAR, width = 256)
     private String mime;
     // 文件读取类型
-    private FsAs fileAs;
+    private ReadType readAs;
     // 文件大小
     private long size;
     // 是否私有(不公开时只有自己可以访问)
@@ -86,12 +96,12 @@ public class Document extends BeanCreateModify {
         this.mime = mime;
     }
 
-    public FsAs getFileAs() {
-        return fileAs;
+    public ReadType getReadAs() {
+        return readAs;
     }
 
-    public void setFileAs(FsAs fileAs) {
-        this.fileAs = fileAs;
+    public void setReadAs(ReadType readAs) {
+        this.readAs = readAs;
     }
 
     public String getName() {
@@ -206,4 +216,45 @@ public class Document extends BeanCreateModify {
         this.transDone = transDone;
     }
 
+    public String getModule() {
+        return module;
+    }
+
+    public void setModule(String module) {
+        this.module = module;
+    }
+
+    public String getDefine() {
+        return define;
+    }
+
+    public void setDefine(String define) {
+        this.define = define;
+    }
+
+    /**
+     * @return 当前对象的meta对象
+     */
+    public Map<String, Object> myMeta() {
+        return Json.fromJsonAsMap(Object.class, meta);
+    }
+
+    /**
+     * @return 返回一个带着meta属性的map对象, 默认值都被设置好了
+     */
+    public Map<String, Object> dfMeta() {
+        return FsHelper.dfMeta(type);
+    }
+
+    public boolean isBinary() {
+        return readAs == ReadType.BIN;
+    }
+
+    public boolean isDir() {
+        return readAs == ReadType.DIR;
+    }
+
+    public boolean isComplex() {
+        return readAs == ReadType.CPX;
+    }
 }

@@ -5,10 +5,11 @@ import org.nutz.dao.entity.annotation.Index;
 import org.nutz.dao.entity.annotation.Name;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.entity.annotation.TableIndexes;
+import org.octopus.core.fs.PathDefine;
 
 @Table("t_domain")
 @TableIndexes({@Index(name = "t_domain_alias", fields = {"alias"}, unique = true)})
-public class Domain extends CreateModify {
+public class Domain extends CreateModify implements PathDefine {
 
     @Name
     private String name;
@@ -51,6 +52,11 @@ public class Domain extends CreateModify {
 
     public void setHome(String home) {
         this.home = home;
+    }
+
+    @Override
+    public String define() {
+        return "/" + name;
     }
 
 }

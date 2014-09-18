@@ -25,7 +25,7 @@ import org.nutz.web.fliter.CheckNotLogin;
 import org.octopus.core.Keys;
 import org.octopus.core.bean.Document;
 import org.octopus.core.bean.User;
-import org.octopus.core.fs.FsAs;
+import org.octopus.core.fs.ReadType;
 
 @Filters({@By(type = CheckNotLogin.class, args = {Keys.SESSION_USER, "/login"})})
 @At("/ex")
@@ -70,7 +70,7 @@ public class ExchangeModule extends AbstractBaseModule {
         }
         // 检查是不是文件夹 FIXME 默认是检查是不是文件类型的
         boolean checkIsFile = true;
-        if (checkIsFile && doc.getFileAs() == FsAs.DIR) {
+        if (checkIsFile && doc.getReadAs() == ReadType.DIR) {
             log.warnf("Dir[%s](Create by %s) Can't As File by %s",
                       doc.getName(),
                       doc.getCreateUser(),

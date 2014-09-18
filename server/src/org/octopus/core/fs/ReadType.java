@@ -7,7 +7,7 @@ package org.octopus.core.fs;
  * @author pw
  * 
  */
-public enum FsAs {
+public enum ReadType {
 
     /**
      * 包含子文件的目录

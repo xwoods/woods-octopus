@@ -6,11 +6,12 @@ import org.nutz.dao.entity.annotation.Index;
 import org.nutz.dao.entity.annotation.Name;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.entity.annotation.TableIndexes;
+import org.octopus.core.fs.PathDefine;
 
 @Table("t_user")
 @TableIndexes({@Index(name = "t_user_phone", fields = {"phone"}, unique = true),
                @Index(name = "t_user_email", fields = {"email"}, unique = true)})
-public class User extends CreateModify {
+public class User extends CreateModify implements PathDefine {
 
     // emial作为登陆用的主键
     private String email;
@@ -96,6 +97,11 @@ public class User extends CreateModify {
 
     public void setEnable(boolean enable) {
         this.enable = enable;
+    }
+
+    @Override
+    public String define() {
+        return "/" + name;
     }
 
 }

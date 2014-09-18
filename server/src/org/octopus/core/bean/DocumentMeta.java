@@ -1,32 +1,19 @@
 package org.octopus.core.bean;
 
-import org.nutz.dao.entity.annotation.ColDefine;
-import org.nutz.dao.entity.annotation.ColType;
-import org.nutz.dao.entity.annotation.Id;
+import org.nutz.castor.Castors;
+import org.nutz.dao.entity.annotation.Name;
 import org.nutz.dao.entity.annotation.Table;
+import org.octopus.core.fs.MetaType;
 
 @Table("t_document_meta")
 public class DocumentMeta {
 
-    @Id
-    private long id;
-
+    @Name
     private String name;
 
-    private String valueType;
+    private MetaType type;
 
-    private String defaultValue;
-
-    @ColDefine(type = ColType.TEXT)
-    private String typeList;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
+    private String dfValue;
 
     public String getName() {
         return name;
@@ -36,28 +23,46 @@ public class DocumentMeta {
         this.name = name;
     }
 
-    public String getValueType() {
-        return valueType;
+    public MetaType getType() {
+        return type;
     }
 
-    public void setValueType(String valueType) {
-        this.valueType = valueType;
+    public void setType(MetaType type) {
+        this.type = type;
     }
 
-    public String getDefaultValue() {
-        return defaultValue;
+    public String getDfValue() {
+        return dfValue;
     }
 
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
+    public void setDfValue(String dfValue) {
+        this.dfValue = dfValue;
     }
 
-    public String getTypeList() {
-        return typeList;
+    public Object value(String val) {
+        return transValue(val == null ? dfValue : val);
     }
 
-    public void setTypeList(String typeList) {
-        this.typeList = typeList;
+    private Object transValue(String val) {
+        Object rval = null;
+        switch (type) {
+        case INT:
+            rval = Castors.me().cast(val, String.class, Integer.class);
+            break;
+        case BOOL:
+            rval = Castors.me().cast(val, String.class, Boolean.class);
+            break;
+        case FLOAT:
+            rval = Castors.me().cast(val, String.class, Float.class);
+            break;
+        case DOUBLE:
+            rval = Castors.me().cast(val, String.class, Double.class);
+            break;
+        default:
+            // string
+            rval = val;
+            break;
+        }
+        return rval;
     }
-
 }
