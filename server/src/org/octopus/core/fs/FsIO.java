@@ -101,14 +101,14 @@ public class FsIO {
             notSameName(doc);
         }
         // 根据文件后缀, 补全文件相关属性
-        DocumentType docTp = FsHelper.typeMap.get(doc.getType());
+        DocumentType docTp = FsSetting.typeMap.get(doc.getType());
         doc.setHasPreview(docTp.isHasPreview());
         doc.setHasInfo(docTp.isHasInfo());
         doc.setHasTrans(docTp.isHasTrans());
         doc.setMime(docTp.getMime());
         doc.setReadAs(docTp.getReadAs());
-        doc.setCate(FsHelper.type2Cate.get(doc.getType()));
-        doc.setMeta(Json.toJson(FsHelper.type2metaMap.get(doc.getType()), JsonFormat.compact()));
+        doc.setCate(FsSetting.type2Cate.get(doc.getType()));
+        doc.setMeta(Json.toJson(FsSetting.type2metaMap.get(doc.getType()), JsonFormat.compact()));
         // 逻辑上的文件夹, 不需要生成文件或目录
         if (doc.isDir()) {
             return;

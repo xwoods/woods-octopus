@@ -3,6 +3,7 @@ package org.octopus.core.bean;
 import org.nutz.castor.Castors;
 import org.nutz.dao.entity.annotation.Name;
 import org.nutz.dao.entity.annotation.Table;
+import org.nutz.json.Json;
 import org.octopus.core.fs.MetaType;
 
 @Table("t_document_meta")
@@ -64,5 +65,9 @@ public class DocumentMeta {
             break;
         }
         return rval;
+    }
+
+    public String toString() {
+        return Json.toJson(this);
     }
 }

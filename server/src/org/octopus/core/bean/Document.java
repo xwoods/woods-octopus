@@ -8,7 +8,7 @@ import org.nutz.dao.entity.annotation.Index;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.entity.annotation.TableIndexes;
 import org.nutz.json.Json;
-import org.octopus.core.fs.FsHelper;
+import org.octopus.core.fs.FsSetting;
 import org.octopus.core.fs.ReadType;
 
 @Table("t_document")
@@ -243,7 +243,7 @@ public class Document extends BeanCreateModify {
      * @return 返回一个带着meta属性的map对象, 默认值都被设置好了
      */
     public Map<String, Object> dfMeta() {
-        return FsHelper.dfMeta(type);
+        return FsSetting.dfMeta(type);
     }
 
     public boolean isBinary() {
@@ -256,5 +256,9 @@ public class Document extends BeanCreateModify {
 
     public boolean isComplex() {
         return readAs == ReadType.CPX;
+    }
+
+    public String toString() {
+        return Json.toJson(this);
     }
 }

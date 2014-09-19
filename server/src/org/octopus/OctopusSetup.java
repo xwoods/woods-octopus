@@ -21,6 +21,7 @@ import org.octopus.core.bean.User;
 import org.octopus.core.chat.ChatCache;
 import org.octopus.core.chat.UserCache;
 import org.octopus.core.fs.FsPath;
+import org.octopus.core.fs.FsSetting;
 
 public class OctopusSetup implements Setup {
 
@@ -45,13 +46,16 @@ public class OctopusSetup implements Setup {
         if (!Strings.isBlank(fsHomePath)) {
             FsPath.setRoot(fsHomePath);
         }
-
         // 设置RS, 可以使用其他服务器来提供静态文件
         nc.setAttribute(Keys.RS, Strings.sBlank(conf.getAppRs(), "/rs"));
 
         // 初始化数据库与数据
         Octopus.initDatabase(dao, conf);
         Octopus.initUserAndDomain(dao);
+
+        // 加载文件配置
+        FsSetting.loadSetting(dao, OctopusSetup.class.getResourceAsStream("/fs/file.properties"));
+        FsSetting.resetCache(dao);
 
         // 侧边导航初始化
         NavController.init(dao);

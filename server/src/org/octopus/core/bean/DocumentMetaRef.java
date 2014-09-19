@@ -2,6 +2,7 @@ package org.octopus.core.bean;
 
 import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.entity.annotation.Table;
+import org.nutz.json.Json;
 
 @Table("t_document_meta_ref")
 public class DocumentMetaRef {
@@ -48,4 +49,7 @@ public class DocumentMetaRef {
         this.spDfValue = spDfValue;
     }
 
+    public String toString() {
+        return Json.toJson(this);
+    }
 }

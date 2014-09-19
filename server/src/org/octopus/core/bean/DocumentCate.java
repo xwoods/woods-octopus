@@ -2,6 +2,7 @@ package org.octopus.core.bean;
 
 import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.entity.annotation.Table;
+import org.nutz.json.Json;
 
 @Table("t_document_cate")
 public class DocumentCate {
@@ -27,6 +28,10 @@ public class DocumentCate {
 
     public void setTypeName(String typeName) {
         this.typeName = typeName;
+    }
+
+    public String toString() {
+        return Json.toJson(this);
     }
 
 }

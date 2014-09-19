@@ -4,6 +4,7 @@ import org.nutz.dao.entity.annotation.ColDefine;
 import org.nutz.dao.entity.annotation.ColType;
 import org.nutz.dao.entity.annotation.Name;
 import org.nutz.dao.entity.annotation.Table;
+import org.nutz.json.Json;
 import org.octopus.core.fs.ReadType;
 
 @Table("t_document_type")
@@ -69,6 +70,11 @@ public class DocumentType {
 
     public void setMime(String mime) {
         this.mime = mime;
+    }
+
+    @Override
+    public String toString() {
+        return Json.toJson(this);
     }
 
 }
