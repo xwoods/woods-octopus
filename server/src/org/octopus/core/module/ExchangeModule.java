@@ -1,15 +1,11 @@
 package org.octopus.core.module;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.UnsupportedEncodingException;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.nutz.dao.Cnd;
 import org.nutz.lang.Lang;
-import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
@@ -106,12 +102,13 @@ public class ExchangeModule extends AbstractBaseModule {
 
     @At("/r/bin")
     @Ok("raw")
-    public Object readBinary(@Param("fid") String fid,
+    public Object readBinary(@Param("docId") String docId,
                              @Param("useTrans") boolean useTrans,
+                             @Param("canRead") boolean canRead,
                              HttpServletResponse resp,
                              @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
-        Document doc = dao.fetch(Document.class, Cnd.where("id", "=", fid));
-        HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, false);
+        Document doc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
+        HttpStatusView errStatusView = checkDocumentPvg(me, doc, canRead, false, false);
         if (errStatusView != null) {
             return errStatusView;
         }
@@ -124,26 +121,24 @@ public class ExchangeModule extends AbstractBaseModule {
         catch (UnsupportedEncodingException e) {
             throw Lang.wrapThrow(e);
         }
-        // 用户目录 + 文件目录
-        // FIXME 这里要重新实现一下了
-        return null;
+        return fsIO.readBinary(doc);
     }
 
     @At("/r/txt")
     @Ok("raw")
-    public Object readTxt(@Param("fid") String fid,
-                          HttpServletResponse resp,
+    public Object readTxt(@Param("docId") String docId,
+                          @Param("useTrans") boolean useTrans,
+                          @Param("canRead") boolean canRead,
                           @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
-        Object tf = readBinary(fid, false, resp, me);
-        if (tf instanceof HttpStatusView) {
-            return tf;
+        Document doc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
+        HttpStatusView errStatusView = checkDocumentPvg(me, doc, canRead, false, false);
+        if (errStatusView != null) {
+            return errStatusView;
         }
-        try {
-            return Streams.readAndClose(new FileReader((File) tf));
-        }
-        catch (FileNotFoundException e) {
-            log.error(e);
-        }
-        return new HttpStatusView(500);
+        return fsIO.readText(doc);
+    }
+
+    public void writeBinary() {
+
     }
 }
