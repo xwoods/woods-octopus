@@ -188,6 +188,9 @@ public class FsSetting {
                 }
             }
         }
+
+        // 重置缓存
+        resetCache(dao);
     }
 
     /**

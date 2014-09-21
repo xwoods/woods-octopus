@@ -1,5 +1,6 @@
 package org.octopus.core.fs;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -21,11 +21,15 @@ import org.nutz.json.JsonFormat;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Streams;
+import org.nutz.lang.random.R;
 import org.nutz.lang.stream.NullInputStream;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
+import org.nutz.web.Webs.Err;
+import org.octopus.OctopusErr;
 import org.octopus.core.bean.Document;
 import org.octopus.core.bean.DocumentType;
+import org.octopus.core.bean.User;
 
 /**
  * 
@@ -48,6 +52,11 @@ public class FsIO {
      * 读文件, 大小限制
      */
     private long READ_LIMIT = 1024 * 1024 * 100;
+
+    /**
+     * 做IO操作, 缓存大小
+     */
+    private int IO_BUFFER_SIZE = 8192;
 
     @Inject("refer:dao")
     protected Dao dao;
@@ -77,7 +86,7 @@ public class FsIO {
      * @return 在发现同名文件的时候, 调用该方法, 返回一个有效的文件名称
      * 
      */
-    public String notSameName(Document doc) {
+    public void setNewName(Document doc) {
         String cnm = doc.getName();
         int i = 0;
         boolean found = false;
@@ -86,19 +95,41 @@ public class FsIO {
             doc.setName(nnm);
             found = hasSameName(doc);
         }
-        return doc.getName();
     }
 
     /**
-     * 生成一个新文件
+     * 生成一个新文件对象
      * 
-     * @param doc
-     * @return 文件保存在磁盘上的真实路径
+     * @param parent
+     *            父节点
+     * @param fnm
+     *            文件名称
+     * @param isPrivate
+     *            是否私有
+     * @param ctUser
+     *            建立者
+     * @return 文件对象
      */
-    public void make(Document doc) {
+    public Document make(Document parent, String fnm, boolean isPrivate, User ctUser) {
+        String fnmM = Files.getMajorName(fnm);
+        String fnmS = Files.getSuffixName(fnm);
+        Document doc = new Document();
+        doc.setCreateTime(new Date());
+        doc.setCreateUser(ctUser.getName());
+        doc.setParentId(parent.getId());
+        doc.setModule(parent.getModule());
+        doc.setDefine(parent.getDefine());
+        doc.setName(fnmM);
+        doc.setType(fnmS);
+        // 是否私有看模块规定
+        doc.setPrivate(isPrivate);
+        // 默认可读
+        doc.setCanRead(true);
+        doc.setCanWrite(false);
+        doc.setCanRemove(false);
         // 检查文件是否重名
         if (hasSameName(doc)) {
-            notSameName(doc);
+            setNewName(doc);
         }
         // 根据文件后缀, 补全文件相关属性
         DocumentType docTp = FsSetting.typeMap.get(doc.getType());
@@ -110,71 +141,145 @@ public class FsIO {
         doc.setCate(FsSetting.type2Cate.get(doc.getType()));
         doc.setMeta(Json.toJson(FsSetting.type2metaMap.get(doc.getType()), JsonFormat.compact()));
         // 逻辑上的文件夹, 不需要生成文件或目录
-        if (doc.isDir()) {
-            return;
+        if (!doc.isDir()) {
+            // 生成对应文件跟目录
+            try {
+                // 复合型文件, 生成目录
+                if (doc.isComplex()) {
+                    Files.createDirIfNoExists(FsPath.file(doc));
+                }
+                // BIN或TXT, 生成文件
+                else {
+                    Files.createFileIfNoExists(FsPath.file(doc));
+                }
+                // 其他相关文件与目录
+                if (doc.isHasTrans()) {
+                    Files.createDirIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_TRANS));
+                }
+                if (doc.isHasPreview()) {
+                    Files.createDirIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_PREVIEW));
+                    extraMaker.makePreview(doc);
+                }
+                if (doc.isHasInfo()) {
+                    Files.createFileIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_INFO));
+                }
+            }
+            catch (IOException e) {
+                log.error(e);
+                throw Lang.wrapThrow(e);
+            }
         }
-        // 生成对应文件跟目录
-        try {
-            // 复合型文件, 生成目录
-            if (doc.isComplex()) {
-                Files.createDirIfNoExists(FsPath.file(doc));
-            }
-            // BIN或TXT, 生成文件
-            else {
-                Files.createFileIfNoExists(FsPath.file(doc));
-            }
-            // 其他相关文件与目录
-            if (doc.isHasTrans()) {
-                Files.createDirIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_TRANS));
-            }
-            if (doc.isHasPreview()) {
-                Files.createDirIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_PREVIEW));
-                extraMaker.makePreview(doc);
-            }
-            if (doc.isHasInfo()) {
-                Files.createFileIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_INFO));
-            }
-        }
-        catch (IOException e) {
-            log.error(e);
-            throw Lang.wrapThrow(e);
-        }
+        // 插入数据库
+        dao.insert(doc);
+        return doc;
     }
 
-    public boolean writeText(Document doc, InputStream ins) {
+    /**
+     * 以文本的方式写入文件
+     * 
+     * @param doc
+     *            文档对象
+     * @param ins
+     *            新的文件流
+     * @param mdUser
+     *            修改者
+     * @return 是否写入成功
+     */
+    public boolean writeText(Document doc, InputStream ins, User mdUser) {
         try {
             Reader reader = new InputStreamReader(ins, "UTF-8");
             String text = Streams.readAndClose(reader);
             if (null == text)
                 text = "";
+            File f = Files.createFileIfNoExists(FsPath.file(doc));
+            if (f.getFreeSpace() < WRITE_LIMIT) {
+                throw OctopusErr.NEED_MORE_DISK_SPACE();
+            }
             // 读取旧数据
             String old = readText(doc);
             // 如果不同，写入数据
             if (null == old || !old.equals(text)) {
-                File f = Files.createFileIfNoExists(FsPath.file(doc));
-                // 磁盘剩余空间少于1GB,不允许写文件
-                if (f.getFreeSpace() < WRITE_LIMIT) {
-                    throw new RuntimeException("Write Text, Free Space is too small!");
+                if (log.isDebugEnabled()) {
+                    log.debug("New Text, Rewrite " + doc);
                 }
                 Files.write(f, text);
                 // 更新文件信息
                 doc.setSize(f.length());
                 doc.setModifyTime(new Date());
+                doc.setModifyUser(mdUser.getName());
                 dao.update(doc, "size|modifyTime|modifyUser");
                 return true;
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Same Text, Ignore Rewrite " + doc);
+                }
             }
         }
-        catch (UnsupportedEncodingException e) {
-            throw Lang.wrapThrow(e);
-        }
-        catch (IOException e) {
+        catch (Exception e) {
             throw Lang.wrapThrow(e);
         }
         return false;
     }
 
-    public boolean writeBinary(Document doc, InputStream ins) {
-
+    /**
+     * 以二进制方式写入文件
+     * 
+     * @param doc
+     *            文档对象
+     * @param ins
+     *            新的文件流
+     * @param mdUser
+     *            修改者
+     * @return 是否写入成功
+     */
+    public boolean writeBinary(Document doc, InputStream ins, User mdUser) {
+        File tmpf = null;
+        try {
+            // 这个是旧文件
+            File f = Files.createFileIfNoExists(FsPath.file(doc));
+            // 空间不足
+            if (f.getFreeSpace() < WRITE_LIMIT) {
+                throw OctopusErr.NEED_MORE_DISK_SPACE();
+            }
+            // 创建临时文件
+            tmpf = Files.createFileIfNoExists(f.getAbsolutePath()
+                                              + "."
+                                              + System.nanoTime()
+                                              + R.random(0, 100000)
+                                              + ".tmp");
+            // 将内容写入临时文件
+            BufferedOutputStream ops = new BufferedOutputStream(Streams.fileOut(tmpf),
+                                                                IO_BUFFER_SIZE);
+            Streams.writeAndClose(ops, ins);
+            long sz = tmpf.length();
+            if (sz != f.length()
+                || !Streams.equals(Streams.buff(Streams.fileIn(f)),
+                                   Streams.buff(Streams.fileIn(tmpf)))) {
+                if (log.isDebugEnabled()) {
+                    log.debug("New Binary, Rewrite " + doc);
+                }
+                // 替换文件
+                Files.deleteFile(f);
+                Files.move(tmpf, f);
+                // 更新文件信息
+                doc.setSize(f.length());
+                doc.setModifyTime(new Date());
+                doc.setModifyUser(mdUser.getName());
+                dao.update(doc, "size|modifyTime|modifyUser");
+                return true;
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Same Binary, Ignore Rewrite " + doc);
+                }
+            }
+        }
+        catch (IOException e) {
+            throw Err.wrap(e);
+        }
+        finally {
+            if (null != tmpf)
+                Files.deleteFile(tmpf);
+        }
         return false;
     }
 

@@ -20,8 +20,12 @@ import org.octopus.core.NavController;
 import org.octopus.core.bean.User;
 import org.octopus.core.chat.ChatCache;
 import org.octopus.core.chat.UserCache;
+import org.octopus.core.fs.FsModule;
 import org.octopus.core.fs.FsPath;
 import org.octopus.core.fs.FsSetting;
+import org.octopus.core.fs.pathdefine.ChatPathDefine;
+import org.octopus.core.fs.pathdefine.DomainPathDefine;
+import org.octopus.core.fs.pathdefine.UserPathDefine;
 
 public class OctopusSetup implements Setup {
 
@@ -37,25 +41,32 @@ public class OctopusSetup implements Setup {
         Dao dao = ioc.get(Dao.class, "dao");
         OctopusConfig conf = ioc.get(OctopusConfig.class, "conf");
 
+        // 设置RS, 可以使用其他服务器来提供静态文件
+        nc.setAttribute(Keys.RS, Strings.sBlank(conf.getAppRs(), "/rs"));
+
         // 设置secretKey与GodPassword
         Octopus.setSecretKey(conf.get("password-key"));
         Octopus.setGodPassword(conf.get("password-superuser"));
+
+        // 初始化数据库与数据
+        Octopus.initDatabase(dao, conf);
 
         // 初始化FileSystem(fs)
         String fsHomePath = conf.getFSHome();
         if (!Strings.isBlank(fsHomePath)) {
             FsPath.setRoot(fsHomePath);
         }
-        // 设置RS, 可以使用其他服务器来提供静态文件
-        nc.setAttribute(Keys.RS, Strings.sBlank(conf.getAppRs(), "/rs"));
 
-        // 初始化数据库与数据
-        Octopus.initDatabase(dao, conf);
-        Octopus.initUserAndDomain(dao);
+        // FsModule注册
+        FsModule.regModule(FsModule.M_USERS, new UserPathDefine(dao));
+        FsModule.regModule(FsModule.M_CHAT, new ChatPathDefine(dao));
+        FsModule.regModule(FsModule.M_DOMAINS, new DomainPathDefine(dao));
 
         // 加载文件配置
         FsSetting.loadSetting(dao, OctopusSetup.class.getResourceAsStream("/fs/file.properties"));
-        FsSetting.resetCache(dao);
+
+        // 用户与域信息初始化
+        Octopus.initUserAndDomain(dao);
 
         // 侧边导航初始化
         NavController.init(dao);

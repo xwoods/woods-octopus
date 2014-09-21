@@ -1,32 +1,41 @@
 package org.octopus.core.module;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nutz.dao.Cnd;
 import org.nutz.lang.Lang;
+import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
+import org.nutz.lang.stream.StringInputStream;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.mvc.Scope;
 import org.nutz.mvc.annotation.At;
 import org.nutz.mvc.annotation.Attr;
 import org.nutz.mvc.annotation.By;
+import org.nutz.mvc.annotation.Fail;
 import org.nutz.mvc.annotation.Filters;
 import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.annotation.Param;
 import org.nutz.mvc.view.HttpStatusView;
 import org.nutz.web.fliter.CheckNotLogin;
+import org.octopus.OctopusErr;
 import org.octopus.core.Keys;
 import org.octopus.core.bean.Document;
 import org.octopus.core.bean.User;
+import org.octopus.core.fs.FsModule;
 import org.octopus.core.fs.ReadType;
 
 @Filters({@By(type = CheckNotLogin.class, args = {Keys.SESSION_USER, "/login"})})
-@At("/ex")
+@At("/doc")
 @Ok("ajax")
-public class ExchangeModule extends AbstractBaseModule {
+public class DocumentModule extends AbstractBaseModule {
 
     private Log log = Logs.get();
 
@@ -100,15 +109,13 @@ public class ExchangeModule extends AbstractBaseModule {
         return null;
     }
 
-    @At("/r/bin")
+    @At("/bin/read")
     @Ok("raw")
     public Object readBinary(@Param("docId") String docId,
-                             @Param("useTrans") boolean useTrans,
-                             @Param("canRead") boolean canRead,
                              HttpServletResponse resp,
                              @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
         Document doc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
-        HttpStatusView errStatusView = checkDocumentPvg(me, doc, canRead, false, false);
+        HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, false);
         if (errStatusView != null) {
             return errStatusView;
         }
@@ -124,21 +131,132 @@ public class ExchangeModule extends AbstractBaseModule {
         return fsIO.readBinary(doc);
     }
 
-    @At("/r/txt")
+    @At("/txt/read")
     @Ok("raw")
     public Object readTxt(@Param("docId") String docId,
-                          @Param("useTrans") boolean useTrans,
-                          @Param("canRead") boolean canRead,
                           @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
         Document doc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
-        HttpStatusView errStatusView = checkDocumentPvg(me, doc, canRead, false, false);
+        HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, false);
         if (errStatusView != null) {
             return errStatusView;
         }
         return fsIO.readText(doc);
     }
 
-    public void writeBinary() {
+    private String urlDecode(String str) {
+        try {
+            return URLDecoder.decode(str, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return str;
+    }
 
+    /**
+     * 
+     * 
+     * @param docId
+     * @param content
+     * @param me
+     * @return
+     */
+    @At("/txt/write")
+    @Ok("ajax")
+    @Fail("ajax")
+    public Document writeText(@Param("docId") String docId,
+                              @Param("content") String content,
+                              @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        Document doc = dao.fetch(Document.class, docId);
+        if (doc == null) {
+            throw OctopusErr.DOCUMENT_NOT_EXIST(docId);
+        }
+        fsIO.writeText(doc, new StringInputStream(content), me);
+        return doc;
+    }
+
+    /**
+     * 上传文件, 一般是覆盖操作
+     * 
+     * @param req
+     * @param module
+     * @param moduleKey
+     * @param me
+     * @return
+     */
+    @At("/bin/write")
+    @Ok("ajax")
+    @Fail("ajax")
+    public Document writeBinary(HttpServletRequest req,
+                                @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        String docId = req.getHeader("DOC_ID");
+        Document doc = dao.fetch(Document.class, docId);
+        if (doc == null) {
+            throw OctopusErr.DOCUMENT_NOT_EXIST(docId);
+        }
+        // 写入文件
+        try {
+            BufferedInputStream ins = Streams.buff(req.getInputStream());
+            if (doc.isBinary()) {
+                fsIO.writeBinary(doc, ins, me);
+            } else {
+                fsIO.writeText(doc, ins, me);
+            }
+        }
+        catch (IOException e) {
+            throw Lang.wrapThrow(e);
+        }
+        return doc;
+    }
+
+    /**
+     * 上传文件, 新建一个文件
+     * 
+     * @param req
+     * @param module
+     * @param moduleKey
+     * @param me
+     * @return
+     */
+    @At("/bin/add")
+    @Ok("ajax")
+    @Fail("ajax")
+    public Document addBinary(HttpServletRequest req,
+                              @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        String module = req.getHeader("DOC_M");
+        String moduleKey = req.getHeader("DOC_MKEY");
+        String pid = req.getHeader("DOC_PID");
+        String fnm = urlDecode(req.getHeader("DOC_FNM"));
+        boolean isPrivate = req.getHeader("DOC_RPIVATE") == null ? true
+                                                                : Boolean.valueOf(req.getHeader("DOC_RPIVATE"));
+        // 如果有父节点的话
+        Document parent = null;
+        if (!Strings.isBlank(pid)) {
+            parent = dao.fetch(Document.class, pid);
+            if (parent == null) {
+                throw OctopusErr.DOCUMENT_PARENT_NOT_EXIST(pid);
+            }
+        } else {
+            // 做个假的parent, 用define作为parent
+            parent = new Document();
+            parent.setModule(module);
+            parent.setDefine(FsModule.definePath(module, moduleKey));
+            parent.setId(parent.getDefine());
+        }
+        // 生成Doc对象
+        Document doc = fsIO.make(parent, fnm, isPrivate, me);
+        // 写入文件
+        try {
+            BufferedInputStream ins = Streams.buff(req.getInputStream());
+            if (doc.isBinary()) {
+                fsIO.writeBinary(doc, ins, me);
+            } else {
+                fsIO.writeText(doc, ins, me);
+            }
+        }
+        catch (IOException e) {
+            throw Lang.wrapThrow(e);
+        }
+        return doc;
     }
 }

@@ -3,7 +3,10 @@ package org.octopus.core.fs;
 public interface PathDefine {
 
     /**
-     * @return 返回当前模块下的目录定义方式
+     * 根据当前模块的关键字, 给出对应的目录名称
+     * 
+     * @param mkey
+     * @return
      */
-    String define();
+    String define(String mkey);
 }

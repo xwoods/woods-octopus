@@ -2,10 +2,9 @@ package org.octopus.core.bean;
 
 import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.entity.annotation.Table;
-import org.octopus.core.fs.PathDefine;
 
 @Table("t_chat")
-public class Chat implements PathDefine {
+public class Chat {
 
     @Id
     private long id;
@@ -36,11 +35,6 @@ public class Chat implements PathDefine {
 
     public void setDomain(String domain) {
         this.domain = domain;
-    }
-
-    @Override
-    public String define() {
-        return "/" + id;
     }
 
 }

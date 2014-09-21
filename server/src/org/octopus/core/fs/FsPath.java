@@ -111,31 +111,10 @@ public class FsPath {
         return file(doc) + "." + extra;
     }
 
-    /**
-     * 内置模块 - 用户个人网盘
-     */
-    public final static String M_USERS = "users";
-
-    /**
-     * 内置模块 - 聊天附件
-     */
-    public final static String M_CHAT = "chat";
-
-    /**
-     * 内置模块 - 域共享文件
-     */
-    public final static String M_DOMAINS = "domains";
-
-    static {
-        addModulePath(M_USERS);
-        addModulePath(M_CHAT);
-        addModulePath(M_DOMAINS);
-    }
-
     // ------------------------------------ 特殊文件目录, 不在document结构中的
 
     public static String usersPath() {
-        return getModulePath(M_USERS);
+        return getModulePath(FsModule.M_USERS);
     }
 
     /**
@@ -143,7 +122,7 @@ public class FsPath {
      * @return 用户头像
      */
     public static String userFace(String uname) {
-        return getModulePath(M_USERS) + "/" + uname + "/face";
+        return getModulePath(FsModule.M_USERS) + "/" + uname + "/face";
     }
 
     /**
@@ -151,7 +130,7 @@ public class FsPath {
      * @return 用户的profile
      */
     public static String userProfile(String uname) {
-        return getModulePath(M_USERS) + "/" + uname + "/profile";
+        return getModulePath(FsModule.M_USERS) + "/" + uname + "/profile";
     }
 
 }
