@@ -20,13 +20,13 @@
     <script language="JavaScript" src="${rs}/deps/zlib/browser.js"></script>
     <script language="JavaScript" src="${rs}/deps/zlib/http.js"></script>
 
-    <script language="JavaScript" src="${rs}/deps/zui/zui.grid.js"></script>
-    <link rel="stylesheet" href="${rs}/deps/zui/zui.grid.css">
-
-    <script language="JavaScript" src="${rs}/deps/zui/zui.masker.js"></script>
+    <link rel="stylesheet" href="${rs}/deps/zui/zui.file.css">
     <link rel="stylesheet" href="${rs}/deps/zui/zui.masker.css">
-
-    <link rel="stylesheet" href="${rs}/deps/zui/zui.uploadfile.css">
+    <link rel="stylesheet" href="${rs}/deps/zui/zui.grid.css">
+    <link rel="stylesheet" href="${rs}/deps/zui/zui.upload.css">
+    <script language="JavaScript" src="${rs}/deps/zui/zui.masker.js"></script>
+    <script language="JavaScript" src="${rs}/deps/zui/zui.grid.js"></script>
+    <script language="JavaScript" src="${rs}/deps/zui/zui.upload.js"></script>
 
     <script language="JavaScript" src="${rs}/deps/underscore.js"></script>
     <script language="JavaScript" src="${rs}/deps/angular/angular.js"></script>

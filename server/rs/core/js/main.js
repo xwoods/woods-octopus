@@ -318,6 +318,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
 
     window.onresize = function () {
         sidebarResize();
+        $.masker('resize');
     }
 
     // 切换sidebar
@@ -349,8 +350,12 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             var html = '';
             html += '<li id="chat-' + chatId + '" chatId="' + chatId + '">';
             html += '   <i class="fa fa-1x fa-times-circle"></i>';
-            html += '   <div class="chat-thumb"></div>';
-            html += '   <div class="chat-user">' + window.myConf.friendsNameMap[chatUser] + '</div>';
+            html += '   <div class="chat-thumb">';
+            // FIXME 暂时仅仅添加聊天人的头像
+            html += '   <img src="/user/face/' + chatUser + '">';
+            html += '   </div>';
+            html += '   </div>';
+            html += '   <div class="chat-user">' + chatUser + '</div>';
             html += '   <div class="chat-unread">0</div>';
             html += '</li>'
             chatList.append(html);
@@ -693,75 +698,52 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
         }
     };
 
-    // 文件上传
+    // 上传头像
     $(document.body).delegate('.hm-user .user-face', 'click', function () {
-        $.masker({
-            title: '上传头像',
-            width: '50%',
-            height: '50%',
-            closeBtn: true,
-            btns: [
-                {
-                    clz: 'btn-upload-file',
-                    label: "上传",
-                    event: {
-                        type: 'click',
-                        handle: function (sele) {
-
-                        }
+        var uface = $(this);
+        $.upload({
+            title: "上传头像",
+            width: 400,
+            height: 300,
+            upload: {
+                num: 1,
+                type: ['jpg', 'jpeg', 'png', 'gif'],
+                doUpload: function (file, upJq, progress, callback) {
+                    var xhr = new XMLHttpRequest();
+                    if (!xhr.upload) {
+                        alert("XMLHttpRequest object don't support upload for your browser!!!");
+                        return;
                     }
+                    xhr.upload.addEventListener("progress", function (e) {
+                        progress(e);
+                    }, false);
+                    xhr.onreadystatechange = function (e) {
+                        if (xhr.readyState == 4) {
+                            if (xhr.status == 200) {
+                                callback();
+                            } else {
+                                alret('Fail to upload "' + file.name + '"\n\n' + xhr.responseText);
+                            }
+                        }
+                    };
+                    // 准备请求对象头部信息
+                    var contentType = "application/x-www-form-urlencoded; charset=utf-8";
+                    xhr.open("POST", "/user/upload/face/" + window.myConf.user, true);
+                    xhr.setRequestHeader('Content-type', contentType)
+                    xhr.send(file);
+                },
+                afterUpload: function () {
+
+                },
+                finishUpload: function () {
+                    $.masker('close');
+                    // 重新加载头像
+                    var fp = uface.parent();
+                    uface.remove();
+                    fp.prepend('<img src="/user/face/' + window.myConf.user + "?" + new Date() + '" class="user-face">');
                 }
-            ],
-            body: function () {
-                var html = '';
-                html += '<div class="upload-file-form">'
-                html += '   <ul class="upload-file-list"></ul>';
-                html += '   <div class="upload-file-tip">';
-                html += '       <div>把文件<b>拖拽到这里</b>, 然后点上传即可</div>'
-                html += '   </div>'
-                html += '</div>'
-                return html;
             }
         });
-        var mdiv = $.masker('get');
-        var dropArea = $(".upload-file-form", mdiv);
-        var upArea = $(".upload-file-list", mdiv);
-        var events = {
-            dragOver: function (e) {
-                e.stopPropagation();
-                e.preventDefault();
-                dropArea.addClass("dragover");
-            },
-            dragLeave: function (e) {
-                e.stopPropagation();
-                e.preventDefault();
-                dropArea.removeClass("dragover");
-            },
-            dropFile: function (e) {
-                dropArea.removeClass("dragover");
-                e.stopPropagation();
-                e.preventDefault();
-                if (e.dataTransfer) {
-                    var tfiles = e.dataTransfer.files;
-                    for (var i = 0; i < tfiles.length; i++) {
-                        upArea.append(events.upHtml(tfiles[i]));
-                    }
-                }
-                return this;
-            },
-            upHtml: function (file) {
-                var upH = '';
-                upH += '<li>';
-                upH += '    <div class="file-type">' + ($z.util.isBlank(file.type) ? "bin" : file.type) + '</div>';
-                upH += '    <div class="file-nm">' + file.name + '</div>';
-                upH += '    <div class="file-size">' + file.size + '</div>';
-                upH += '</li>';
-                return upH;
-            }
-        };
-        mdiv.delegate(".upload-file-form", "dragover", events.dragOver);
-        mdiv.delegate(".upload-file-form", "dragleave", events.dragLeave);
-        dropArea[0].addEventListener("drop", events.dropFile, false);
     });
 });
 

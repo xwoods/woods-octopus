@@ -447,6 +447,11 @@ body {
     float: left;
 }
 
+.sidebar-container .chat-list > li > .chat-thumb > img {
+    width: 24px;
+    height: 24px;
+}
+
 .sidebar-container .chat-list > li > .chat-user {
     width: 110px;
     height: 36px;

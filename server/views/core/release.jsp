@@ -8,9 +8,6 @@
             "文件上传功能"实现
         </li>
         <li>
-            "用户更换头像"
-        </li>
-        <li>
             "网盘"模块实现, 可以读取,存放各类文件
         </li>
         <li>
@@ -43,6 +40,17 @@
     </ul>
 </div>
 <div class="release-log">
+    <div class="release-date">2014-09-22</div>
+    <div class="release-note">
+        <ul>
+            <li>
+                "用户头像更新"上线
+                <ol>
+                    <li>点击屏幕右上角头像, 上传一张图片(jpg, png, gif)即可替换头像</li>
+                </ol>
+            </li>
+        </ul>
+    </div>
     <div class="release-date">2014-09-17</div>
     <div class="release-note">
         <ul>

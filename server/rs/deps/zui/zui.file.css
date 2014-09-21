@@ -1,0 +1,34 @@
+/**
+ * Created by pw on 14-9-22.
+ */
+
+.zui-file-icon {
+    width: 128px;
+    height: 128px;
+    background: url("zui.file.png") no-repeat;
+}
+
+.image {
+    background-position: 0px 0px;
+}
+
+.jpg {
+    background-position: 0px 0px;
+}
+.jpeg {
+    background-position: 0px 0px;
+}
+.gif {
+    background-position: 0px 0px;
+}
+.png {
+    background-position: 0px 0px;
+}
+.bmp {
+    background-position: 0px 0px;
+}
+
+
+.video {
+    background-position: 0px -128px;
+}

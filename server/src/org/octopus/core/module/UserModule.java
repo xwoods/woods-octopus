@@ -1,6 +1,8 @@
 package org.octopus.core.module;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -19,6 +21,7 @@ import org.nutz.dao.sql.Sql;
 import org.nutz.dao.sql.SqlCallback;
 import org.nutz.dao.util.cri.SimpleCriteria;
 import org.nutz.lang.Lang;
+import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
 import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
@@ -260,6 +263,22 @@ public class UserModule extends AbstractBaseModule {
         } else {
             log.warnf("User[%s] Face Not Found!", uname);
             return this.getClass().getResourceAsStream("/fs/user/face.png");
+        }
+    }
+
+    /**
+     * @param uname
+     * @param req
+     */
+    @At("/upload/face/?")
+    public void uploadUserFace(String uname, HttpServletRequest req) {
+        try {
+            BufferedInputStream ins = Streams.buff(req.getInputStream());
+            File uface = new File(FsPath.userFace(uname));
+            Streams.writeAndClose(new FileOutputStream(uface), ins);
+        }
+        catch (Exception e) {
+            throw Lang.wrapThrow(e);
         }
     }
 

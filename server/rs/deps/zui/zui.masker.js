@@ -164,6 +164,9 @@
         },
         get: function () {
             return this;
+        },
+        resize: function () {
+            layout.resize(this);
         }
     };
 // _________________________________

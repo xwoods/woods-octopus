@@ -50,7 +50,7 @@ public class FsPath {
      */
     public static void addModulePath(String moduleName, String modulePath) {
         if (!modulePath.startsWith("/")) {
-            modulePath += modulePath + "/";
+            modulePath = "/" + modulePath;
         }
         log.infof("ModulePath Add [%s - %s]", moduleName, modulePath);
         modulePathMap.put(moduleName, modulePath);
@@ -96,6 +96,9 @@ public class FsPath {
         String pd = doc.getDefine();
         if (!pd.startsWith("/")) {
             pd += "/" + pd;
+        }
+        if (pd.endsWith("/")) {
+            pd = pd.substring(pd.length() - 1);
         }
         return getModulePath(doc.getModule()) + pd + evalPath(doc.getId());
     }

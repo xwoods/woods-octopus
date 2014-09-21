@@ -23,9 +23,9 @@ import org.octopus.core.chat.UserCache;
 import org.octopus.core.fs.FsModule;
 import org.octopus.core.fs.FsPath;
 import org.octopus.core.fs.FsSetting;
-import org.octopus.core.fs.pathdefine.ChatPathDefine;
-import org.octopus.core.fs.pathdefine.DomainPathDefine;
-import org.octopus.core.fs.pathdefine.UserPathDefine;
+import org.octopus.core.fs.pd.ChatPathDefine;
+import org.octopus.core.fs.pd.DomainPathDefine;
+import org.octopus.core.fs.pd.UserPathDefine;
 
 public class OctopusSetup implements Setup {
 
@@ -79,7 +79,7 @@ public class OctopusSetup implements Setup {
                 if (log.isDebugEnabled()) {
                     log.debugf("Create User-Home : %s", ele.getName());
                 }
-                Files.createDirIfNoExists(new File(FsPath.usersPath(), ele.getName()));
+                Files.createDirIfNoExists(new File(FsPath.usersPath() + "/" + ele.getName()));
             }
         });
 

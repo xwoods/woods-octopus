@@ -1,4 +1,4 @@
-package org.octopus.core.fs.pathdefine;
+package org.octopus.core.fs.pd;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;

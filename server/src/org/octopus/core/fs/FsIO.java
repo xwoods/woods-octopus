@@ -112,7 +112,7 @@ public class FsIO {
      */
     public Document make(Document parent, String fnm, boolean isPrivate, User ctUser) {
         String fnmM = Files.getMajorName(fnm);
-        String fnmS = Files.getSuffixName(fnm);
+        String fnmS = Files.getSuffixName(fnm).toLowerCase();
         Document doc = new Document();
         doc.setCreateTime(new Date());
         doc.setCreateUser(ctUser.getName());
@@ -153,19 +153,19 @@ public class FsIO {
                     Files.createFileIfNoExists(FsPath.file(doc));
                 }
                 // 其他相关文件与目录
+                if (doc.isHasInfo()) {
+                    Files.createFileIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_INFO));
+                }
                 if (doc.isHasTrans()) {
                     Files.createDirIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_TRANS));
                 }
                 if (doc.isHasPreview()) {
                     Files.createDirIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_PREVIEW));
+                    // FIXME 移动到别的地方去, 不要放在这里
                     extraMaker.makePreview(doc);
-                }
-                if (doc.isHasInfo()) {
-                    Files.createFileIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_INFO));
                 }
             }
             catch (IOException e) {
-                log.error(e);
                 throw Lang.wrapThrow(e);
             }
         }
