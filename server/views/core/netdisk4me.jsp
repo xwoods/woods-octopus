@@ -62,27 +62,47 @@
         <div class="netdisk-list-toolbar">
             <input type="checkbox">
         </div>
-        <div class="netdisk-list">
+        <div class="netdisk-list list-view">
             <ul>
-                <li fnm="llt.gif" fsz="1670691">
+                <li>
+                    <input type="checkbox" class="list-chk">
                     <div class="file-type zui-icon-64 gif"></div>
+                    <div class="file-type-list zui-icon-24 gif"></div>
                     <div class="file-nm">llt.gif</div>
+                    <div class="file-size">23MB</div>
+                    <div class="file-createTime">2014-03-23</div>
                 </li>
-                <li fnm="llt.gif" fsz="3556">
+                <li>
+                    <input type="checkbox" class="list-chk">
                     <div class="file-type zui-icon-64 zip"></div>
+                    <div class="file-type-list zui-icon-24 zip"></div>
                     <div class="file-nm">test.ziptest.ziptest.ziptest.ziptest.ziptest.zip</div>
+                    <div class="file-size">23MB</div>
+                    <div class="file-createTime">2014-03-23</div>
                 </li>
-                <li fnm="llt.gif" fsz="1670691" class="active">
+                <li>
+                    <input type="checkbox" class="list-chk">
                     <div class="file-type zui-icon-64 jpg"></div>
+                    <div class="file-type-list zui-icon-24 jpg"></div>
                     <div class="file-nm">haha.jpg</div>
+                    <div class="file-size">23MB</div>
+                    <div class="file-createTime">2014-03-23</div>
                 </li>
-                <li fnm="llt.gif" fsz="1670691">
+                <li>
+                    <input type="checkbox" class="list-chk">
                     <div class="file-type zui-icon-64 doc"></div>
+                    <div class="file-type-list zui-icon-24 doc"></div>
                     <div class="file-nm">2013.doc</div>
+                    <div class="file-size">23MB</div>
+                    <div class="file-createTime">2014-03-23</div>
                 </li>
-                <li fnm="llt.gif" fsz="1670691">
+                <li>
+                    <input type="checkbox" class="list-chk">
                     <div class="file-type zui-icon-64 xls"></div>
+                    <div class="file-type-list zui-icon-24 xls"></div>
                     <div class="file-nm">2014.xls</div>
+                    <div class="file-size">23MB</div>
+                    <div class="file-createTime">2014-03-23</div>
                 </li>
             </ul>
         </div>

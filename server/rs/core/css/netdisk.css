@@ -111,7 +111,7 @@
 
 .netdisk-list > ul > li {
     display: inline-block;
-    margin: 10px;
+    padding: 15px 0px 3px 0px;
     width: 80px;
 }
 
@@ -141,4 +141,67 @@
 
 .netdisk-list > ul > li.active {
     border: 2px solid rgba(0, 122, 255, 0.6);
+}
+
+.netdisk-list > ul > li .file-size {
+    display: none;
+}
+
+.netdisk-list > ul > li .file-createtime {
+    display: none;
+}
+
+.netdisk-list > ul > li .file-type-list {
+    display: none;
+}
+
+/*列表模式*/
+
+.netdisk-list.list-view {
+}
+
+.netdisk-list.list-view > ul > li {
+    display: block;
+    width: 100%;
+    border-bottom: 1px solid #eee;
+}
+
+
+.netdisk-list.list-view > ul > li > input {
+    display: inline-block;
+    height: 24px;
+    line-height: 24px;
+    margin: 0 10px;
+}
+
+.netdisk-list.list-view > ul > li > div {
+    display: inline-block;
+    height: 24px;
+    line-height: 24px;
+    font-size: 15px;
+    color: #a8a9aa;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.netdisk-list.list-view > ul > li .file-type {
+    display: none;
+}
+
+.netdisk-list.list-view > ul > li .file-type-list {
+    width: 24px;
+}
+
+.netdisk-list.list-view > ul > li .file-nm {
+    width: 60%;
+    text-align: left;
+    padding-left: 5px;
+}
+
+.netdisk-list.list-view > ul > li .file-size {
+    width: 10%;
+}
+
+.netdisk-list.list-view > ul > li .file-createTime {
+    width: 20%;
 }
