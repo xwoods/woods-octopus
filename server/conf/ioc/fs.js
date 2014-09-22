@@ -13,9 +13,6 @@ var fs = {
 		fields : {
 			dao : {
 				refer : "dao"
-			},
-			extraMaker : {
-				refer : "fsExtraMaker"
 			}
 		}
 	}

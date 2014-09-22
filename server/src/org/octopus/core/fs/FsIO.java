@@ -61,9 +61,6 @@ public class FsIO {
     @Inject("refer:dao")
     protected Dao dao;
 
-    @Inject("refer:fsExtraMaker")
-    protected FsExtraMaker extraMaker;
-
     private Cnd fsCnd(Document doc) {
         return Cnd.where("module", "=", doc.getModule()).and("define", "=", doc.getDefine());
     }
@@ -89,11 +86,11 @@ public class FsIO {
     public void setNewName(Document doc) {
         String cnm = doc.getName();
         int i = 0;
-        boolean found = false;
-        while (!found) {
+        boolean same = true;
+        while (same) {
             String nnm = cnm + "_" + i++;
             doc.setName(nnm);
-            found = hasSameName(doc);
+            same = hasSameName(doc);
         }
     }
 
@@ -140,6 +137,8 @@ public class FsIO {
         doc.setReadAs(docTp.getReadAs());
         doc.setCate(FsSetting.type2Cate.get(doc.getType()));
         doc.setMeta(Json.toJson(FsSetting.type2metaMap.get(doc.getType()), JsonFormat.compact()));
+        // 插入数据库
+        dao.insert(doc);
         // 逻辑上的文件夹, 不需要生成文件或目录
         if (!doc.isDir()) {
             // 生成对应文件跟目录
@@ -161,16 +160,12 @@ public class FsIO {
                 }
                 if (doc.isHasPreview()) {
                     Files.createDirIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_PREVIEW));
-                    // FIXME 移动到别的地方去, 不要放在这里
-                    extraMaker.makePreview(doc);
                 }
             }
             catch (IOException e) {
                 throw Lang.wrapThrow(e);
             }
         }
-        // 插入数据库
-        dao.insert(doc);
         return doc;
     }
 

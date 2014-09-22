@@ -30,9 +30,13 @@ public class FsExtraMaker {
             // 图片
             if ("image".equals(doc.getCate())) {
                 File pi = new File(FsPath.fileExtra(doc, "preview"), "preview.jpg");
-                BufferedImage im = Images.read(Streams.fileIn(FsPath.file(doc)));
-                BufferedImage im2 = Images.zoomScale(im, 256, 256, null);
-                Images.write(im2, pi);
+                if ("gif".equals(doc.getType())) {
+                    Files.copy(new File(FsPath.file(doc)), pi);
+                } else {
+                    BufferedImage im = Images.read(Streams.fileIn(FsPath.file(doc)));
+                    BufferedImage im2 = Images.zoomScale(im, 256, 256, null);
+                    Images.write(im2, pi);
+                }
             }
             // 视频
             if ("video".equals(doc.getCate())) {

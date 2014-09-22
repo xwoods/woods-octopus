@@ -1,6 +1,7 @@
 package org.octopus.core.module;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -30,6 +31,7 @@ import org.octopus.core.Keys;
 import org.octopus.core.bean.Document;
 import org.octopus.core.bean.User;
 import org.octopus.core.fs.FsModule;
+import org.octopus.core.fs.FsPath;
 import org.octopus.core.fs.ReadType;
 
 @Filters({@By(type = CheckNotLogin.class, args = {Keys.SESSION_USER, "/login"})})
@@ -120,7 +122,8 @@ public class DocumentModule extends AbstractBaseModule {
             return errStatusView;
         }
         try {
-            String encode = new String(doc.getName().getBytes("UTF-8"), "ISO8859-1");
+            String encode = new String((doc.getName() + "." + doc.getType()).getBytes("UTF-8"),
+                                       "ISO8859-1");
             resp.setHeader("Content-Disposition", "attachment; filename=" + encode);
             if (!Strings.isBlank(doc.getMime()))
                 resp.setHeader("Content-Type", doc.getMime());
@@ -253,10 +256,33 @@ public class DocumentModule extends AbstractBaseModule {
             } else {
                 fsIO.writeText(doc, ins, me);
             }
+            // FIXME 移动到别的地方去, 不要放在这里
+            fsExtraMaker.makePreview(doc);
         }
         catch (IOException e) {
             throw Lang.wrapThrow(e);
         }
         return doc;
+    }
+
+    @At("/preview/?")
+    @Ok("raw")
+    public Object preview(String docId,
+                          HttpServletResponse resp,
+                          @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        Document doc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
+        HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, false);
+        if (errStatusView != null) {
+            return errStatusView;
+        }
+        try {
+            String encode = new String(doc.getName().getBytes("UTF-8"), "ISO8859-1");
+            resp.setHeader("Content-Disposition", "attachment; filename=" + encode);
+            resp.setHeader("Content-Type", "image/jpeg");
+        }
+        catch (UnsupportedEncodingException e) {
+            throw Lang.wrapThrow(e);
+        }
+        return new File(FsPath.fileExtra(doc, FsPath.EXTRA_PREVIEW), "preview.jpg");
     }
 }

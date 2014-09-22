@@ -360,7 +360,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             html += '</li>'
             chatList.append(html);
             var chtml = '';
-            chtml += '<div id="chat-container-' + chatId + '">';
+            chtml += '<div id="chat-container-' + chatId + '" chatId="' + chatId + '">';
             chtml += '  <div class="chat-header">' + chatTitle + '</div>';
             chtml += '  <div class="chat-content">';
             chtml += '      <div class="chat-readmore" chatId="' + chatId + '">加载更多历史信息...</div>';
@@ -372,6 +372,9 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             chtml += '          <textarea placeholder="写点什么吧...."></textarea>';
             chtml += '          <span chatId="' + chatId + '">发送</span>';
             chtml += '      </div>';
+            chtml += '  </div>';
+            chtml += '  <div class="chat-upload">';
+            chtml += '      <span>0%</span>';
             chtml += '  </div>';
             chtml += '</div>';
             chatContainer.append(chtml);
@@ -403,7 +406,23 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
                         html += '<div class="' + (ch.user == window.myConf.user ? "me" : "") + '">';
                         html += '   <span class="name">' + window.myConf.friendsNameMap[ch.user] + "</span>";
                         html += '   <span class="time">' + ch.createTime + "</span>";
-                        html += '   <p>' + $z.util.replaceAll(ch.content, "\n", "<br>") + "</p>";
+                        if (ch.content[0] == "*" && ch.content[ch.content.length - 1] == "*") {
+                            // 文件
+                            var finfo = ch.content.substr(1, ch.content.length - 2).split(',');
+                            var ftype = finfo[0];
+                            var fname = finfo[1];
+                            var docId = finfo[2];
+                            html += '<div class="file-preview">';
+                            if (hasPreview(ftype)) {
+                                html += '<img src="/doc/preview/' + docId + '" class="file-preview-img" docId="' + docId + '">';
+                            } else {
+                                html += '<div class="file-type zui-file-icon ' + ftype + '"></div>'
+                                html += '<div class="file-nm"><a href="/doc/bin/read?docId=' + docId + '" >' + fname + '.' + ftype + '</a></div>'
+                            }
+                            html += '<div>';
+                        } else {
+                            html += '   <p>' + $z.util.replaceAll(ch.content, "\n", "<br>") + "</p>";
+                        }
                         html += '</div>';
                         chBody.append(html);
                     }
@@ -469,6 +488,91 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
         });
     }
 
+
+    chatContainer.on('dragover', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $(this).addClass('dragover');
+    });
+
+    chatContainer.on('dragleave', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $(this).removeClass('dragover');
+    });
+
+
+    var chatUpCheck = ['jpg', 'jpeg', 'png', 'gif', 'doc', 'xls', 'ppt', 'zip'];
+    var chatUpMap = {};
+    for (var i = 0; i < chatUpCheck.length; i++) {
+        chatUpMap[chatUpCheck[i]] = true;
+    }
+
+    chatContainer[0].addEventListener("drop", function (e) {
+        chatContainer.removeClass('dragover');
+        e.stopPropagation();
+        e.preventDefault();
+        var activeChat = chatContainer.find('div.active');
+        var upro = activeChat.find('.chat-upload span');
+        var chatId = activeChat.attr('chatId');
+        if (e.dataTransfer) {
+            var tf = e.dataTransfer.files[0];
+            var fnmS = function (name) {
+                if (name.lastIndexOf('.') != -1) {
+                    return name.substr(name.lastIndexOf('.') + 1);
+                }
+                return null;
+            }(tf.name);
+            if (fnmS != null) {
+                if (chatUpMap[fnmS]) {
+                    chatContainer.addClass('uploading');
+                    var xhr = new XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function (e) {
+                        var p = parseInt(e.loaded * 10000 / e.total) / 100 + "%";
+                        upro.html(p);
+                    }, false);
+                    xhr.onreadystatechange = function (e) {
+                        if (xhr.readyState == 4) {
+                            if (xhr.status == 200) {
+                                var re = $z.util.str2json(xhr.responseText);
+                                var doc = re.data;
+                                // 模拟发送一个特殊信息
+                                var msg = "*" + doc.type + "," + doc.name + "," + doc.id + "*";
+                                var mtxt = activeChat.find('.chat-submit textarea');
+                                mtxt.val(msg);
+                                var mbtn = activeChat.find('.chat-submit span');
+                                mbtn.click();
+                                // 取消状态
+                                upro.html('0%');
+                                chatContainer.removeClass('uploading');
+                            }
+                        }
+                    };
+                    // 准备请求对象头部信息
+                    var contentType = "application/x-www-form-urlencoded; charset=utf-8";
+                    xhr.open("POST", "/doc/bin/add", true);
+                    xhr.setRequestHeader('Content-type', contentType);
+                    xhr.setRequestHeader('DOC_M', "chat");
+                    xhr.setRequestHeader('DOC_MKEY', chatId);
+                    xhr.setRequestHeader("DOC_FNM", "" + encodeURI(tf.name));
+                    xhr.setRequestHeader('DOC_RPIVATE', "false");
+                    xhr.send(tf);
+                }
+            }
+        }
+    }, false);
+
+    var pmap = {
+        'jpg': true,
+        'jpeg': true,
+        'png': true,
+        'gif': true
+    };
+
+    function hasPreview(type) {
+        return pmap[type] == true;
+    }
+
     // 加载历史信息
     chatContainer.delegate('.chat-readmore', 'click', function () {
         var rmBtn = $(this);
@@ -499,7 +603,23 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
                         html += '<div class="' + (ch.user == window.myConf.user ? "me" : "") + '">';
                         html += '   <span class="name">' + window.myConf.friendsNameMap[ch.user] + "</span>";
                         html += '   <span class="time">' + ch.createTime + "</span>";
-                        html += '   <p>' + $z.util.replaceAll(ch.content, "\n", "<br>") + "</p>";
+                        if (ch.content[0] == "*" && ch.content[ch.content.length - 1] == "*") {
+                            // 文件
+                            var finfo = ch.content.substr(1, ch.content.length - 2).split(',');
+                            var ftype = finfo[0];
+                            var fname = finfo[1];
+                            var docId = finfo[2];
+                            html += '<div class="file-preview">';
+                            if (hasPreview(ftype)) {
+                                html += '<img src="/doc/preview/' + docId + '" class="file-preview-img" docId="' + docId + '">';
+                            } else {
+                                html += '<div class="file-type zui-file-icon ' + ftype + '"></div>'
+                                html += '<div class="file-nm"><a href="/doc/bin/read?docId=' + docId + '" >' + fname + '.' + ftype + '</a></div>'
+                            }
+                            html += '<div>';
+                        } else {
+                            html += '   <p>' + $z.util.replaceAll(ch.content, "\n", "<br>") + "</p>";
+                        }
                         html += '</div>';
                         rmBtn.after(html);
                     }

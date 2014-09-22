@@ -8,6 +8,7 @@
     background: url("zui.file.png") no-repeat;
 }
 
+/*---------图片----------*/
 .image {
     background-position: 0px 0px;
 }
@@ -15,20 +16,53 @@
 .jpg {
     background-position: 0px 0px;
 }
+
 .jpeg {
     background-position: 0px 0px;
 }
+
 .gif {
     background-position: 0px 0px;
 }
+
 .png {
     background-position: 0px 0px;
 }
+
 .bmp {
     background-position: 0px 0px;
 }
 
+/*---------视频----------*/
 
 .video {
     background-position: 0px -128px;
+}
+
+/*---------压缩包----------*/
+
+.compressed {
+    background-position: 0px -512px;
+}
+
+.zip {
+    background-position: 0px -512px;
+}
+
+.tar {
+    background-position: 0px -512px;
+}
+
+/*---------office----------*/
+
+.doc {
+    background-position: 0px -640px;
+}
+
+.xls {
+    background-position: 0px -640px;
+}
+
+.ppt {
+    background-position: 0px -640px;
 }

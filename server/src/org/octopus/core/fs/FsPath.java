@@ -95,7 +95,7 @@ public class FsPath {
     public static String file(Document doc) {
         String pd = doc.getDefine();
         if (!pd.startsWith("/")) {
-            pd += "/" + pd;
+            pd = "/" + pd;
         }
         if (pd.endsWith("/")) {
             pd = pd.substring(pd.length() - 1);

@@ -482,6 +482,7 @@ body {
 .sidebar-container .chat-container {
     margin-left: 200px;
     height: 100%;
+    position: relative;
 }
 
 .sidebar-container .chat-container > div {
@@ -552,6 +553,31 @@ body {
     width: 100%;
     height: 150px;
     border-top: 1px solid #D9D9D9;
+}
+
+.sidebar-container .chat-container.dragover {
+    opacity: 0.3;
+}
+
+.sidebar-container .chat-container.uploading .chat-upload {
+    display: table;
+}
+
+.sidebar-container .chat-container .chat-upload {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    background: rgba(255, 255, 255, 0.6);
+    top: 0;
+    display: none;
+}
+
+.sidebar-container .chat-container .chat-upload > span {
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+    color: #A0A0A0;
+    font-size: 25px;
 }
 
 .sidebar-container .chat-container .chat-footer .chat-menu-bar {
@@ -940,4 +966,22 @@ body {
 
 .myfriends .friend-info.online-true .friend-stat > span.off {
     display: none;
+}
+
+.file-preview {
+    margin: 5px;
+}
+
+.file-preview .file-nm {
+    width: 128px;
+    /*word-break: break-all;*/
+    word-wrap: break-word;
+    white-space: normal;
+    color: #FFF;
+    text-align: center;
+}
+
+.file-preview .file-nm a {
+    color: #007AFF;
+    text-decoration: underline;
 }
