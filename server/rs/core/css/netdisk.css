@@ -111,8 +111,20 @@
 
 .netdisk-list > ul > li {
     display: inline-block;
-    padding: 15px 0px 3px 0px;
-    width: 80px;
+    padding: 9px 0px 9px 0px;
+    width: 110px;
+    color: #4D4D4D;
+}
+
+.netdisk-list > ul > li > div {
+    height: 24px;
+    line-height: 24px;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+.netdisk-list > ul > li:hover {
+    background: #f3f6fc;
 }
 
 .netdisk-list > ul > li .file-size {
@@ -130,13 +142,14 @@
 
 .netdisk-list > ul > li .file-nm {
     width: 100%;
-    height: 24px;
-    line-height: 24px;
     white-space: normal;
-    color: #000;
     text-align: center;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+
+.netdisk-list > ul > li > input {
+    margin-left: 12px;
 }
 
 .netdisk-list > ul > li.active {
@@ -147,7 +160,7 @@
     display: none;
 }
 
-.netdisk-list > ul > li .file-createtime {
+.netdisk-list > ul > li .file-createTime {
     display: none;
 }
 
@@ -166,12 +179,11 @@
     border-bottom: 1px solid #eee;
 }
 
-
 .netdisk-list.list-view > ul > li > input {
     display: inline-block;
     height: 24px;
     line-height: 24px;
-    margin: 0 10px;
+    margin: 0 7px 0 10px;
 }
 
 .netdisk-list.list-view > ul > li > div {
@@ -179,7 +191,6 @@
     height: 24px;
     line-height: 24px;
     font-size: 15px;
-    color: #a8a9aa;
     white-space: nowrap;
     overflow: hidden;
 }
