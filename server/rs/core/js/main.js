@@ -78,6 +78,25 @@ function crumbHtml(route) {
     return chtml;
 }
 
+var previewTypeMap = {
+    'jpg': true,
+    'jpeg': true,
+    'png': true,
+    'gif': true
+};
+
+var uploadTypeMap = {
+    'jpg': true,
+    'jpeg': true,
+    'png': true,
+    'gif': true,
+    'doc': true,
+    'xls': true,
+    'ppt': true,
+    'zip': true
+};
+
+
 if (!window.myConf) {
     window.myConf = {
         'domain': '',
@@ -90,7 +109,13 @@ if (!window.myConf) {
         'friendsChat': {},
         // 部分控制页面的元素
         'isDebug': false,
-        'mini': true
+        'mini': true,
+        hasPreview: function (type) {
+            return previewTypeMap[type] == true;
+        },
+        canUpload: function (type) {
+            return uploadTypeMap[type] == true;
+        }
     }
 }
 
@@ -413,7 +438,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
                             var fname = finfo[1];
                             var docId = finfo[2];
                             html += '<div class="file-preview">';
-                            if (hasPreview(ftype)) {
+                            if (window.myConf.hasPreview(ftype)) {
                                 html += '<img src="/doc/preview/' + docId + '" class="file-preview-img" docId="' + docId + '">';
                             } else {
                                 html += '<div class="file-type zui-file-icon ' + ftype + '"></div>'
@@ -501,13 +526,6 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
         $(this).removeClass('dragover');
     });
 
-
-    var chatUpCheck = ['jpg', 'jpeg', 'png', 'gif', 'doc', 'xls', 'ppt', 'zip'];
-    var chatUpMap = {};
-    for (var i = 0; i < chatUpCheck.length; i++) {
-        chatUpMap[chatUpCheck[i]] = true;
-    }
-
     chatContainer[0].addEventListener("drop", function (e) {
         chatContainer.removeClass('dragover');
         e.stopPropagation();
@@ -524,7 +542,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
                 return null;
             }(tf.name);
             if (fnmS != null) {
-                if (chatUpMap[fnmS]) {
+                if (window.myConf.canUpload(fnmS)) {
                     chatContainer.addClass('uploading');
                     var xhr = new XMLHttpRequest();
                     xhr.upload.addEventListener("progress", function (e) {
@@ -562,16 +580,6 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
         }
     }, false);
 
-    var pmap = {
-        'jpg': true,
-        'jpeg': true,
-        'png': true,
-        'gif': true
-    };
-
-    function hasPreview(type) {
-        return pmap[type] == true;
-    }
 
     // 加载历史信息
     chatContainer.delegate('.chat-readmore', 'click', function () {
