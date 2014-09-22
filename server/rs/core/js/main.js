@@ -618,7 +618,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
                             var fname = finfo[1];
                             var docId = finfo[2];
                             html += '<div class="file-preview">';
-                            if (hasPreview(ftype)) {
+                            if (window.myConf.hasPreview(ftype)) {
                                 html += '<img src="/doc/preview/' + docId + '" class="file-preview-img" docId="' + docId + '">';
                             } else {
                                 html += '<div class="file-type zui-file-icon ' + ftype + '"></div>'

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,6 +41,27 @@ import org.octopus.core.fs.ReadType;
 public class DocumentModule extends AbstractBaseModule {
 
     private Log log = Logs.get();
+
+    @At("/list")
+    public List<Document> listDocument(@Param("parentId") String parentId,
+                                       @Param("module") String module,
+                                       @Param("mkey") String moduleKey,
+                                       @Param("cate") String cate,
+                                       HttpServletResponse resp,
+                                       @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        Cnd lcdn = null;
+        if (!Strings.isBlank(parentId)) {
+            lcdn = Cnd.where("parentId", "=", parentId);
+        } else {
+            lcdn = Cnd.where("module", "=", module).and("parentId",
+                                                        "=",
+                                                        FsModule.definePath(module, moduleKey));
+        }
+        if (!Strings.isBlank(cate)) {
+            lcdn.and("cate", "=", cate);
+        }
+        return dao.query(Document.class, lcdn);
+    }
 
     /**
      * 检查文件的访问权限, 做初步的判断

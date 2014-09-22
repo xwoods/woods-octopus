@@ -45,6 +45,10 @@ public class Document extends BeanCreateModify {
     private ReadType readAs;
     // 文件大小
     private long size;
+    // 文件的sha1值, 来查找重复文件
+    @ColDefine(width = 256)
+    private String sha1;
+
     // 是否私有(不公开时只有自己可以访问)
     private boolean isPrivate;
     // ----------------------------- 可读,可写,可删除是针对公开文件设置的权限, 文件创造者访问本文件不存在权限问题
@@ -230,6 +234,14 @@ public class Document extends BeanCreateModify {
 
     public void setDefine(String define) {
         this.define = define;
+    }
+
+    public String getSha1() {
+        return sha1;
+    }
+
+    public void setSha1(String sha1) {
+        this.sha1 = sha1;
     }
 
     /**
