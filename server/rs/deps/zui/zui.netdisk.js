@@ -62,23 +62,23 @@
             html += '                </li>';
             html += '            </ul>';
             html += '            <ul class="netdisk-toolbar-btns select-btns">';
-            html += '                <li class="single">';
+            html += '                <li class="single file-download">';
             html += '                    <span class="fa fa-download fa-lg"></span>';
             html += '                    下载';
             html += '                </li>';
-            html += '                <li class="single multi">';
+            html += '                <li class="single multi file-delete">';
             html += '                    <span class="fa fa-trash fa-lg"></span>';
             html += '                    删除';
             html += '                </li>';
-            html += '                <li class="single">';
+            html += '                <li class="single file-share">';
             html += '                    <span class="fa fa-share-alt fa-lg"></span>';
             html += '                    分享';
             html += '                </li>';
-            html += '                <li class="single">';
+            html += '                <li class="single file-rename">';
             html += '                    <span class="fa fa-pencil-square-o fa-lg"></span>';
             html += '                    重命名';
             html += '                </li>';
-            html += '                <li class="multi">';
+            html += '                <li class="multi file-move">';
             html += '                    <span class="fa fa-arrows-alt fa-lg"></span>';
             html += '                    移动';
             html += '                </li>';
@@ -342,6 +342,7 @@
                     data.refresh(selection);
                 } else {
                     // 预览
+                    alert('暂时还不支持打开预览, 请下载到本地查看.')
                 }
             });
 
@@ -358,6 +359,20 @@
                 }
                 cli.nextAll().remove();
                 data.refresh(selection);
+            });
+
+            // 下载文件
+            selection.delegate('.file-download', 'click', function () {
+                var selection = util.selection(this);
+                var opt = util.opt(selection);
+                // FIXME 暂时仅仅支持单文件下载
+                var sfile = selection.find('.netdisk-list input[type=checkbox]:checked').first();
+                var doc = sfile.parent().data(DOC_ITEM);
+                if (doc.cate == 'folder') {
+                    alert('暂时不支持文件夹下载');
+                    return;
+                }
+                window.location.href = "/doc/bin/read?docId=" + doc.id;
             });
 
         },
