@@ -314,7 +314,17 @@ var coreRoute = [
         url: '/notImpl',
         page: '/core/notImpl.jsp',
         ctrl: 'NoImplCtl'
-    }
+    },
+    {
+        url: '/netdisk4me',
+        page: '/core/netdisk4me.jsp',
+        ctrl: 'ND4UserCtl'
+    },
+    {
+        url: '/netdisk4domain',
+        page: '/core/netdisk4domain.jsp',
+        ctrl: 'ND4DomainCtl'
+    },
 ];
 
 var mainApp = angular.module('mainApp', ['ngRoute']);

@@ -1,0 +1,130 @@
+/**
+ * Created by pw on 14-9-22.
+ */
+
+.netdisk-toolbar {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.netdisk-toolbar-btns {
+    display: inline-block;
+    margin: 0 5px;
+    border: 1px solid #D9D9D9;
+    border-radius: 4px;
+    background-color: #ffffff;
+}
+
+.netdisk-toolbar-btns > li {
+    display: inline-block;
+    padding: 0 10px;
+    font-size: 13px;
+    height: 22px;
+    line-height: 22px;
+    color: #536083;
+    border-right: 1px solid #D9D9D9;
+    cursor: pointer;
+}
+
+.netdisk-toolbar-btns > li:hover {
+    color: #007AFF;
+}
+
+.netdisk-toolbar-btns > li:last-child {
+    border-right: none;
+}
+
+.netdisk-toolbar-btns.list-btns {
+    float: right;
+    border: none;
+}
+
+.netdisk-toolbar-btns.list-btns > li {
+    border: none;
+    padding: 2px;
+}
+
+.default-btns-upload {
+    border: 1px solid #007AFF;
+    border-radius: 4px;
+}
+
+.default-btns-upload > li {
+    background: #007AFF;
+    color: #ffffff;
+}
+
+.default-btns-upload > li:hover {
+    color: #aaa;
+}
+
+.list-btns > li {
+    color: #D9D9D9;
+}
+
+.list-btns > li.active {
+    color: #007AFF;
+}
+
+.netdisk-crumbs {
+    padding: 10px 5px;
+}
+
+.netdisk-crumbs > ul > li {
+    display: inline-block;
+    padding-right: 20px;
+    position: relative;
+    color: #3083eb;
+    cursor: pointer;
+}
+
+.netdisk-crumbs > ul > li:hover {
+    text-decoration: underline;
+}
+
+.netdisk-crumbs > ul > li:last-child:after {
+    content: "";
+}
+
+.netdisk-crumbs > ul > li:after {
+    content: ">";
+    position: absolute;
+    right: 5px;
+    top: 0;
+    color: #000;
+}
+
+.netdisk-list-toolbar {
+    background: #F7F7F7;
+    border-radius: 2px;
+    border: 1px solid #D2D2D2;
+    padding: 10px;
+}
+
+.netdisk-list > ul > li {
+    display: inline-block;
+    padding: 5px;
+}
+
+.netdisk-list > ul > li .file-size {
+    width: 128px;
+    height: 15px;
+    line-height: 15px;
+    text-align: center;
+}
+
+.netdisk-list > ul > li .file-type {
+    height: 128px;
+    border-radius: 10px;
+}
+
+.netdisk-list > ul > li .file-nm {
+    width: 128px;
+    height: 24px;
+    line-height: 24px;
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: normal;
+    color: #000;
+    text-align: center;
+}
