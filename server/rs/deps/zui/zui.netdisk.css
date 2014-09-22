@@ -296,3 +296,16 @@
 .cate-filter > li.active {
     color: #007AFF;
 }
+
+.open-file-container {
+    width: 100%;
+    height: 100%;
+}
+
+.open-file {
+    width: 100%;
+    height: 100%;
+    display: block;
+    margin:0 auto
+    vertical-align:middle;
+}

@@ -341,6 +341,22 @@
                     nli.appendTo(pul);
                     data.refresh(selection);
                 } else {
+                    if (doc.cate == "image") {
+                        $.masker({
+                            title: "图片名称: " + doc.name,
+                            closeBtn: true,
+                            width: "80%",
+                            height: "80%",
+                            body: function () {
+                                var html = '';
+                                html += '<div class="open-file-container">'
+                                html += '   <img class="open-file" src="/doc/bin/read?docId=' + doc.id + '" >';
+                                html += '</div>'
+                                return html;
+                            }
+                        });
+                        return;
+                    }
                     // 预览
                     alert('暂时还不支持打开预览, 请下载到本地查看.')
                 }
@@ -425,6 +441,16 @@
             events.unbind(selection);
             util.removeOpt(selection);
             selection.empty();
+        },
+        seleFiles: function () {
+            var selection = this;
+            var opt = util.opt(selection);
+            var sfiles = selection.find('.netdisk-list input[type=checkbox]:checked');
+            var dlist = [];
+            sfiles.each(function (i, ele) {
+                dlist.push($(ele).data(DOC_ITEM));
+            });
+            return dlist;
         }
     };
 // _________________________________
