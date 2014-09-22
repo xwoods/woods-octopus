@@ -2,67 +2,120 @@
  * Created by pw on 14-9-22.
  */
 
-.zui-file-icon {
-    width: 128px;
-    height: 128px;
-    background: url("zui.file.png") no-repeat;
+/*64px大小的icon*/
+
+.zui-icon-24 {
+    width: 24px;
+    height: 24px;
+    background: url("zui.icons.png") no-repeat;
 }
 
-/*---------图片----------*/
-.image {
-    background-position: 0px 0px;
+/*64px大小的icon*/
+
+.zui-icon-64 {
+    width: 64px;
+    height: 64px;
+    background: url("zui.icons.png") no-repeat;
 }
 
-.jpg {
-    background-position: 0px 0px;
+.zui-icon-64.folder {
+    background-position: -120px 0px;
 }
 
-.jpeg {
-    background-position: 0px 0px;
+/*图片*/
+.zui-icon-64.png {
+    background-position: -120px -64px;
 }
 
-.gif {
-    background-position: 0px 0px;
+.zui-icon-64.bmp {
+    background-position: -120px -128px;
 }
 
-.png {
-    background-position: 0px 0px;
+.zui-icon-64.gif {
+    background-position: -120px -192px;
 }
 
-.bmp {
-    background-position: 0px 0px;
+.zui-icon-64.jpg, .zui-icon-64.jpeg {
+    background-position: -120px -256px;
 }
 
-/*---------视频----------*/
-
-.video {
-    background-position: 0px -128px;
+.zui-icon-64.tif {
+    background-position: -120px -320px;
 }
 
-/*---------压缩包----------*/
-
-.compressed {
-    background-position: 0px -512px;
+.zui-icon-64.tif {
+    background-position: -120px -320px;
 }
 
-.zip {
-    background-position: 0px -512px;
+/*文本*/
+.zui-icon-64.txt {
+    background-position: -120px -384px;
 }
 
-.tar {
-    background-position: 0px -512px;
+/*视频*/
+.zui-icon-64.mov {
+    background-position: -120px -448px;
 }
 
-/*---------office----------*/
-
-.doc {
-    background-position: 0px -640px;
+.zui-icon-64.mp4 {
+    background-position: -120px -512px;
 }
 
-.xls {
-    background-position: 0px -640px;
+.zui-icon-64.avi {
+    background-position: -120px -576px;
 }
 
-.ppt {
-    background-position: 0px -640px;
+.zui-icon-64.wmv {
+    background-position: -120px -640px;
+}
+
+.zui-icon-64.mpg {
+    background-position: -120px -704px;
+}
+
+.zui-icon-64.mvk {
+    background-position: -120px -768px;
+}
+
+/*压缩包*/
+.zui-icon-64.rar {
+    background-position: -120px -832px;
+}
+
+.zui-icon-64.tar {
+    background-position: -120px -896px;
+}
+
+.zui-icon-64.zip {
+    background-position: -120px -960px;
+}
+
+/*office*/
+
+.zui-icon-64.csv {
+    background-position: -120px -1024px;
+}
+
+.zui-icon-64.xls {
+    background-position: -120px -1088px;
+}
+
+.zui-icon-64.xlsx {
+    background-position: -120px -1152px;
+}
+
+.zui-icon-64.doc {
+    background-position: -120px -1216px;
+}
+
+.zui-icon-64.docx {
+    background-position: -120px -1280px;
+}
+
+.zui-icon-64.ppt {
+    background-position: -120px -1344px;
+}
+
+.zui-icon-64.pptx {
+    background-position: -120px -1408px;
 }

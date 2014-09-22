@@ -17,16 +17,20 @@
 
 .netdisk-toolbar-btns > li {
     display: inline-block;
-    padding: 0 10px;
+    padding: 0 13px;
     font-size: 13px;
-    height: 22px;
-    line-height: 22px;
+    height: 24px;
+    line-height: 24px;
     color: #536083;
     border-right: 1px solid #D9D9D9;
     cursor: pointer;
 }
 
-.netdisk-toolbar-btns > li:hover {
+.netdisk-toolbar-btns > li > .fa {
+    padding-right: 5px;
+}
+
+.netdisk-toolbar-btns > li:hover > .fa {
     color: #007AFF;
 }
 
@@ -55,7 +59,11 @@
 }
 
 .default-btns-upload > li:hover {
-    color: #aaa;
+    color: #D9D9D9;
+}
+
+.default-btns-upload > li:hover > .fa {
+    color: #D9D9D9;
 }
 
 .list-btns > li {
@@ -103,28 +111,34 @@
 
 .netdisk-list > ul > li {
     display: inline-block;
-    padding: 5px;
+    margin: 10px;
+    width: 80px;
 }
 
 .netdisk-list > ul > li .file-size {
-    width: 128px;
+    width: 100%;
     height: 15px;
     line-height: 15px;
     text-align: center;
 }
 
 .netdisk-list > ul > li .file-type {
-    height: 128px;
-    border-radius: 10px;
+    width: 64px;
+    height: 64px;
+    margin: 5px auto;
 }
 
 .netdisk-list > ul > li .file-nm {
-    width: 128px;
+    width: 100%;
     height: 24px;
     line-height: 24px;
-    word-break: break-all;
-    word-wrap: break-word;
     white-space: normal;
     color: #000;
     text-align: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.netdisk-list > ul > li.active {
+    border: 2px solid rgba(0, 122, 255, 0.6);
 }

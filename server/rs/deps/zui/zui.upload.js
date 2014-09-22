@@ -124,10 +124,10 @@
                 function uploadFileHtml(file) {
                     var upH = '';
                     upH += '<li fnm="' + file.name + '" fsz="' + file.size + '">';
-                    upH += '    <div class="file-type zui-file-icon ' + suffixName(file.name) + '" ></div>';
+                    upH += '    <div class="file-type zui-icon-64 ' + suffixName(file.name) + '" ></div>';
                     upH += '    <div class="file-size">' + sizeText(file.size) + '</div>';
                     upH += '    <div class="file-nm">' + file.name + '</div>';
-                    upH += '    <div class="file-del fa fa-2x fa-times-circle"></div>';
+                    upH += '    <div class="file-del fa fa-lg fa-times"></div>';
                     upH += '    <div class="file-uploading">';
                     upH += '        <div class="file-uploading-process"></div>';
                     upH += '    </div>';

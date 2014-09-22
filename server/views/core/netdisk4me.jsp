@@ -49,7 +49,7 @@
         <div class="netdisk-crumbs">
             <ul>
                 <li>
-                    我的网盘
+                    全部文件
                 </li>
                 <li>
                     测试目录1
@@ -65,28 +65,23 @@
         <div class="netdisk-list">
             <ul>
                 <li fnm="llt.gif" fsz="1670691">
-                    <div class="file-type zui-file-icon gif"></div>
-                    <div class="file-size">1.7 MB</div>
+                    <div class="file-type zui-icon-64 gif"></div>
                     <div class="file-nm">llt.gif</div>
                 </li>
                 <li fnm="llt.gif" fsz="3556">
-                    <div class="file-type zui-file-icon zip"></div>
-                    <div class="file-size">22 MB</div>
-                    <div class="file-nm">test.zip</div>
+                    <div class="file-type zui-icon-64 zip"></div>
+                    <div class="file-nm">test.ziptest.ziptest.ziptest.ziptest.ziptest.zip</div>
                 </li>
-                <li fnm="llt.gif" fsz="1670691">
-                    <div class="file-type zui-file-icon jpg"></div>
-                    <div class="file-size">35 KB</div>
+                <li fnm="llt.gif" fsz="1670691" class="active">
+                    <div class="file-type zui-icon-64 jpg"></div>
                     <div class="file-nm">haha.jpg</div>
                 </li>
                 <li fnm="llt.gif" fsz="1670691">
-                    <div class="file-type zui-file-icon doc"></div>
-                    <div class="file-size">25.6 KB</div>
+                    <div class="file-type zui-icon-64 doc"></div>
                     <div class="file-nm">2013.doc</div>
                 </li>
                 <li fnm="llt.gif" fsz="1670691">
-                    <div class="file-type zui-file-icon xls"></div>
-                    <div class="file-size">35 KB</div>
+                    <div class="file-type zui-icon-64 xls"></div>
                     <div class="file-nm">2014.xls</div>
                 </li>
             </ul>

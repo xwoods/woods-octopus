@@ -451,7 +451,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
                             if (window.myConf.hasPreview(ftype)) {
                                 html += '<img src="/doc/preview/' + docId + '" class="file-preview-img" docId="' + docId + '">';
                             } else {
-                                html += '<div class="file-type zui-file-icon ' + ftype + '"></div>'
+                                html += '<div class="file-type zui-icon-64 ' + ftype + '"></div>'
                                 html += '<div class="file-nm"><a href="/doc/bin/read?docId=' + docId + '" >' + fname + '.' + ftype + '</a></div>'
                             }
                             html += '<div>';
@@ -631,7 +631,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
                             if (window.myConf.hasPreview(ftype)) {
                                 html += '<img src="/doc/preview/' + docId + '" class="file-preview-img" docId="' + docId + '">';
                             } else {
-                                html += '<div class="file-type zui-file-icon ' + ftype + '"></div>'
+                                html += '<div class="file-type zui-icon-64 ' + ftype + '"></div>'
                                 html += '<div class="file-nm"><a href="/doc/bin/read?docId=' + docId + '" >' + fname + '.' + ftype + '</a></div>'
                             }
                             html += '<div>';
@@ -841,8 +841,8 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
         var uface = $(this);
         $.upload({
             title: "上传头像",
-            width: 400,
-            height: 300,
+            width: 350,
+            height: 250,
             upload: {
                 num: 1,
                 type: ['jpg', 'jpeg', 'png', 'gif'],
