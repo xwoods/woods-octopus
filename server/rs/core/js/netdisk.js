@@ -10,7 +10,8 @@ function ND4UserCtl($scope) {
         root: {
             module: 'users',
             moduleKey: window.myConf.user
-        }
+        },
+        multisel: true
     });
 
 }
@@ -23,6 +24,7 @@ function ND4DomainCtl($scope) {
         root: {
             module: 'domains',
             moduleKey: window.myConf.domain
-        }
+        },
+        multisel: false
     });
 }
