@@ -43,9 +43,9 @@ public class DocumentModule extends AbstractBaseModule {
     private Log log = Logs.get();
 
     @At("/list")
-    public List<Document> listDocument(@Param("parentId") String parentId,
+    public List<Document> listDocument(@Param("pid") String parentId,
                                        @Param("module") String module,
-                                       @Param("mkey") String moduleKey,
+                                       @Param("moduleKey") String moduleKey,
                                        @Param("cate") String cate,
                                        HttpServletResponse resp,
                                        @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
@@ -214,7 +214,7 @@ public class DocumentModule extends AbstractBaseModule {
     @Fail("ajax")
     public Document writeBinary(HttpServletRequest req,
                                 @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
-        String docId = req.getHeader("DOC_ID");
+        String docId = req.getHeader("docId");
         Document doc = dao.fetch(Document.class, docId);
         if (doc == null) {
             throw OctopusErr.DOCUMENT_NOT_EXIST(docId);
@@ -248,28 +248,15 @@ public class DocumentModule extends AbstractBaseModule {
     @Fail("ajax")
     public Document addBinary(HttpServletRequest req,
                               @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
-        String module = req.getHeader("DOC_M");
-        String moduleKey = req.getHeader("DOC_MKEY");
-        String pid = req.getHeader("DOC_PID");
-        String fnm = urlDecode(req.getHeader("DOC_FNM"));
-        boolean isPrivate = req.getHeader("DOC_RPIVATE") == null ? true
-                                                                : Boolean.valueOf(req.getHeader("DOC_RPIVATE"));
-        // 如果有父节点的话
-        Document parent = null;
-        if (!Strings.isBlank(pid)) {
-            parent = dao.fetch(Document.class, pid);
-            if (parent == null) {
-                throw OctopusErr.DOCUMENT_PARENT_NOT_EXIST(pid);
-            }
-        } else {
-            // 做个假的parent, 用define作为parent
-            parent = new Document();
-            parent.setModule(module);
-            parent.setDefine(FsModule.definePath(module, moduleKey));
-            parent.setId(parent.getDefine());
-        }
+        String module = req.getHeader("module");
+        String moduleKey = req.getHeader("moduleKey");
+        String pid = req.getHeader("pid");
+        String fnm = urlDecode(req.getHeader("fnm"));
+        boolean isPrivate = req.getHeader("isPrivate") == null ? true
+                                                              : Boolean.valueOf(req.getHeader("isPrivate"));
+
         // 生成Doc对象
-        Document doc = fsIO.make(parent, fnm, isPrivate, me);
+        Document doc = makeDocument(module, moduleKey, pid, fnm, null, isPrivate, me);
         // 写入文件
         try {
             BufferedInputStream ins = Streams.buff(req.getInputStream());
@@ -307,4 +294,58 @@ public class DocumentModule extends AbstractBaseModule {
         }
         return new File(FsPath.fileExtra(doc, FsPath.EXTRA_PREVIEW), "preview.jpg");
     }
+
+    /**
+     * 新建一个文件对象
+     * 
+     * @param module
+     * @param moduleKey
+     * @param pid
+     * @param fnm
+     * @param type
+     * @param isPrivate
+     * @param me
+     * @return
+     */
+    @At("/create")
+    @Ok("ajax")
+    public Document createDocument(@Param("module") String module,
+                                   @Param("moduleKey") String moduleKey,
+                                   @Param("pid") String pid,
+                                   @Param("fnm") String fnm,
+                                   @Param("ftp") String type,
+                                   @Param("isPrivate") Boolean isPrivate,
+                                   @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        if (isPrivate == null) {
+            isPrivate = true;
+        }
+        return makeDocument(module, moduleKey, pid, fnm, type, isPrivate, me);
+    }
+
+    private Document makeDocument(String module,
+                                  String moduleKey,
+                                  String pid,
+                                  String fnm,
+                                  String type,
+                                  boolean isPrivate,
+                                  User ctUser) {
+        // 如果有父节点的话
+        Document parent = null;
+        if (!Strings.isBlank(pid)) {
+            parent = dao.fetch(Document.class, pid);
+            if (parent == null) {
+                throw OctopusErr.DOCUMENT_PARENT_NOT_EXIST(pid);
+            }
+        } else {
+            // 做个假的parent, 用define作为parent
+            parent = new Document();
+            parent.setModule(module);
+            parent.setDefine(FsModule.definePath(module, moduleKey));
+            parent.setId(parent.getDefine());
+        }
+        // 生成Doc对象
+        Document doc = fsIO.make(parent, fnm, type, isPrivate, ctUser);
+        return doc;
+    }
+
 }

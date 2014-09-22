@@ -14,7 +14,7 @@
     $z.initMsg = function () {
         var msgJq = $("#__msg__");
         var mkvList = msgJq.children();
-        mkvList.each(function(i, ele){
+        mkvList.each(function (i, ele) {
             var mkv = $(ele);
             $z.__msg__[mkv.attr('key')] = mkv.html();
         });
@@ -114,5 +114,31 @@
             return str.replace(reallyDo, replaceWith);
         }
     };
+
+
+    util.sizeText = function (size, unit) {
+        if (typeof size != "number") size = size * 1;
+        if ("M" == unit) {
+            var g = size / 1000;
+            if (g > 1) return Math.ceil(g * 10) / 10 + " GB";
+            return size + "MB";
+        }
+        if ("K" == unit) {
+            var m = size / 1000;
+            var g = m / 1000;
+            if (g > 1) return Math.ceil(g * 10) / 10 + " GB";
+            if (m > 1) return Math.ceil(m * 10) / 10 + " MB";
+            return Math.ceil(k) + " KB";
+        }
+        var k = size / 1000;
+        if (k > 1) {
+            var m = k / 1000;
+            var g = m / 1000;
+            if (g > 1) return Math.ceil(g * 10) / 10 + " GB";
+            if (m > 1) return Math.ceil(m * 10) / 10 + " MB";
+            return Math.ceil(k) + " KB";
+        }
+        return size + " B";
+    }
 
 })(window);

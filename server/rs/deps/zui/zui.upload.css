@@ -49,6 +49,10 @@
 
 .upload-file-list.upload-file-list > li {
     display: block;
+}
+
+.upload-file-list.upload-file-list.single > li {
+    display: block;
     float: none;
     margin: 0 auto;
 }
@@ -80,7 +84,7 @@
     line-height: 15px;
     text-align: center;
     margin-bottom: 5px;
-    color: #888;
+    color: #FFFF36;
     text-shadow: 1px 1px 0 #444;
 }
 

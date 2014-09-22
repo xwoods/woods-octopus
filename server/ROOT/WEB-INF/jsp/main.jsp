@@ -24,9 +24,12 @@
     <link rel="stylesheet" href="${rs}/deps/zui/zui.masker.css">
     <link rel="stylesheet" href="${rs}/deps/zui/zui.grid.css">
     <link rel="stylesheet" href="${rs}/deps/zui/zui.upload.css">
+    <link rel="stylesheet" href="${rs}/deps/zui/zui.netdisk.css">
+
     <script language="JavaScript" src="${rs}/deps/zui/zui.masker.js"></script>
     <script language="JavaScript" src="${rs}/deps/zui/zui.grid.js"></script>
     <script language="JavaScript" src="${rs}/deps/zui/zui.upload.js"></script>
+    <script language="JavaScript" src="${rs}/deps/zui/zui.netdisk.js"></script>
 
     <script language="JavaScript" src="${rs}/deps/underscore.js"></script>
     <script language="JavaScript" src="${rs}/deps/angular/angular.js"></script>

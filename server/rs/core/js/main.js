@@ -580,10 +580,10 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
                     var contentType = "application/x-www-form-urlencoded; charset=utf-8";
                     xhr.open("POST", "/doc/bin/add", true);
                     xhr.setRequestHeader('Content-type', contentType);
-                    xhr.setRequestHeader('DOC_M', "chat");
-                    xhr.setRequestHeader('DOC_MKEY', chatId);
-                    xhr.setRequestHeader("DOC_FNM", "" + encodeURI(tf.name));
-                    xhr.setRequestHeader('DOC_RPIVATE', "false");
+                    xhr.setRequestHeader('module', "chat");
+                    xhr.setRequestHeader('moduleKey', chatId);
+                    xhr.setRequestHeader("fnm", "" + encodeURI(tf.name));
+                    xhr.setRequestHeader('isPrivate', "false");
                     xhr.send(tf);
                 }
             }

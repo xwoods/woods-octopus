@@ -21,6 +21,7 @@ import org.nutz.json.JsonFormat;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Streams;
+import org.nutz.lang.Strings;
 import org.nutz.lang.random.R;
 import org.nutz.lang.stream.NullInputStream;
 import org.nutz.log.Log;
@@ -85,10 +86,10 @@ public class FsIO {
      */
     public void setNewName(Document doc) {
         String cnm = doc.getName();
-        int i = 0;
+        int i = 1;
         boolean same = true;
         while (same) {
-            String nnm = cnm + "_" + i++;
+            String nnm = cnm + "(" + i++ + ")";
             doc.setName(nnm);
             same = hasSameName(doc);
         }
@@ -101,15 +102,24 @@ public class FsIO {
      *            父节点
      * @param fnm
      *            文件名称
+     * @param type
+     *            文件类型
      * @param isPrivate
      *            是否私有
      * @param ctUser
      *            建立者
      * @return 文件对象
      */
-    public Document make(Document parent, String fnm, boolean isPrivate, User ctUser) {
-        String fnmM = Files.getMajorName(fnm);
-        String fnmS = Files.getSuffixName(fnm).toLowerCase();
+    public Document make(Document parent, String fnm, String type, boolean isPrivate, User ctUser) {
+        String fnmM = null;
+        String fnmS = null;
+        if (Strings.isBlank(type)) { // 查找文件类型
+            fnmM = Files.getMajorName(fnm);
+            fnmS = Files.getSuffixName(fnm).toLowerCase();
+        } else {
+            fnmM = fnm;
+            fnmS = type;
+        }
         Document doc = new Document();
         doc.setCreateTime(new Date());
         doc.setCreateUser(ctUser.getName());
