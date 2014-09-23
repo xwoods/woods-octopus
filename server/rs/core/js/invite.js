@@ -1,7 +1,5 @@
 mainApp.controller('InviteCtl', function ($scope) {
 
-    var octserver = "octopus.danoolive.com:9577";
-
     $scope.userName = "";
     $scope.isMale = "true";
     $scope.domainList = "";
@@ -56,12 +54,12 @@ mainApp.controller('InviteCtl', function ($scope) {
     });
 
 
-    module.delegate('.show-invite-url', 'click', function(){
+    module.delegate('.show-invite-url', 'click', function () {
         var cu = $(this);
         var rid = cu.attr('rid');
         var unm = cu.html();
         iurl.find('b').html(unm);
-        iurl.find('span').html("http://" + octserver + "/login#icode=" + rid);
+        iurl.find('span').html(window.location.host + "/login#icode=" + rid);
     });
 
     inviteJq.zgrid({
@@ -89,8 +87,8 @@ mainApp.controller('InviteCtl', function ($scope) {
                 'hasReg': function (rowData) {
                     return rowData.hasReg ? addFontColor("已用", "#000") : addFontColor("可用", "#080");
                 },
-                "userName" : function(rowData){
-                    return '<span class="show-invite-url" rid="'+ rowData.id +'">' + rowData.userName + "</span>"
+                "userName": function (rowData) {
+                    return '<span class="show-invite-url" rid="' + rowData.id + '">' + rowData.userName + "</span>"
                 }
             },
             columns: [

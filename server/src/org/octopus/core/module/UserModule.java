@@ -305,12 +305,12 @@ public class UserModule extends AbstractBaseModule {
     @At("/na")
     public AjaxReturn userNameAlias() {
         final NutMap naMap = new NutMap();
-        Sql sql = Sqls.create("select name, alias from t_user");
+        Sql sql = Sqls.create("select name from t_user");
         sql.setCallback(new SqlCallback() {
             @Override
             public Object invoke(Connection conn, ResultSet rs, Sql sql) throws SQLException {
                 while (rs.next()) {
-                    naMap.put(rs.getString(1), rs.getString(2));
+                    naMap.put(rs.getString(1), rs.getString(1));
                 }
                 return null;
             }
