@@ -4,6 +4,7 @@ import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.octopus.core.bean.Chat;
 import org.octopus.core.fs.PathDefine;
+import org.octopus.core.fs.PathDefineNotExistException;
 
 public class ChatPathDefine implements PathDefine {
 
@@ -19,7 +20,7 @@ public class ChatPathDefine implements PathDefine {
         if (c != null) {
             return "" + c.getId();
         }
-        return null;
+        throw new PathDefineNotExistException();
     }
 
 }

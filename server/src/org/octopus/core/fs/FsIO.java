@@ -30,7 +30,6 @@ import org.nutz.web.Webs.Err;
 import org.octopus.OctopusErr;
 import org.octopus.core.bean.Document;
 import org.octopus.core.bean.DocumentType;
-import org.octopus.core.bean.User;
 
 /**
  * 
@@ -66,16 +65,25 @@ public class FsIO {
         return Cnd.where("module", "=", doc.getModule()).and("define", "=", doc.getDefine());
     }
 
+    public boolean existDocument(String module, String define, String parentId, String fnm) {
+        Document chkdoc = new Document();
+        chkdoc.setModule(module);
+        chkdoc.setDefine(define);
+        chkdoc.setParentId(parentId);
+        chkdoc.setName(fnm);
+        return existDocument(chkdoc);
+    }
+
     /**
      * @param doc
      *            文档
      * @return 在当前目录下是否有重名的
      */
-    public boolean hasSameName(Document doc) {
+    public boolean existDocument(Document doc) {
         int sn = dao.count(Document.class,
-                           fsCnd(doc).and("name", "=", doc.getName()).and("parentId",
-                                                                          "=",
-                                                                          doc.getParentId()));
+                           fsCnd(doc).and("parentId", "=", doc.getParentId()).and("name",
+                                                                                  "=",
+                                                                                  doc.getName()));
         return sn > 0;
     }
 
@@ -91,8 +99,35 @@ public class FsIO {
         while (same) {
             String nnm = cnm + "(" + i++ + ")";
             doc.setName(nnm);
-            same = hasSameName(doc);
+            same = existDocument(doc);
         }
+    }
+
+    public Document fetch(String module, String define, String fnm) {
+        Document parent = new Document();
+        parent.setModule(module);
+        parent.setDefine(define);
+        parent.setId(define); // define就是parentId
+        return fetch(parent, fnm);
+    }
+
+    public Document fetch(Document parent, String fnm) {
+        Document doc = dao.fetch(Document.class, fsCnd(parent).and("parentId", "=", parent.getId())
+                                                              .and("name", "=", fnm));
+        return doc;
+    }
+
+    public Document make(String module,
+                         String define,
+                         String fnm,
+                         String type,
+                         boolean isPrivate,
+                         String ctUser) {
+        Document parent = new Document();
+        parent.setModule(module);
+        parent.setDefine(define);
+        parent.setId(define); // define就是parentId
+        return make(parent, fnm, type, isPrivate, ctUser);
     }
 
     /**
@@ -110,7 +145,7 @@ public class FsIO {
      *            建立者
      * @return 文件对象
      */
-    public Document make(Document parent, String fnm, String type, boolean isPrivate, User ctUser) {
+    public Document make(Document parent, String fnm, String type, boolean isPrivate, String ctUser) {
         String fnmM = null;
         String fnmS = null;
         if (Strings.isBlank(type)) { // 查找文件类型
@@ -122,7 +157,7 @@ public class FsIO {
         }
         Document doc = new Document();
         doc.setCreateTime(new Date());
-        doc.setCreateUser(ctUser.getName());
+        doc.setCreateUser(ctUser);
         doc.setParentId(parent.getId());
         doc.setModule(parent.getModule());
         doc.setDefine(parent.getDefine());
@@ -135,7 +170,7 @@ public class FsIO {
         doc.setCanWrite(false);
         doc.setCanRemove(false);
         // 检查文件是否重名
-        if (hasSameName(doc)) {
+        if (existDocument(doc)) {
             setNewName(doc);
         }
         // 根据文件后缀, 补全文件相关属性
@@ -190,7 +225,7 @@ public class FsIO {
      *            修改者
      * @return 是否写入成功
      */
-    public boolean writeText(Document doc, InputStream ins, User mdUser) {
+    public boolean writeText(Document doc, InputStream ins, String mdUser) {
         try {
             Reader reader = new InputStreamReader(ins, "UTF-8");
             String text = Streams.readAndClose(reader);
@@ -211,7 +246,7 @@ public class FsIO {
                 // 更新文件信息
                 doc.setSize(f.length());
                 doc.setModifyTime(new Date());
-                doc.setModifyUser(mdUser.getName());
+                doc.setModifyUser(mdUser);
                 dao.update(doc, "size|modifyTime|modifyUser");
                 return true;
             } else {
@@ -237,7 +272,7 @@ public class FsIO {
      *            修改者
      * @return 是否写入成功
      */
-    public boolean writeBinary(Document doc, InputStream ins, User mdUser) {
+    public boolean writeBinary(Document doc, InputStream ins, String mdUser) {
         File tmpf = null;
         try {
             // 这个是旧文件
@@ -269,7 +304,7 @@ public class FsIO {
                 // 更新文件信息
                 doc.setSize(f.length());
                 doc.setModifyTime(new Date());
-                doc.setModifyUser(mdUser.getName());
+                doc.setModifyUser(mdUser);
                 dao.update(doc, "size|modifyTime|modifyUser");
                 return true;
             } else {

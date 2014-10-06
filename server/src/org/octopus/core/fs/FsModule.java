@@ -33,6 +33,10 @@ public class FsModule {
 
     private static Map<String, PathDefine> m2definMap = new HashMap<String, PathDefine>();
 
+    public static void regModule(String moduleName) {
+        regModule(moduleName, null);
+    }
+
     /**
      * 注册模块, 并给出目录定义
      * 
@@ -53,7 +57,10 @@ public class FsModule {
      * @return
      */
     public static String definePath(String moduleName, String mkey) {
-        return m2definMap.get(moduleName).define(mkey);
+        PathDefine pd = m2definMap.get(moduleName);
+        if (pd == null) {
+            return mkey;
+        }
+        return pd.define(mkey);
     }
-
 }

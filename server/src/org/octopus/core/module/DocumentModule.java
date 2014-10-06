@@ -196,7 +196,7 @@ public class DocumentModule extends AbstractBaseModule {
         if (doc == null) {
             throw OctopusErr.DOCUMENT_NOT_EXIST(docId);
         }
-        fsIO.writeText(doc, new StringInputStream(content), me);
+        fsIO.writeText(doc, new StringInputStream(content), me.getName());
         return doc;
     }
 
@@ -223,9 +223,9 @@ public class DocumentModule extends AbstractBaseModule {
         try {
             BufferedInputStream ins = Streams.buff(req.getInputStream());
             if (doc.isBinary()) {
-                fsIO.writeBinary(doc, ins, me);
+                fsIO.writeBinary(doc, ins, me.getName());
             } else {
-                fsIO.writeText(doc, ins, me);
+                fsIO.writeText(doc, ins, me.getName());
             }
         }
         catch (IOException e) {
@@ -256,14 +256,14 @@ public class DocumentModule extends AbstractBaseModule {
                                                               : Boolean.valueOf(req.getHeader("isPrivate"));
 
         // 生成Doc对象
-        Document doc = makeDocument(module, moduleKey, pid, fnm, null, isPrivate, me);
+        Document doc = makeDocument(module, moduleKey, pid, fnm, null, isPrivate, me.getName());
         // 写入文件
         try {
             BufferedInputStream ins = Streams.buff(req.getInputStream());
             if (doc.isBinary()) {
-                fsIO.writeBinary(doc, ins, me);
+                fsIO.writeBinary(doc, ins, me.getName());
             } else {
-                fsIO.writeText(doc, ins, me);
+                fsIO.writeText(doc, ins, me.getName());
             }
             // FIXME 移动到别的地方去, 不要放在这里
             fsExtraMaker.makePreview(doc);
@@ -319,7 +319,7 @@ public class DocumentModule extends AbstractBaseModule {
         if (isPrivate == null) {
             isPrivate = true;
         }
-        return makeDocument(module, moduleKey, pid, fnm, type, isPrivate, me);
+        return makeDocument(module, moduleKey, pid, fnm, type, isPrivate, me.getName());
     }
 
     private Document makeDocument(String module,
@@ -328,23 +328,24 @@ public class DocumentModule extends AbstractBaseModule {
                                   String fnm,
                                   String type,
                                   boolean isPrivate,
-                                  User ctUser) {
+                                  String ctUser) {
+        Document doc = null;
         // 如果有父节点的话
-        Document parent = null;
         if (!Strings.isBlank(pid)) {
-            parent = dao.fetch(Document.class, pid);
+            Document parent = dao.fetch(Document.class, pid);
             if (parent == null) {
                 throw OctopusErr.DOCUMENT_PARENT_NOT_EXIST(pid);
             }
+            doc = fsIO.make(parent, fnm, type, isPrivate, ctUser);
         } else {
             // 做个假的parent, 用define作为parent
-            parent = new Document();
-            parent.setModule(module);
-            parent.setDefine(FsModule.definePath(module, moduleKey));
-            parent.setId(parent.getDefine());
+            doc = fsIO.make(module,
+                            FsModule.definePath(module, moduleKey),
+                            fnm,
+                            type,
+                            isPrivate,
+                            ctUser);
         }
-        // 生成Doc对象
-        Document doc = fsIO.make(parent, fnm, type, isPrivate, ctUser);
         return doc;
     }
 

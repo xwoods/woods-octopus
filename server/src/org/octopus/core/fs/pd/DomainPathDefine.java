@@ -4,6 +4,7 @@ import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.octopus.core.bean.Domain;
 import org.octopus.core.fs.PathDefine;
+import org.octopus.core.fs.PathDefineNotExistException;
 
 public class DomainPathDefine implements PathDefine {
 
@@ -19,7 +20,7 @@ public class DomainPathDefine implements PathDefine {
         if (d != null) {
             return d.getName();
         }
-        return null;
+        throw new PathDefineNotExistException();
     }
 
 }
