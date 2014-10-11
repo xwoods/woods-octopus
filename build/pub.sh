@@ -33,6 +33,7 @@ cp -rf $OCT_LIB/* $BUILD_PATH/lib/
 cp2buildWithROOT $OCT_PATH/server
 cp2build $HOME/gitrep/xwoods/octopus-danoo
 cp2build $HOME/gitrep/xwoods/octopus-matrix
+cp2build $HOME/gitrep/xwoods/octopus-weixin
 
 # build_jar
 export BUILD_DEPS=$OCT_LIB
