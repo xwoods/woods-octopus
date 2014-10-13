@@ -7,8 +7,9 @@
 }
 
 .netdisk-toolbar {
-    padding-bottom: 10px;
+    padding-bottom: 5px;
     border-bottom: 1px solid #D9D9D9;
+    height: 37px;
 }
 
 .netdisk-toolbar-btns {

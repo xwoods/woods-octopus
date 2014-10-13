@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./pub.sh 201
+. ./build-danoo.sh 201
 
 cd $BUILD_PATH
 

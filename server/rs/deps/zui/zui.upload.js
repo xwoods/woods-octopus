@@ -106,7 +106,7 @@
                     }
                     var cup = ufiles.first();
                     var cprocess = cup.find('.file-uploading-process');
-                    var ctip = cup.find('.file-uploading-tip');
+                    var ctip = cup.find('.file-upload-tip');
                     var file = cup.data(UP_FILE);
                     cup.addClass('uploading');
                     opt.upload.doUpload(file, mdiv, function (e) {
@@ -116,6 +116,7 @@
                     }, function () {
                         cup.removeClass('uploading');
                         cup.addClass('uploaded');
+                        ctip.html("上传完毕")
                         // 继续下一个
                         uploadFile2Server();
                     });
@@ -131,7 +132,7 @@
                     upH += '    <div class="file-uploading">';
                     upH += '        <div class="file-uploading-process"></div>';
                     upH += '    </div>';
-                    upH += '    <div class="file-uploading-tip">0%</div>'
+                    upH += '    <div class="file-upload-tip">0%</div>'
                     upH += '</li>';
                     return upH;
                 }

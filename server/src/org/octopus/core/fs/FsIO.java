@@ -18,6 +18,7 @@ import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.json.Json;
 import org.nutz.json.JsonFormat;
+import org.nutz.lang.Each;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Streams;
@@ -101,6 +102,10 @@ public class FsIO {
             doc.setName(nnm);
             same = existDocument(doc);
         }
+    }
+
+    public Document fetch(String id) {
+        return dao.fetch(Document.class, id);
     }
 
     public Document fetch(String module, String define, String fnm) {
@@ -379,4 +384,43 @@ public class FsIO {
                                                  doc.getId()));
     }
 
+    /**
+     * 获取root目录下的子文件
+     * 
+     * @param root
+     * @param type
+     * @param deep
+     * @return
+     */
+    public List<Document> children(Document root, String type, boolean deep) {
+        List<Document> chList = null;
+        if (root.isDir()) {
+            Cnd cnd = fsCnd(root).and("parentId", "=", root.getId());
+            if (!Strings.isBlank(type)) {
+                cnd.and("type", "=", type);
+            }
+            chList = dao.query(Document.class, cnd);
+            // 查询更多的子文件
+            if (deep) {
+                for (Document ch : chList) {
+                    if (ch.isDir()) {
+                        chList.addAll(children(ch, type, deep));
+                    }
+                }
+            }
+        }
+        return chList;
+    }
+
+    /**
+     * 依次遍历访问子文件
+     * 
+     * @param root
+     * @param type
+     * @param eachVisit
+     */
+    public void visitChildren(Document root, String type, boolean deep, Each<Document> eachVisit) {
+        // TODO
+
+    }
 }

@@ -22,6 +22,12 @@
         },
         checkopt: function (opt) {
             // TODO
+            if (!opt.mode) {
+                opt.mode = 'write'
+            }
+            if (!opt.view) {
+                opt.view = 'grid';
+            }
             return opt;
         },
         selection: function (ele) {
@@ -49,52 +55,56 @@
             var html = '';
             html += ' 	<div class="netdisk">';
             html += '        <div class="netdisk-toolbar">';
-            html += '            <ul class="netdisk-toolbar-btns default-btns-upload">';
-            html += '                <li>';
-            html += '                    <span class="fa fa-upload fa-lg"></span>';
-            html += '                    上传';
-            html += '                </li>';
-            html += '            </ul>';
-            html += '            <ul class="netdisk-toolbar-btns default-btns-newfolder">';
-            html += '                <li>';
-            html += '                    <span class="fa fa-folder-o fa-lg"></span>';
-            html += '                    新建文件夹';
-            html += '                </li>';
-            html += '            </ul>';
+            if (opt.mode == 'write') {
+                html += '            <ul class="netdisk-toolbar-btns default-btns-upload">';
+                html += '                <li>';
+                html += '                    <span class="fa fa-upload fa-lg"></span>';
+                html += '                    上传';
+                html += '                </li>';
+                html += '            </ul>';
+                html += '            <ul class="netdisk-toolbar-btns default-btns-newfolder">';
+                html += '                <li>';
+                html += '                    <span class="fa fa-folder-o fa-lg"></span>';
+                html += '                    新建文件夹';
+                html += '                </li>';
+                html += '            </ul>';
+            }
             html += '            <ul class="netdisk-toolbar-btns select-btns">';
             html += '                <li class="single file-download">';
             html += '                    <span class="fa fa-download fa-lg"></span>';
             html += '                    下载';
             html += '                </li>';
-            html += '                <li class="single multi file-delete">';
-            html += '                    <span class="fa fa-trash fa-lg"></span>';
-            html += '                    删除';
-            html += '                </li>';
-            html += '                <li class="single file-share">';
-            html += '                    <span class="fa fa-share-alt fa-lg"></span>';
-            html += '                    分享';
-            html += '                </li>';
-            html += '                <li class="single file-rename">';
-            html += '                    <span class="fa fa-pencil-square-o fa-lg"></span>';
-            html += '                    重命名';
-            html += '                </li>';
-            html += '                <li class="multi file-move">';
-            html += '                    <span class="fa fa-arrows-alt fa-lg"></span>';
-            html += '                    移动';
-            html += '                </li>';
+            if (opt.mode == 'write') {
+                html += '                <li class="single multi file-delete">';
+                html += '                    <span class="fa fa-trash fa-lg"></span>';
+                html += '                    删除';
+                html += '                </li>';
+                html += '                <li class="single file-share">';
+                html += '                    <span class="fa fa-share-alt fa-lg"></span>';
+                html += '                    分享';
+                html += '                </li>';
+                html += '                <li class="single file-rename">';
+                html += '                    <span class="fa fa-pencil-square-o fa-lg"></span>';
+                html += '                    重命名';
+                html += '                </li>';
+                html += '                <li class="multi file-move">';
+                html += '                    <span class="fa fa-arrows-alt fa-lg"></span>';
+                html += '                    移动';
+                html += '                </li>';
+            }
             html += '            </ul>';
             html += '            <ul class="netdisk-toolbar-btns list-mode-switch">';
-            html += '                <li class="active" mode="grid">';
+            html += '                <li mode="grid" class="' + (opt.view == 'grid' ? "active" : "") + '">';
             html += '                    <span class="fa fa-th-large fa-lg"></span>';
             html += '                </li>';
-            html += '                <li mode="list">';
+            html += '                <li mode="list" class="' + (opt.view != 'grid' ? "active" : "") + '">';
             html += '                    <span class="fa fa-th-list fa-lg"></span>';
             html += '                </li>';
             html += '            </ul>';
             html += '        </div>';
             html += '        <div class="netdisk-crumbs">';
             html += '            <ul>';
-            html += '               <li module="' + opt.root.module + '" mkey="' + opt.root.moduleKey + '" pid="' + opt.root.pid + '">全部文件</li>';
+            html += '               <li module="' + opt.root.module + '" mkey="' + (opt.root.moduleKey ? opt.root.moduleKey : "") + '" pid="' + (opt.root.pid ? opt.root.pid : "") + '">全部文件</li>';
             html += '            </ul>';
             html += '            <div class="netdisk-list-num">共 <span>0</span> 个文件</div>';
             html += '        </div>';
@@ -111,7 +121,7 @@
             html += '                   <li class="fa fa-file-code-o fa-lg" cate="code"></li>';
             html += '            </ul>';
             html += '        </div>';
-            html += '        <div class="netdisk-list">';
+            html += '        <div class="netdisk-list ' + (opt.view == 'list' ? "list-view" : "") + '">';
             html += '            <ul>';
             html += '            </ul>';
             html += '        </div>';
@@ -150,9 +160,9 @@
         },
         dm: function (selection) {
             var croot = selection.find('.netdisk-crumbs ul li').last();
-            var module = croot.attr('module') == 'undefined' ? '' : croot.attr('module');
-            var mkey = croot.attr('mkey') == 'undefined' ? '' : croot.attr('mkey');
-            var pid = croot.attr('pid') == 'undefined' ? '' : croot.attr('pid');
+            var module = croot.attr('module');
+            var mkey = croot.attr('mkey');
+            var pid = croot.attr('pid');
             var cateJq = selection.find('.cate-filter li.active');
             var cate = cateJq.length > 0 ? cateJq.attr('cate') : null;
             return {
@@ -315,7 +325,7 @@
                             xhr.open("POST", "/doc/bin/add", true);
                             xhr.setRequestHeader('Content-type', contentType);
                             xhr.setRequestHeader('module', dm.module);
-                            xhr.setRequestHeader('moduleKey', dm.moduleKey);
+                            xhr.setRequestHeader('moduleKey', encodeURI(dm.moduleKey));
                             xhr.setRequestHeader('pid', dm.pid);
                             xhr.setRequestHeader("fnm", "" + encodeURI(file.name));
                             xhr.setRequestHeader('isPrivate', "true");
@@ -448,9 +458,22 @@
             var sfiles = selection.find('.netdisk-list input[type=checkbox]:checked');
             var dlist = [];
             sfiles.each(function (i, ele) {
-                dlist.push($(ele).data(DOC_ITEM));
+                dlist.push($(ele).parent().data(DOC_ITEM));
             });
             return dlist;
+        },
+        refresh: function () {
+            data.refresh(this);
+        },
+        reload: function (module, mkey, pid, name) {
+            var selection = this;
+            var cul = selection.find('.netdisk-crumbs ul');
+            cul.empty();
+            if ($z.util.isBlank(name)) {
+                name = "全部文件"
+            }
+            cul.append('<li module="' + module + '" mkey="' + (mkey ? mkey : "") + '" pid="' + (pid ? pid : "") + '">' + name + '</li>');
+            data.refresh(selection);
         }
     };
 // _________________________________

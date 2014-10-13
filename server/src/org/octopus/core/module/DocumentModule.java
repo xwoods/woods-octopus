@@ -249,7 +249,7 @@ public class DocumentModule extends AbstractBaseModule {
     public Document addBinary(HttpServletRequest req,
                               @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
         String module = req.getHeader("module");
-        String moduleKey = req.getHeader("moduleKey");
+        String moduleKey = urlDecode(req.getHeader("moduleKey"));
         String pid = req.getHeader("pid");
         String fnm = urlDecode(req.getHeader("fnm"));
         boolean isPrivate = req.getHeader("isPrivate") == null ? true

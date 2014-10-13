@@ -67,9 +67,11 @@
             html += '</div>';
             var mdiv = $(html);
             mdiv.appendTo(document.body);
-
             mdiv.find('.masker-bg').children().css({'position': "fixed"});
 
+            if (opt.afterDomReady) {
+                opt.afterDomReady(mdiv);
+            }
             return mdiv;
         }
     };

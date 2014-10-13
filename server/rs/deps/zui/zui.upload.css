@@ -76,7 +76,10 @@
     font-size: 15px;
     color: #FFF;
     text-shadow: 1px 1px 0 #444;
+    overflow: hidden;
 }
+
+.file-nm {}
 
 .upload-file-list > li .file-size {
     width: 128px;
@@ -123,8 +126,22 @@
     display: block;
 }
 
-.upload-file-list > li.uploading > .file-uploading-tip {
+.upload-file-list > li.uploading > .file-upload-tip {
     display: block;
+}
+
+.upload-file-list > li.uploaded {
+    background: #ffffff;
+    border-radius: 10px;
+}
+
+.upload-file-list > li.uploaded > .file-del {
+    display: none;
+}
+
+.upload-file-list > li.uploaded > .file-upload-tip {
+    display: block;
+    background: #007AFF;
 }
 
 .file-uploading {
@@ -137,7 +154,7 @@
     border-radius: 16px;
 }
 
-.file-uploading-tip {
+.file-upload-tip {
     display: none;
     width: 100%;
     height: 16px;
