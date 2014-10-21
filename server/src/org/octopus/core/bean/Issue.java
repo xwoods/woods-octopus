@@ -7,8 +7,8 @@ import org.nutz.dao.entity.annotation.TableIndexes;
 
 @Table("t_issue")
 @TableIndexes({@Index(name = "t_issue_domain", fields = {"domain"}, unique = false),
-               @Index(name = "t_issue_ctuser", fields = {"createUser"}, unique = false),
-               @Index(name = "t_issue_content", fields = {"content"}, unique = false)})
+               @Index(name = "t_issue_content", fields = {"content"}, unique = false),
+               @Index(name = "t_issue_ctuser", fields = {"createUser"}, unique = false)})
 public class Issue extends BeanCreateModify {
 
     private String domain;
