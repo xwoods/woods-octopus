@@ -1,5 +1,5 @@
 #! /bin/bash
-export CONF_NM=$1
+export CONF_NM=ieslab
 export OCT_PATH=$HOME/gitrep/nutz-xwoods/woods-octopus
 export OCT_LIB=$HOME/deps/project/ocotpus
 export BUILD_PATH=$HOME/tmp/octopus-publish
