@@ -1,7 +1,7 @@
 var fs = {
 	// Dao
-	fsExtraMaker : {
-		type : 'org.octopus.core.fs.FsExtraMaker',
+	fsExtra : {
+		type : 'org.octopus.core.fs.FsExtra',
 		fields : {
 			dao : {
 				refer : "dao"
@@ -13,6 +13,9 @@ var fs = {
 		fields : {
 			dao : {
 				refer : "dao"
+			},
+			fsExtra : {
+				refer : "fsExtra"
 			}
 		}
 	}

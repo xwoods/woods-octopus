@@ -115,6 +115,25 @@
         }
     };
 
+    util.timeText = function (ut) {
+        if (ut <= 0) {
+            return "";
+        }
+        if (ut > 0 && ut < 1000) {
+            return "1s";
+        }
+        if (ut >= 1000 && ut < 60000) { // 1m内
+            return parseInt(ut / 1000) + "s";
+        }
+        if (ut >= 1000 && ut < 60000) { // 1h内
+            var tm = parseInt(ut / 1000 / 60);
+            return tm + "m" + util.timeText(ut - tm * 1000 * 60);
+        }
+        if (ut >= 60000) { //
+            var th = parseInt(ut / 1000 / 60 / 60);
+            return th + "h" + util.timeText(ut - th * 1000 * 60 * 60);
+        }
+    }
 
     util.sizeText = function (size, unit) {
         if (typeof size != "number") size = size * 1;

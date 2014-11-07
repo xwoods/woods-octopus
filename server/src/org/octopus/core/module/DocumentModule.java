@@ -160,7 +160,7 @@ public class DocumentModule extends AbstractBaseModule {
     @Ok("raw")
     public Object readTxt(@Param("docId") String docId,
                           @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
-        Document doc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
+        Document doc = fsIO.fetch(docId);
         HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, false);
         if (errStatusView != null) {
             return errStatusView;
@@ -265,8 +265,6 @@ public class DocumentModule extends AbstractBaseModule {
             } else {
                 fsIO.writeText(doc, ins, me.getName());
             }
-            // FIXME 移动到别的地方去, 不要放在这里
-            fsExtraMaker.makePreview(doc);
         }
         catch (IOException e) {
             throw Lang.wrapThrow(e);
@@ -292,7 +290,7 @@ public class DocumentModule extends AbstractBaseModule {
         catch (UnsupportedEncodingException e) {
             throw Lang.wrapThrow(e);
         }
-        return new File(FsPath.fileExtra(doc, FsPath.EXTRA_PREVIEW), "preview.jpg");
+        return new File(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_PREVIEW), "preview.jpg");
     }
 
     /**

@@ -62,6 +62,9 @@ public class FsIO {
     @Inject("refer:dao")
     protected Dao dao;
 
+    @Inject("refer:fsExtra")
+    protected FsExtra fsExtra;
+
     private Cnd fsCnd(Document doc) {
         return Cnd.where("module", "=", doc.getModule()).and("define", "=", doc.getDefine());
     }
@@ -203,13 +206,14 @@ public class FsIO {
                 }
                 // 其他相关文件与目录
                 if (doc.isHasInfo()) {
-                    Files.createFileIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_INFO));
+                    Files.createFileIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_FILE_INFO));
                 }
                 if (doc.isHasTrans()) {
-                    Files.createDirIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_TRANS));
+                    Files.createDirIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_TRANS));
+                    Files.createFileIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_FILE_TRANSINFO));
                 }
                 if (doc.isHasPreview()) {
-                    Files.createDirIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_PREVIEW));
+                    Files.createDirIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_PREVIEW));
                 }
             }
             catch (IOException e) {
@@ -311,6 +315,8 @@ public class FsIO {
                 doc.setModifyTime(new Date());
                 doc.setModifyUser(mdUser);
                 dao.update(doc, "size|modifyTime|modifyUser");
+                // 生成extra
+                fsExtra.makePreview(doc);
                 return true;
             } else {
                 if (log.isDebugEnabled()) {
@@ -347,6 +353,18 @@ public class FsIO {
             if (log.isWarnEnabled())
                 log.warnf("Read Text, Size=%s byte!! Very Big?!! DocId=%s", f.length(), doc.getId());
         return Files.read(f);
+    }
+
+    /**
+     * 按照json格式读取, 返回对象
+     * 
+     * @param doc
+     * @param clz
+     * @return
+     */
+    public <T> T readJson(Document doc, Class<T> clz) {
+        String dtxt = readText(doc);
+        return Json.fromJson(clz, dtxt);
     }
 
     /**

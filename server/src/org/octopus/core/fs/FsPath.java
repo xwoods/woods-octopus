@@ -88,9 +88,16 @@ public class FsPath {
 
     // -------------------------------------------- 文件相关
 
-    public static final String EXTRA_PREVIEW = "preview";
-    public static final String EXTRA_INFO = "info";
-    public static final String EXTRA_TRANS = "trans";
+    // 文件信息
+    public static final String EXTRA_FILE_INFO = "info";
+
+    // 预览目录
+    public static final String EXTRA_DIR_PREVIEW = "preview";
+
+    // 转换目录
+    public static final String EXTRA_DIR_TRANS = "trans";
+    // 转换信息
+    public static final String EXTRA_FILE_TRANSINFO = "transinfo";
 
     public static String file(Document doc) {
         String pd = doc.getDefine();

@@ -23,9 +23,9 @@ import org.octopus.core.chat.UserCache;
 import org.octopus.core.fs.FsModule;
 import org.octopus.core.fs.FsPath;
 import org.octopus.core.fs.FsSetting;
-import org.octopus.core.fs.pd.ChatPathDefine;
-import org.octopus.core.fs.pd.DomainPathDefine;
-import org.octopus.core.fs.pd.UserPathDefine;
+import org.octopus.core.fs.pathdefine.ChatPathDefine;
+import org.octopus.core.fs.pathdefine.DomainPathDefine;
+import org.octopus.core.fs.pathdefine.UserPathDefine;
 
 public class OctopusSetup implements Setup {
 
