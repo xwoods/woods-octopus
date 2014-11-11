@@ -35,9 +35,9 @@ public class Octopus {
 
     public final static String VERSION = "0.2";
 
-    private static String secretKey = "1234567890";
+    public static String secretKey = "1234567890";
 
-    private static String godPassword = "123456";
+    public static String godPassword = "123456";
 
     protected static void setSecretKey(String sKey) {
         secretKey = sKey;
@@ -51,6 +51,8 @@ public class Octopus {
      * 使用设定的密匙加密内容
      */
     public static String encrypt(String content) {
+    	if (content == null)
+    		throw new IllegalArgumentException("content is null");
         return Lang.fixedHexString(reciprocalCipher(secretKey,
                                                     content.getBytes(),
                                                     Cipher.ENCRYPT_MODE));

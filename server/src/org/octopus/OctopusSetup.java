@@ -45,8 +45,8 @@ public class OctopusSetup implements Setup {
         nc.setAttribute(Keys.RS, Strings.sBlank(conf.getAppRs(), "/rs"));
 
         // 设置secretKey与GodPassword
-        Octopus.setSecretKey(conf.get("password-key"));
-        Octopus.setGodPassword(conf.get("password-superuser"));
+        Octopus.setSecretKey(conf.get("password-key", Octopus.secretKey));
+        Octopus.setGodPassword(conf.get("password-superuser", Octopus.godPassword));
 
         // 初始化数据库与数据
         Octopus.initDatabase(dao, conf);
