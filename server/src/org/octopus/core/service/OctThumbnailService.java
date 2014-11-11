@@ -11,7 +11,7 @@ import org.nutz.lang.Streams;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 
-@IocBean
+@IocBean(name="thumbnailService")
 public class OctThumbnailService {
 
     private Log log = Logs.get();

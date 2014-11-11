@@ -10,7 +10,7 @@ import org.nutz.runner.NutLock;
 import org.nutz.runner.NutRunner;
 import org.octopus.core.bean.VideoConvRequest;
 
-@IocBean(create = "init", depose = "destory")
+@IocBean(name="videoConvService", create = "init", depose = "destory")
 public class OctVideoConvService {
 
     private Log log = Logs.get();
