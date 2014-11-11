@@ -196,6 +196,7 @@ public class FsIO {
         if (!doc.isDir()) {
             // 生成对应文件跟目录
             try {
+
                 // 复合型文件, 生成目录
                 if (doc.isComplex()) {
                     Files.createDirIfNoExists(FsPath.file(doc));
@@ -204,16 +205,20 @@ public class FsIO {
                 else {
                     Files.createFileIfNoExists(FsPath.file(doc));
                 }
+
                 // 其他相关文件与目录
+                // info
                 if (doc.isHasInfo()) {
                     Files.createFileIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_FILE_INFO));
                 }
+                // preview
+                if (doc.isHasPreview()) {
+                    Files.createDirIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_PREVIEW));
+                }
+                // trans
                 if (doc.isHasTrans()) {
                     Files.createDirIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_TRANS));
                     Files.createFileIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_FILE_TRANSINFO));
-                }
-                if (doc.isHasPreview()) {
-                    Files.createDirIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_PREVIEW));
                 }
             }
             catch (IOException e) {
@@ -317,6 +322,8 @@ public class FsIO {
                 dao.update(doc, "size|modifyTime|modifyUser");
                 // 生成extra
                 fsExtra.makePreview(doc);
+                fsExtra.makeTrans(doc, null);
+                fsExtra.makeMeta(doc);
                 return true;
             } else {
                 if (log.isDebugEnabled()) {
