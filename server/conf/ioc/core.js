@@ -25,7 +25,7 @@ var ioc = {
 			},
 			initialSize : 10,
 			maxActive : 100,
-			testOnReturn : true,
+			testWhileIdle : true,
 			validationQuery : "select 1",
 			filters : "stat"
 		}
