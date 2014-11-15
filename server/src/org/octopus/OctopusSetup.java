@@ -26,6 +26,7 @@ import org.octopus.core.fs.FsSetting;
 import org.octopus.core.fs.pathdefine.ChatPathDefine;
 import org.octopus.core.fs.pathdefine.DomainPathDefine;
 import org.octopus.core.fs.pathdefine.UserPathDefine;
+import org.octopus.core.service.OctVideoConvService;
 
 public class OctopusSetup implements Setup {
 
@@ -90,6 +91,9 @@ public class OctopusSetup implements Setup {
         // 聊天缓存
         ChatCache.init(dao);
         ChatCache.startRunner();
+        
+        // videoConvert
+        ioc.get(OctVideoConvService.class, "videoConvService").start();
 
         // setupChain初始化
         List<String> setupChainList = conf.getSetupChain();
