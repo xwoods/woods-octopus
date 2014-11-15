@@ -12,9 +12,9 @@ import org.nutz.web.error.ErrPageViewMaker;
 
 @Modules(scanPackage = true)
 @Localization(value = "msg", defaultLocalizationKey = "zh-CN")
-@IocBy(type = ComboIocProvider.class, args = {"*org.nutz.ioc.loader.json.JsonLoader",
-                                              "ioc",
-                                              "*org.nutz.ioc.loader.annotation.AnnotationIocLoader",
+@IocBy(type = ComboIocProvider.class, args = {"*js",
+                                              "ioc/",
+                                              "*annotation",
                                               "org.octopus"})
 @SetupBy(OctopusSetup.class)
 @Views(value = {AjaxViewMaker.class, ErrPageViewMaker.class})
