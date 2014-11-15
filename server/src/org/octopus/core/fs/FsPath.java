@@ -90,10 +90,8 @@ public class FsPath {
 
     // 文件信息
     public static final String EXTRA_FILE_INFO = "info";
-
     // 预览目录
     public static final String EXTRA_DIR_PREVIEW = "preview";
-
     // 转换目录
     public static final String EXTRA_DIR_TRANS = "trans";
     // 转换信息

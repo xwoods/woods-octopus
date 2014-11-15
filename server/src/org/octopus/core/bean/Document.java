@@ -1,14 +1,11 @@
 package org.octopus.core.bean;
 
-import java.util.Map;
-
 import org.nutz.dao.entity.annotation.ColDefine;
 import org.nutz.dao.entity.annotation.ColType;
 import org.nutz.dao.entity.annotation.Index;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.entity.annotation.TableIndexes;
 import org.nutz.json.Json;
-import org.octopus.core.fs.FsSetting;
 import org.octopus.core.fs.ReadType;
 
 @Table("t_document")
@@ -68,6 +65,9 @@ public class Document extends BeanCreateModify {
     private int transRate;
     // 是否转换完成
     private boolean transDone;
+    // 转换是否报错
+    private boolean transFail;
+
     // -----------------------------
     // 元数据
     @ColDefine(type = ColType.TEXT)
@@ -247,19 +247,16 @@ public class Document extends BeanCreateModify {
     /**
      * @return 当前对象的meta对象
      */
-    public Map<String, Object> myMeta() {
-        return Json.fromJsonAsMap(Object.class, meta);
-    }
-
-    /**
-     * @return 返回一个带着meta属性的map对象, 默认值都被设置好了
-     */
-    public Map<String, Object> dfMeta() {
-        return FsSetting.dfMeta(type);
+    public MetaInfo meta() {
+        return new MetaInfo(meta);
     }
 
     public boolean isBinary() {
         return readAs == ReadType.BIN;
+    }
+
+    public boolean isTxt() {
+        return readAs == ReadType.TXT;
     }
 
     public boolean isDir() {
@@ -273,4 +270,13 @@ public class Document extends BeanCreateModify {
     public String toString() {
         return Json.toJson(this);
     }
+
+    public boolean isTransFail() {
+        return transFail;
+    }
+
+    public void setTransFail(boolean transFail) {
+        this.transFail = transFail;
+    }
+
 }

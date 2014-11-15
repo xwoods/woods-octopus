@@ -1,0 +1,1 @@
+nohup $VIDEO_CONVERT_PATH/f_fmpeg -i ${srcPath} -y -f image2 -s ${thumbSize} -ss 1 -vframes 1 ${thumbPath}

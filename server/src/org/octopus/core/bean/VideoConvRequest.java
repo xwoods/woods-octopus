@@ -36,9 +36,8 @@ public class VideoConvRequest {
 
     private boolean createTrans;
 
+    // 默认是1x1, 不分割
     private String transCutAs;
-
-    private String transCutBy;
 
     public long getId() {
         return id;
@@ -142,14 +141,6 @@ public class VideoConvRequest {
 
     public void setTransCutAs(String transCutAs) {
         this.transCutAs = transCutAs;
-    }
-
-    public String getTransCutBy() {
-        return transCutBy;
-    }
-
-    public void setTransCutBy(String transCutBy) {
-        this.transCutBy = transCutBy;
     }
 
 }

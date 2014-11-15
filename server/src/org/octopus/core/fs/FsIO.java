@@ -262,6 +262,8 @@ public class FsIO {
                 doc.setModifyTime(new Date());
                 doc.setModifyUser(mdUser);
                 dao.update(doc, "size|modifyTime|modifyUser");
+                // 生成extra
+                createExtra(doc, null);
                 return true;
             } else {
                 if (log.isDebugEnabled()) {
@@ -321,9 +323,7 @@ public class FsIO {
                 doc.setModifyUser(mdUser);
                 dao.update(doc, "size|modifyTime|modifyUser");
                 // 生成extra
-                fsExtra.makePreview(doc);
-                fsExtra.makeTrans(doc, null);
-                fsExtra.makeMeta(doc);
+                createExtra(doc, null);
                 return true;
             } else {
                 if (log.isDebugEnabled()) {
@@ -339,6 +339,24 @@ public class FsIO {
                 Files.deleteFile(tmpf);
         }
         return false;
+    }
+
+    private void createExtra(Document doc, TransInfo tinfo) {
+        fsExtra.makeMeta(doc);
+        if (doc.isHasPreview()) {
+            fsExtra.makePreview(doc);
+        }
+        if (doc.isHasTrans()) {
+            if (tinfo == null) {
+                tinfo = new TransInfo();
+                tinfo.setCutX(1);
+                tinfo.setCutY(1);
+                tinfo.setHasThumb(true);
+                tinfo.setHasPreview(true);
+                tinfo.setHasTrans(true);
+            }
+            fsExtra.makeTrans(doc, tinfo);
+        }
     }
 
     /**

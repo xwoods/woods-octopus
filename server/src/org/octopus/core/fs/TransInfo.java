@@ -2,32 +2,38 @@ package org.octopus.core.fs;
 
 public class TransInfo {
 
-    private int orgWidth;
-
-    private int orgHeight;
-
     private int cutX;
 
     private int cutY;
 
-    private int cutWidth;
+    private boolean hasThumb;
 
-    private int cutHeight;
+    private boolean hasPreview;
 
-    public int getOrgWidth() {
-        return orgWidth;
+    private boolean hasTrans;
+
+    public boolean isHasThumb() {
+        return hasThumb;
     }
 
-    public void setOrgWidth(int orgWidth) {
-        this.orgWidth = orgWidth;
+    public void setHasThumb(boolean hasThumb) {
+        this.hasThumb = hasThumb;
     }
 
-    public int getOrgHeight() {
-        return orgHeight;
+    public boolean isHasPreview() {
+        return hasPreview;
     }
 
-    public void setOrgHeight(int orgHeight) {
-        this.orgHeight = orgHeight;
+    public void setHasPreview(boolean hasPreview) {
+        this.hasPreview = hasPreview;
+    }
+
+    public boolean isHasTrans() {
+        return hasTrans;
+    }
+
+    public void setHasTrans(boolean hasTrans) {
+        this.hasTrans = hasTrans;
     }
 
     public int getCutX() {
@@ -44,22 +50,6 @@ public class TransInfo {
 
     public void setCutY(int cutY) {
         this.cutY = cutY;
-    }
-
-    public int getCutWidth() {
-        return cutWidth;
-    }
-
-    public void setCutWidth(int cutWidth) {
-        this.cutWidth = cutWidth;
-    }
-
-    public int getCutHeight() {
-        return cutHeight;
-    }
-
-    public void setCutHeight(int cutHeight) {
-        this.cutHeight = cutHeight;
     }
 
 }
