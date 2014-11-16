@@ -11,7 +11,10 @@
         'sh': "bash",
         'go': "go",
         'java': "java",
+        'c': "c",
+        'cpp': "cpp",
         'js': 'javascript',
+        'json': 'javascript',
         'html': 'markup',
         'svg': 'markup',
         'xml': 'markup',
@@ -23,6 +26,7 @@
 
     function showDoc(mdiv, doc) {
         var meta = $z.util.str2json(doc.meta);
+        // doc
         var dshow = mdiv.find('.zpreview-doc-show');
         var dsz = selSize(dshow);
         var html = '';
@@ -60,6 +64,7 @@
             html += ' style="display: block; position: absolute; width: ' + dsz.width + 'px; height: ' + dsz.height + 'px; top: ' + 0 + 'px; left: ' + 0 + 'px;"';
             html += '><code class="language-' + ("text" == doc.cate ? codeHighLight['text'] : codeHighLight[doc.type]) + '"></code></pre>';
         }
+        // TODO 其他要支持的文件
         else {
             var pp = selPos(dsz.width, dsz.height, 64, 64);
             html += '<div class="zui-icon-64 ' + doc.type + '"';
@@ -79,7 +84,43 @@
     }
 
     function showMeta(mdiv, doc) {
+        var meta = $z.util.str2json(doc.meta);
+        var mtb = mdiv.find('.zpreview-prop-main table');
+        var html = '';
+        if ("image" == doc.cate) {
+            html += metaHtml('宽度', meta.width + "px");
+            html += metaHtml('高度', meta.height + "px");
+        }
+        if ("video" == doc.cate) {
+            html += metaHtml('宽度', meta.width + "px");
+            html += metaHtml('高度', meta.height + "px");
+            html += metaHtml('时长', meta.duration + "s");
+            html += metaHtml('转换完毕', doc.transDone ? "是" : "否");
+            html += metaHtml('转换进度', doc.transRate + "%");
+            html += metaHtml('切割方式', meta.transCutX + "x" + meta.transCutY);
+            html += metaHtml('切割宽高', meta.transCutWidth + "x" + meta.transCutHeight);
+        }
+        if ("text" == doc.cate || "code" == doc.cate) {
+            html += metaHtml('行数', meta.line);
+        }
+        mtb.append(html);
 
+        var tpi = mdiv.find('.pre-docinfo');
+        if ('video' == doc.cate) {
+            var cutAs = meta.transCutX + "x" + meta.transCutY;
+            if (cutAs != '1x1' && cutAs != '0x0') {
+                tpi.append('(' + cutAs + ")")
+            }
+        }
+    }
+
+    function metaHtml(key, val) {
+        var html = '';
+        html += '<tr>';
+        html += '  <td class="zpreview-prop-key">' + key + '</td>';
+        html += '  <td class="zpreview-prop-val">' + val + '</td>';
+        html += '</tr>';
+        return html;
     }
 
     function selSize(div) {
@@ -134,6 +175,7 @@
                         var html = '';
                         html += '<div class="zpreview-title">';
                         html += '   <span class="pre-docname">' + doc.name + "." + doc.type + '</span>';
+                        html += '   <span class="pre-docinfo"></span>';
                         html += '   <a class="pre-download" href="/doc/bin/read?docId=' + doc.id + '">下载</a>';
                         html += '</div>';
                         html += '<div class="zpreview-body">';
@@ -183,15 +225,9 @@
                         html += '                       <input value="' + ($z.util.isBlank(doc.remark) ? '' : doc.remark) + '">';
                         html += '                   </td>';
                         html += '               </tr>';
-                        //html += '               <tr>';
-                        //html += '                   <td class="zpreview-prop-key">sha1</td>';
-                        //html += '                   <td class="zpreview-prop-val">' + doc.sha1 + '</td>';
-                        //html += '               </tr>';
                         html += '           </table>';
                         html += '       </div>';
                         html += '       <div class="zpreview-prop-other">';
-                        html += '           <table>';
-                        html += '           </table>';
                         html += '       </div>';
                         html += '   </div>';
                         html += '</div>';

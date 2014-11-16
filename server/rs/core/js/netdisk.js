@@ -11,6 +11,7 @@ function ND4UserCtl($scope) {
             module: 'users',
             moduleKey: window.myConf.user
         },
+        isPrivate: true,
         multisel: true
     });
 
@@ -25,6 +26,7 @@ function ND4DomainCtl($scope) {
             module: 'domains',
             moduleKey: window.myConf.domain
         },
+        isPrivate: false,
         multisel: false
     });
 }

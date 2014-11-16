@@ -65,6 +65,8 @@ public abstract class AbstractConvTask implements ConvTask {
         task.setupVideoInfo(srcInfo);
 
         MetaInfo mi = doc.metaInfo();
+        mi.set("width", srcInfo.getWidth());
+        mi.set("height", srcInfo.getHeight());
         mi.set("transCutX", task.getCutX());
         mi.set("transCutY", task.getCutY());
         mi.set("transCutWidth", task.getCutWidth());

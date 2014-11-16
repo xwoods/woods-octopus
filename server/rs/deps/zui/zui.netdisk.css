@@ -337,13 +337,19 @@
 }
 
 .zpreview-title > span, .zpreview-title > a{
+    float: left;
     height: 24px;
     line-height: 24px;
     text-align: left;
     display: inline-block;
-    margin: 8px 20px;
+    margin: 8px 0 0 20px;
     color: #fff;
     font-size: 16px;
+}
+
+.zpreview-title > span.pre-docinfo {
+    margin: 8px 0 0 5px;
+    color: #ff0000;
 }
 
 .zpreview-title .pre-download {
@@ -355,6 +361,7 @@
     padding: 0 15px;
     font-size: 14px;
     text-decoration: none;
+    margin: 8px 20px;
 }
 
 .zpreview-title .pre-download:hover {

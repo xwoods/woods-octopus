@@ -29,7 +29,10 @@
                 opt.view = 'grid';
             }
             if (!opt.uploadType) {
-                opt.uploadType = ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'avi', 'mov', 'mkv', 'zip', 'tar', 'rar', 'txt', 'xls', 'xlsx', 'doc', 'docx', 'ppt', 'pptx'];
+                opt.uploadType = ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'avi', 'mov', 'mkv', 'mpg', 'mpeg', 'wmv', 'txt', 'sh', 'py', 'go', 'zip', 'tar', 'gz', '7z', 'rar', 'rb', 'json', 'js', 'java', 'c', 'cpp']
+            }
+            if (opt.isPrivate == undefined) {
+                opt.isPrivate = true;
             }
             return opt;
         },
@@ -342,7 +345,7 @@
                             xhr.setRequestHeader('moduleKey', encodeURI(dm.moduleKey));
                             xhr.setRequestHeader('pid', dm.pid);
                             xhr.setRequestHeader("fnm", "" + encodeURI(file.name));
-                            xhr.setRequestHeader('isPrivate', "true");
+                            xhr.setRequestHeader('isPrivate', opt.isPrivate);
                             xhr.send(file);
                         },
                         finishUpload: function () {
