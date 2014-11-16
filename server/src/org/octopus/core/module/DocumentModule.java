@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,7 +37,6 @@ import org.octopus.core.bean.Document;
 import org.octopus.core.bean.User;
 import org.octopus.core.fs.FsModule;
 import org.octopus.core.fs.FsPath;
-import org.octopus.core.fs.ReadType;
 
 @Filters({@By(type = CheckNotLogin.class, args = {Keys.SESSION_USER, "/login"})})
 @At("/doc")
@@ -101,14 +102,14 @@ public class DocumentModule extends AbstractBaseModule {
             return new HttpStatusView(403);
         }
         // 检查是不是文件夹 FIXME 默认是检查是不是文件类型的
-        boolean checkIsFile = true;
-        if (checkIsFile && doc.getReadAs() == ReadType.DIR) {
-            log.warnf("Dir[%s](Create by %s) Can't As File by %s",
-                      doc.getName(),
-                      doc.getCreateUser(),
-                      user.getName());
-            return new HttpStatusView(403);
-        }
+        // boolean checkIsFile = true;
+        // if (checkIsFile && doc.getReadAs() == ReadType.DIR) {
+        // log.warnf("Dir[%s](Create by %s) Can't As File by %s",
+        // doc.getName(),
+        // doc.getCreateUser(),
+        // user.getName());
+        // return new HttpStatusView(403);
+        // }
         // READ
         if (checkRead && (!doc.isCanRead() && !isOwner)) {
             log.warnf("File[%s](Create by %s) Can't Read by %s",
@@ -345,18 +346,45 @@ public class DocumentModule extends AbstractBaseModule {
         return new File(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_PREVIEW), "preview.mp4");
     }
 
-    @At("/delete")
+    @At("/rename")
     @Ok("ajax")
-    public AjaxReturn deleteDocument(@Param("docId") String docId,
+    public AjaxReturn renameDocument(@Param("docId") String docId,
+                                     @Param("docName") String docName,
                                      HttpServletResponse resp,
                                      @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
         Document doc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
-        HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, true);
+        HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, false);
         if (errStatusView != null) {
-            return Ajax.fail().setData(errStatusView);
+            // TODO
+        } else {
+            doc.setName(docName);
+            // 检查文件是否重名
+            if (fsIO.existDocument(doc)) {
+                fsIO.setNewName(doc);
+            }
+            dao.update(doc, "name");
         }
-        fsIO.delete(docId);
-        return Ajax.ok();
+        return Ajax.ok().setData(doc.getName());
+    }
+
+    @At("/delete")
+    @Ok("ajax")
+    public AjaxReturn deleteDocument(@Param("docId") String docIds,
+                                     HttpServletResponse resp,
+                                     @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        Map<String, Boolean> delSuccessMap = new HashMap<String, Boolean>();
+        String[] dlist = Strings.splitIgnoreBlank(docIds, ",");
+        for (String d : dlist) {
+            Document doc = dao.fetch(Document.class, Cnd.where("id", "=", d));
+            HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, true);
+            if (errStatusView != null) {
+                delSuccessMap.put(d, false);
+            } else {
+                fsIO.delete(doc);
+                delSuccessMap.put(d, true);
+            }
+        }
+        return Ajax.ok().setData(delSuccessMap);
     }
 
     /**

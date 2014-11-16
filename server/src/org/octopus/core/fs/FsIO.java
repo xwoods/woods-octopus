@@ -469,6 +469,15 @@ public class FsIO {
      */
     public void delete(String docId) {
         Document doc = fetch(docId);
+        delete(doc);
+    }
+
+    /**
+     * 删除文档
+     * 
+     * @param docId
+     */
+    public void delete(Document doc) {
         if (doc.isDir()) {
             // 删除子节点
             List<Document> dList = children(doc, null, true);

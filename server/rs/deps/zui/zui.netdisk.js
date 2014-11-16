@@ -29,7 +29,7 @@
                 opt.view = 'grid';
             }
             if (!opt.uploadType) {
-                opt.uploadType = ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'avi', 'mov', 'mkv', 'mpg', 'mpeg', 'wmv', 'txt', 'sh', 'py', 'go', 'zip', 'tar', 'gz', '7z', 'rar', 'rb', 'json', 'js', 'java', 'c', 'cpp']
+                opt.uploadType = ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'avi', 'mov', 'mkv', 'mpg', 'mpeg', 'wmv', 'txt', 'sh', 'py', 'go', 'zip', 'tar', 'gz', '7z', 'rar', 'rb', 'json', 'js', 'java', 'c', 'cpp', 'xls', 'xlsx', 'doc', 'docx', 'ppt', 'pptx']
             }
             if (opt.isPrivate == undefined) {
                 opt.isPrivate = true;
@@ -93,9 +93,13 @@
                 html += '                    <span class="fa fa-pencil-square-o fa-lg"></span>';
                 html += '                    重命名';
                 html += '                </li>';
-                html += '                <li class="multi file-move">';
-                html += '                    <span class="fa fa-arrows-alt fa-lg"></span>';
-                html += '                    移动';
+                html += '                <li class="multi single file-move">';
+                html += '                    <span class="fa fa-arrows fa-lg"></span>';
+                html += '                    移动到';
+                html += '                </li>';
+                html += '                <li class="multi single file-copy">';
+                html += '                    <span class="fa fa-copy fa-lg"></span>';
+                html += '                    复制到';
                 html += '                </li>';
             }
             html += '            </ul>';
@@ -410,6 +414,45 @@
                 data.refresh(selection);
             });
 
+            // 分享文件
+            selection.delegate('.file-share', 'click', function () {
+                var selection = util.selection(this);
+                var opt = util.opt(selection);
+                var sfile = selection.find('.netdisk-list input[type=checkbox]:checked').first();
+                var doc = sfile.parent().data(DOC_ITEM);
+                // TODO
+                alert('该功能未完成');
+            });
+
+            // 重命名文件
+            selection.delegate('.file-rename', 'click', function () {
+                var selection = util.selection(this);
+                var opt = util.opt(selection);
+                var sfile = selection.find('.netdisk-list input[type=checkbox]:checked').first();
+                var doc = sfile.parent().data(DOC_ITEM);
+
+                var oldName = doc.name;
+                var newName = prompt("重命名后点击确认", oldName);
+                if (!$z.util.isBlank(newName) && oldName != newName) {
+                    $z.http.post('/doc/rename', {'docId': doc.id, 'docName': newName}, function (re) {
+                        var newName2 = re.data;
+                        if (newName2 != newName) {
+                            alert("文件 " + newName + " 已经存在, 新名称被修改为 " + newName2);
+                        }
+                        doc.name = newName2;
+                        var fnm = doc.name;
+                        sfile.parent().find('.file-nm').prop('fnm', fnm);
+                        if (fnm.length > 25) {
+                            fnm = fnm.substr(0, 18) + "..." + fnm.substr(fnm.length - 3);
+                        }
+                        if (doc.cate != "folder") {
+                            fnm += '.' + doc.type;
+                        }
+                        sfile.parent().find('.file-nm span').html(fnm);
+                    });
+                }
+            });
+
             // 下载文件
             selection.delegate('.file-download', 'click', function () {
                 var selection = util.selection(this);
@@ -424,6 +467,65 @@
                 window.location.href = "/doc/bin/read?docId=" + doc.id;
             });
 
+            // 删除文件
+            selection.delegate('.file-delete', 'click', function () {
+                var selection = util.selection(this);
+                var opt = util.opt(selection);
+                // FIXME 暂时仅仅支持单文件下载
+                var dflist = selection.find('.netdisk-list input[type=checkbox]:checked');
+                var dfarray = [];
+                var dfmap = {};
+                dflist.each(function () {
+                    var doc = $(this).parent().data(DOC_ITEM);
+                    dfarray.push(doc.id);
+                    dfmap[doc.id] = doc;
+                })
+                var sureDelete = confirm("确定要删除 " + dfarray.length + " 个文件吗?");
+                if (sureDelete) {
+                    $.masker({
+                        title: "删除文件",
+                        width: "70%",
+                        height: "70%",
+                        body: function () {
+                            var html = '';
+                            html += '<div class="netdisk-delete-list">'
+                            html += '<div class="netdisk-delete-list-log">' + addLog("开始删除以下文件:") + "</div>";
+                            html += '<div class="netdisk-delete-list-log"></div>';
+                            for (var i = 0; i < dfarray.length; i++) {
+                                html += '<div class="netdisk-delete-list-log">' + addLog("类型: " + dfmap[dfarray[i]].type + ", 名称: " + dfmap[dfarray[i]].name) + "</div>";
+                            }
+                            html += '<div class="netdisk-delete-list-log"></div>';
+                            html += '<div class="netdisk-delete-list-log">' + addLog("努力删除中, 请耐心等待....") + "</div>";
+                            html += '<div class="netdisk-delete-list-log"></div>';
+                            html += '</div>'
+                            return html;
+                        }
+                    });
+                    var mdiv = $.masker('get');
+                    var dllog = mdiv.find('.netdisk-delete-list');
+                    $z.http.post('/doc/delete', {'docId': dfarray.join(',')}, function (re) {
+                        var smap = re.data;
+                        for (var i = 0; i < dfarray.length; i++) {
+                            var delSucc = smap[dfarray[i]];
+                            var delDoc = dfmap[dfarray[i]];
+                            var html = '';
+                            html += '<div class="netdisk-delete-list-log">';
+                            html += addLog('<b>' + (delSucc ? "成功" : "失败") + "</b> " + delDoc.name);
+                            html += '</div>';
+                            dllog.append(html);
+                        }
+                        $.masker('addCloseBtn');
+                        data.refresh(selection);
+                    });
+                }
+            });
+
+            function addLog(log) {
+                var dt = new Date();
+                var ymd = "" + dt.getFullYear() + "-" + (dt.getMonth() + 1) + "-" + dt.getDay();
+                var hms = "" + dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+                return ymd + " " + hms + " " + log;
+            }
         },
         createNewFile: function (dm, fnm, ftp, callback) {
             $z.http.post('/doc/create', $.extend(dm, {

@@ -83,11 +83,9 @@
             selection.undelegate();
         },
         bind: function (selection, opt) {
-            if (opt.closeBtn) {
-                selection.delegate('.btn-close', 'click', function () {
-                    $.masker('close');
-                });
-            }
+            selection.delegate('.btn-close', 'click', function () {
+                $.masker('close');
+            });
             if (opt.btns) {
                 for (var i = 0; i < opt.btns.length; i++) {
                     var bset = opt.btns[i];
@@ -165,6 +163,10 @@
         },
         resize: function () {
             layout.resize(this);
+        },
+        addCloseBtn: function () {
+            var mdiv = this;
+            mdiv.find('.masker-btns').append('<div class="btn-close">关闭</div>');
         }
     };
 // _________________________________

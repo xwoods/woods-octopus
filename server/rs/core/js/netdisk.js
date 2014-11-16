@@ -27,6 +27,6 @@ function ND4DomainCtl($scope) {
             moduleKey: window.myConf.domain
         },
         isPrivate: false,
-        multisel: false
+        multisel: true
     });
 }
