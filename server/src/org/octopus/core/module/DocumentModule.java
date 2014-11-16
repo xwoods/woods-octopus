@@ -26,6 +26,8 @@ import org.nutz.mvc.annotation.Filters;
 import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.annotation.Param;
 import org.nutz.mvc.view.HttpStatusView;
+import org.nutz.web.ajax.Ajax;
+import org.nutz.web.ajax.AjaxReturn;
 import org.nutz.web.fliter.CheckNotLogin;
 import org.octopus.OctopusErr;
 import org.octopus.core.Keys;
@@ -60,6 +62,7 @@ public class DocumentModule extends AbstractBaseModule {
         if (!Strings.isBlank(cate)) {
             lcdn.and("cate", "=", cate);
         }
+        lcdn.asc("name");
         return dao.query(Document.class, lcdn);
     }
 
@@ -290,7 +293,70 @@ public class DocumentModule extends AbstractBaseModule {
         catch (UnsupportedEncodingException e) {
             throw Lang.wrapThrow(e);
         }
-        return new File(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_PREVIEW), "preview.jpg");
+        // 按照文件类型, 返回对应的预览
+        if ("video".equals(doc.getCate()) || "image".equals(doc.getCate())) {
+            return new File(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_PREVIEW), "preview.jpg");
+        }
+        // TODO 未实现
+        else {
+            return null;
+        }
+    }
+
+    @At("/preview-video-poster/?")
+    @Ok("raw")
+    public Object previewVideoPost(String docId,
+                                   HttpServletResponse resp,
+                                   @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        Document doc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
+        HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, false);
+        if (errStatusView != null) {
+            return errStatusView;
+        }
+        try {
+            String encode = new String(doc.getName().getBytes("UTF-8"), "ISO8859-1");
+            resp.setHeader("Content-Disposition", "attachment; filename=" + encode);
+            resp.setHeader("Content-Type", "image/jpeg");
+        }
+        catch (UnsupportedEncodingException e) {
+            throw Lang.wrapThrow(e);
+        }
+        return new File(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_PREVIEW), "poster.jpg");
+    }
+
+    @At("/preview-video/?")
+    @Ok("raw")
+    public Object previewVideo(String docId,
+                               HttpServletResponse resp,
+                               @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        Document doc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
+        HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, false);
+        if (errStatusView != null) {
+            return errStatusView;
+        }
+        try {
+            String encode = new String(doc.getName().getBytes("UTF-8"), "ISO8859-1");
+            resp.setHeader("Content-Disposition", "attachment; filename=" + encode);
+            resp.setHeader("Content-Type", "video/mp4");
+        }
+        catch (UnsupportedEncodingException e) {
+            throw Lang.wrapThrow(e);
+        }
+        return new File(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_PREVIEW), "preview.mp4");
+    }
+
+    @At("/delete")
+    @Ok("ajax")
+    public AjaxReturn deleteDocument(@Param("docId") String docId,
+                                     HttpServletResponse resp,
+                                     @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        Document doc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
+        HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, true);
+        if (errStatusView != null) {
+            return Ajax.fail().setData(errStatusView);
+        }
+        fsIO.delete(docId);
+        return Ajax.ok();
     }
 
     /**

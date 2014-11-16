@@ -29,12 +29,21 @@
     <script language="JavaScript" src="${rs}/deps/zui/zui.masker.js"></script>
     <script language="JavaScript" src="${rs}/deps/zui/zui.grid.js"></script>
     <script language="JavaScript" src="${rs}/deps/zui/zui.upload.js"></script>
+    <script language="JavaScript" src="${rs}/deps/zui/zui.preview.js"></script>
     <script language="JavaScript" src="${rs}/deps/zui/zui.netdisk.js"></script>
 
     <script language="JavaScript" src="${rs}/deps/underscore.js"></script>
     <script language="JavaScript" src="${rs}/deps/angular/angular.js"></script>
     <script language="JavaScript" src="${rs}/deps/angular/angular-route.js"></script>
 
+    <script language="JavaScript" src="${rs}/deps/prism/prism.js"></script>
+    <link href="${rs}/deps/prism/prism.css" rel="stylesheet" type="text/css">
+
+    <script language="JavaScript" src="${rs}/deps/videojs/video.js"></script>
+    <link href="${rs}/deps/videojs/video-js.css" rel="stylesheet" type="text/css">
+    <script>
+        videojs.options.flash.swf = "${rs}/deps/videojs/video-js.swf";
+    </script>
     <!-- ############ 路由 ############ -->
     <script language="JavaScript" src="/ui/route"></script>
 

@@ -97,6 +97,23 @@
         _ajax(http.constant.method.POST, url, form, callback);
     };
 
+    http.getText = function(url, form, callback) {
+        if (typeof form == "function") {
+            callback = form;
+            form = null;
+        }
+        var whenDone = function(text) {
+            if (typeof callback == "function") callback(text);
+        };
+        var ajaxOption = {
+            url: url,
+            data: form,
+            dataType: "text",
+            processData: true
+        };
+        $.ajax(ajaxOption).done(whenDone).fail(_ajaxFail);
+    }
+
     //============================================= XMLHttpRequest
 
     /**

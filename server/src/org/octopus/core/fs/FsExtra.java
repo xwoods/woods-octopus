@@ -57,7 +57,7 @@ public class FsExtra {
      */
     public void makeMeta(Document doc) {
         File df = new File(FsPath.file(doc));
-        MetaInfo mi = doc.meta();
+        MetaInfo mi = doc.metaInfo();
         if (doc.isBinary()) {
             if ("image".equals(doc.getCate())) {
                 BufferedImage bimg = Images.read(df);
@@ -107,6 +107,13 @@ public class FsExtra {
             String tarPath = FsPath.fileExtra(doc, FsPath.EXTRA_DIR_PREVIEW) + "/preview.jpg";
             // 图片
             if ("image".equals(doc.getCate())) {
+                // if("gif".equals(doc.getType())){
+                // try {
+                // Files.copyFile(new File(srcPath), new File(tarPath));
+                // } catch (IOException e) {
+                // e.printStackTrace();
+                // }
+                // }
                 thumbnailService.createThumbnail(srcPath, tarPath, thumbWidth, thumbHeight);
             }
             // 视频
@@ -135,6 +142,10 @@ public class FsExtra {
                                             + "/preview.jpg");
             File tarPreviewImage = new File(FsPath.fileExtra(tar, FsPath.EXTRA_DIR_PREVIEW)
                                             + "/preview.jpg");
+            File srcPosterImage = new File(FsPath.fileExtra(src, FsPath.EXTRA_DIR_PREVIEW)
+                                           + "/poster.jpg");
+            File tarPosterImage = new File(FsPath.fileExtra(tar, FsPath.EXTRA_DIR_PREVIEW)
+                                           + "/poster.jpg");
 
             File srcPreviewVideo = new File(FsPath.fileExtra(src, FsPath.EXTRA_DIR_PREVIEW)
                                             + "/preview.mp4");
@@ -150,6 +161,7 @@ public class FsExtra {
                 else if ("video".equals(tar.getCate())) {
                     Files.copyFile(srcPreviewImage, tarPreviewImage);
                     Files.copyFile(srcPreviewVideo, tarPreviewVideo);
+                    Files.copyFile(srcPosterImage, tarPosterImage);
                 }
                 // TODO 其他未实现呢
                 else {

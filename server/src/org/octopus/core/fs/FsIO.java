@@ -258,12 +258,7 @@ public class FsIO {
                 }
                 Files.write(f, text);
                 // 更新文件信息
-                doc.setSize(f.length());
-                doc.setModifyTime(new Date());
-                doc.setModifyUser(mdUser);
-                dao.update(doc, "size|modifyTime|modifyUser");
-                // 生成extra
-                createExtra(doc, null);
+                afterWrite(f, mdUser, doc);
                 return true;
             } else {
                 if (log.isDebugEnabled()) {
@@ -318,12 +313,7 @@ public class FsIO {
                 Files.deleteFile(f);
                 Files.move(tmpf, f);
                 // 更新文件信息
-                doc.setSize(f.length());
-                doc.setModifyTime(new Date());
-                doc.setModifyUser(mdUser);
-                dao.update(doc, "size|modifyTime|modifyUser");
-                // 生成extra
-                createExtra(doc, null);
+                afterWrite(f, mdUser, doc);
                 return true;
             } else {
                 if (log.isDebugEnabled()) {
@@ -341,20 +331,25 @@ public class FsIO {
         return false;
     }
 
-    private void createExtra(Document doc, TransInfo tinfo) {
+    private void afterWrite(File f, String mdUser, Document doc) {
+        doc.setSha1(Lang.sha1(f));
+        doc.setSize(f.length());
+        doc.setModifyTime(new Date());
+        doc.setModifyUser(mdUser);
+        dao.update(doc, "size|modifyTime|modifyUser|sha1");
         fsExtra.makeMeta(doc);
         if (doc.isHasPreview()) {
             fsExtra.makePreview(doc);
         }
-        if (doc.isHasTrans()) {
-            if (tinfo == null) {
-                tinfo = new TransInfo();
-                tinfo.setCutX(1);
-                tinfo.setCutY(1);
-                tinfo.setHasThumb(true);
-                tinfo.setHasPreview(true);
-                tinfo.setHasTrans(true);
-            }
+        // FIXME 暂时仅仅支持视频的转换
+        // 如果是视频的话
+        if ("video".equals(doc.getCate()) && doc.isHasTrans()) {
+            TransInfo tinfo = new TransInfo();
+            tinfo.setCutX(1);
+            tinfo.setCutY(1);
+            tinfo.setHasThumb(true);
+            tinfo.setHasPreview(true);
+            tinfo.setHasTrans(true);
             fsExtra.makeTrans(doc, tinfo);
         }
     }
@@ -465,5 +460,57 @@ public class FsIO {
     public void visitChildren(Document root, String type, boolean deep, Each<Document> eachVisit) {
         // TODO
 
+    }
+
+    /**
+     * 删除文档
+     * 
+     * @param docId
+     */
+    public void delete(String docId) {
+        Document doc = fetch(docId);
+        if (doc.isDir()) {
+            // 删除子节点
+            List<Document> dList = children(doc, null, true);
+            for (Document dc : dList) {
+                deleteDocument(dc);
+            }
+        }
+        // 删自己
+        deleteDocument(doc);
+    }
+
+    /**
+     * 删除文档
+     * 
+     * @param docId
+     */
+    private void deleteDocument(Document doc) {
+        // 直接删除
+        _delete(FsPath.file(doc));
+        if (doc.isHasInfo()) {
+            _delete(FsPath.fileExtra(doc, FsPath.EXTRA_FILE_INFO));
+        }
+        if (doc.isHasPreview()) {
+            _delete(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_PREVIEW));
+        }
+        if (doc.isHasTrans()) {
+            _delete(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_TRANS));
+            _delete(FsPath.fileExtra(doc, FsPath.EXTRA_FILE_TRANSINFO));
+        }
+        dao.delete(doc);
+    }
+
+    private boolean _delete(String path) {
+        File df = new File(path);
+        if (df.exists()) {
+            try {
+                return df.isDirectory() ? Files.deleteDir(df) : Files.deleteFile(df);
+            }
+            catch (Exception e) {
+                log.error(e);
+            }
+        }
+        return false;
     }
 }

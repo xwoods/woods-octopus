@@ -8,15 +8,12 @@
     width: 24px;
     height: 24px;
     background: url("zui.icons.png") no-repeat;
-}
-
-.zui-icon-24.dir {
     background-position: -16px 0px;
 }
 
 /*图片*/
 .zui-icon-24.png {
-    background-position: -16px -16px;
+    background-position: -16px -24px;
 }
 
 .zui-icon-24.bmp {
@@ -112,17 +109,19 @@
     background-position: -16px -552px;
 }
 
+.zui-icon-24.dir {
+    background-position: -16px -568px;
+}
+
 /*64px大小的icon*/
 
 .zui-icon-64 {
     width: 64px;
     height: 64px;
     background: url("zui.icons.png") no-repeat;
-}
-
-.zui-icon-64.dir {
     background-position: -120px 0px;
 }
+
 
 /*图片*/
 .zui-icon-64.png {
@@ -220,4 +219,8 @@
 
 .zui-icon-64.pptx {
     background-position: -120px -1408px;
+}
+
+.zui-icon-64.dir {
+    background-position: -120px -1472px;
 }

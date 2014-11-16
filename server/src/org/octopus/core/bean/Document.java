@@ -247,7 +247,7 @@ public class Document extends BeanCreateModify {
     /**
      * @return 当前对象的meta对象
      */
-    public MetaInfo meta() {
+    public MetaInfo metaInfo() {
         return new MetaInfo(meta);
     }
 

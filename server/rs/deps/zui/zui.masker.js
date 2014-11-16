@@ -68,10 +68,6 @@
             var mdiv = $(html);
             mdiv.appendTo(document.body);
             mdiv.find('.masker-bg').children().css({'position': "fixed"});
-
-            if (opt.afterDomReady) {
-                opt.afterDomReady(mdiv);
-            }
             return mdiv;
         }
     };
@@ -186,6 +182,10 @@
                 layout.resize(mdiv);
                 // 绑定事件
                 events.bind(mdiv, opt);
+
+                if (opt.afterDomReady) {
+                    opt.afterDomReady(mdiv);
+                }
             }
             // 命令模式
             else if (opt && (typeof opt == "string")) {

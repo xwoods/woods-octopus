@@ -82,7 +82,13 @@ var previewTypeMap = {
     'jpg': true,
     'jpeg': true,
     'png': true,
-    'gif': true
+    'gif': true,
+    'mp4': true,
+    'mov' : true,
+    'wmv': true,
+    'mpeg': true,
+    'avi': true,
+    'mpg' : true
 };
 
 var uploadTypeMap = {
@@ -93,7 +99,13 @@ var uploadTypeMap = {
     'doc': true,
     'xls': true,
     'ppt': true,
-    'zip': true
+    'zip': true,
+    'mp4': true,
+    'mov' : true,
+    'wmv': true,
+    'mpeg': true,
+    'avi': true,
+    'mpg' : true
 };
 
 

@@ -167,7 +167,7 @@
 }
 
 .netdisk-list > ul > li:hover {
-    background: #f3f6fc;
+    background: #e9ecf2;
 }
 
 .netdisk-list > ul > li .file-size {
@@ -182,14 +182,32 @@
     height: 64px;
     margin: 5px auto;
     display: block;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
 .netdisk-list > ul > li .file-nm {
     width: 100%;
-    white-space: normal;
-    text-align: center;
-    text-overflow: ellipsis;
+    height: 40px;
     overflow: hidden;
+    padding: 0 5px;
+}
+
+.netdisk-list > ul > li .file-nm > span {
+    display: inline-block;
+    padding: 4px 0;
+    line-height: 16px;
+    width: 100%;
+    height: 40px;
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: normal;
+    cursor: pointer;
+    text-align: center;
+}
+
+.netdisk-list > ul > li .file-nm > span:hover {
+    text-decoration: underline;
 }
 
 .netdisk-list > ul > li .file-nm:hover {
@@ -307,6 +325,104 @@
     width: 100%;
     height: 100%;
     display: block;
-    margin:0 auto
-    vertical-align:middle;
+    margin: 0 auto vertical-align : middle;
+}
+
+.zpreview-title {
+    width: 100%;
+    height: 40px;
+    background-color: #007AFF;
+    border-radius: 6px 6px 0 0;
+    position: absolute;
+}
+
+.zpreview-title > span, .zpreview-title > a{
+    height: 24px;
+    line-height: 24px;
+    text-align: left;
+    display: inline-block;
+    margin: 8px 20px;
+    color: #fff;
+    font-size: 16px;
+}
+
+.zpreview-title .pre-download {
+    cursor: pointer;
+    float: right;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    color : #eee;
+    padding: 0 15px;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.zpreview-title .pre-download:hover {
+    background-color: #fff;
+    color: #007AFF;
+}
+
+.zpreview-body {
+    padding-top: 40px;
+    height: 100%;
+}
+
+.zpreview-body-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-color: #000;
+}
+
+.zpreview-doc {
+    height: 100%;
+    margin-right: 350px;
+    padding: 15px;
+}
+
+.zpreview-doc-show {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.zpreview-prop {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 349px;
+    height: 100%;
+    background-color: #666;
+    border-left: 1px dotted #888;
+    padding: 5px;
+    overflow-y: auto;
+}
+
+.zpreview-prop-key {
+    padding: 5px;
+    color: #FF4;
+    text-align: right;
+    font-weight: bold;
+    text-shadow: 1px 1px 0px #000;
+}
+
+.zpreview-prop-val {
+    padding: 5px;
+    color: #FFF;
+    font-weight: bold;
+    font-family: Courier;
+    text-shadow: 1px 1px 1px #666;
+    word-break: break-all;
+    word-wrap: break-word;
+}
+
+.zpreview-doc-text {
+    font-family: Courier;
+    padding: 10px;
+    border: 0;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.6);
+    font-size: 12px;
+    line-height: 20px;
+    color: #EE0;
 }

@@ -28,6 +28,9 @@
             if (!opt.view) {
                 opt.view = 'grid';
             }
+            if (!opt.uploadType) {
+                opt.uploadType = ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'avi', 'mov', 'mkv', 'zip', 'tar', 'rar', 'txt', 'xls', 'xlsx', 'doc', 'docx', 'ppt', 'pptx'];
+            }
             return opt;
         },
         selection: function (ele) {
@@ -139,14 +142,24 @@
             var html = '';
             html += '    <li class="file-cate-' + doc.cate + '" docId="' + doc.id + '">';
             html += '         <input type="checkbox" class="list-chk">';
-            // FIXME 这样写太不对啦
-            if (window.myConf.hasPreview(doc.type)) {
-                html += '         <img class="file-type" src="/doc/preview/' + doc.id + '">';
+            if (doc.hasPreview) {
+                html += '         <img class="file-type" src="/doc/preview/' + doc.id + '?' + new Date().getTime() + '">';
             } else {
                 html += '         <div class="file-type zui-icon-64 ' + doc.type + '"></div>';
             }
+            // TODO doc.hasTrans
             html += '         <div class="file-type-list zui-icon-24 ' + doc.type + '"></div>';
-            html += '         <div class="file-nm">' + doc.name + '</div>';
+            html += '         <div class="file-nm" fnm="' + doc.name + '"><span>';
+            var fnm = doc.name;
+            if (fnm.length > 25) {
+                fnm = fnm.substr(0, 18) + "..." + fnm.substr(fnm.length - 3);
+            }
+            if (doc.cate == "folder") {
+                html += fnm
+            } else {
+                html += fnm + '.' + doc.type;
+            }
+            html += '</span></div>';
             html += '         <div class="file-size">' + $z.util.sizeText(doc.size) + '</div>';
             html += '         <div class="file-createTime">' + doc.createTime + '</div>';
             html += '    </li>';
@@ -294,6 +307,7 @@
             // 上传文件
             selection.delegate('.default-btns-upload', 'click', function () {
                 var selection = util.selection(this);
+                var opt = util.opt(selection);
                 var dm = data.dm(selection);
                 $.upload({
                     title: "上传文件",
@@ -301,7 +315,7 @@
                     height: "80%",
                     upload: {
                         multi: true,
-                        type: ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'avi', 'mov', 'mkv', 'zip', 'tar', 'rar', 'txt', 'xls', 'xlsx', 'doc', 'docx', 'ppt', 'pptx'],
+                        type: opt.uploadType,
                         doUpload: function (file, upJq, progress, callback) {
                             var xhr = new XMLHttpRequest();
                             if (!xhr.upload) {
@@ -339,8 +353,7 @@
                 });
             });
 
-            // 打开文件
-            selection.delegate('.file-nm', 'click', function () {
+            var openFile = function () {
                 var selection = util.selection(this);
                 var opt = util.opt(selection);
                 var doc = $(this).parent().data(DOC_ITEM);
@@ -351,26 +364,33 @@
                     nli.appendTo(pul);
                     data.refresh(selection);
                 } else {
-                    if (doc.cate == "image") {
-                        $.masker({
-                            title: "图片名称: " + doc.name,
-                            closeBtn: true,
-                            width: "80%",
-                            height: "80%",
-                            body: function () {
-                                var html = '';
-                                html += '<div class="open-file-container">'
-                                html += '   <img class="open-file" src="/doc/bin/read?docId=' + doc.id + '" >';
-                                html += '</div>'
-                                return html;
-                            }
-                        });
-                        return;
-                    }
-                    // 预览
-                    alert('暂时还不支持打开预览, 请下载到本地查看.')
+                    //if (doc.cate == "image") {
+                    //    $.masker({
+                    //        title: "图片名称: " + doc.name,
+                    //        closeBtn: true,
+                    //        width: "80%",
+                    //        height: "80%",
+                    //        body: function () {
+                    //            var html = '';
+                    //            html += '<div class="open-file-container">'
+                    //            html += '   <img class="open-file" src="/doc/bin/read?docId=' + doc.id + '" >';
+                    //            html += '</div>'
+                    //            return html;
+                    //        }
+                    //    });
+                    //    return;
+                    //}
+                    //// 预览
+                    //alert('暂时还不支持打开预览, 请下载到本地查看.')
+                    $.zpreview({
+                        "doc": doc
+                    });
                 }
-            });
+            };
+
+            // 打开文件
+            selection.delegate('.file-nm', 'click', openFile);
+            selection.delegate('img.file-type', 'click', openFile);
 
             // 切换显示目录
             selection.delegate('.netdisk-crumbs ul li', 'click', function () {

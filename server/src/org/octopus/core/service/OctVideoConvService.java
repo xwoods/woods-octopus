@@ -85,7 +85,11 @@ public class OctVideoConvService {
             getConvTask(doc).runTask(task);
             // 调整一下thumb
             if (task.getThumb() != null) {
-                thumbnailService.createThumbnail(task.getThumb(), task.getThumb(), 0, 0);
+                thumbnailService.createThumbnail(task.getThumb(),
+                                                 FsPath.fileExtra(doc, FsPath.EXTRA_DIR_PREVIEW)
+                                                         + "/preview.jpg",
+                                                 0,
+                                                 0);
             }
         }
         catch (Exception e) {
@@ -125,7 +129,7 @@ public class OctVideoConvService {
             task.setPreview(previewPath + "/preview.mp4");
         }
         if (vcReq.isCreateThumb()) {
-            task.setThumb(previewPath + "/preview.jpg");
+            task.setThumb(previewPath + "/poster.jpg");
         }
         return task;
     }
