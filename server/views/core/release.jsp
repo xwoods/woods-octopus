@@ -5,16 +5,7 @@
     <div class="feture-title">新功能列表</div>
     <ul>
         <li>
-            "矩阵-素材转换服务", 对已上传素材进行二次转换(比如将视频按照3x5屏幕进行再转换)
-        </li>
-        <li>
-            "矩阵-播放器配置", 配置盒子ip, 布局等
-        </li>
-        <li>
             "矩阵-屏幕制作", 讲素材摆按照播放要求进行摆放与设置(大小, 跨屏)
-        </li>
-        <li>
-            "播放器comment" 支持微信或email等其他方式添加
         </li>
         <li>
             "问与答", 支持问题分类, 方便统计或完成后续工作
@@ -25,6 +16,34 @@
     </ul>
 </div>
 <div class="release-log">
+<div class="release-date">2014-11-16</div>
+<div class="release-note">
+    <ul>
+        <li>
+            "文件系统"加强
+            <ol>
+                <li>图片与视频支持预览</li>
+                <li>视频支持播放预览</li>
+                <li>视频支持转换为 n x n 模式</li>
+                <li>文本或代码文件支持高亮显示+行号显示</li>
+                <li>删除, 重命名, 制作副本</li>
+            </ol>
+        </li>
+        <li>
+            "下载服务"功能实现
+            <ol>
+                <li>存放各种盒子需要下载的文件</li>
+                <li>通过url, http://octopus.danoolive.com/dw?fnm=文件名</li>
+            </ol>
+        </li>
+        <li>
+            "矩阵-素材转换服务", 对已上传素材进行二次转换(比如将视频按照3x5屏幕进行再转换), 即"文件系统"增强部分
+        </li>
+        <li>
+            "矩阵-播放器配置", 配置盒子ip, 布局等
+        </li>
+    </ul>
+</div>
 <div class="release-date">2014-09-23</div>
 <div class="release-note">
     <ul>
