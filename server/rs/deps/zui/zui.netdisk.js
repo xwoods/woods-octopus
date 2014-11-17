@@ -97,9 +97,13 @@
                 html += '                    <span class="fa fa-arrows fa-lg"></span>';
                 html += '                    移动到';
                 html += '                </li>';
-                html += '                <li class="multi single file-copy">';
+                html += '                <li class="single file-copy">';
                 html += '                    <span class="fa fa-copy fa-lg"></span>';
-                html += '                    复制到';
+                html += '                    制作副本';
+                html += '                </li>';
+                html += '                <li class="single file-trans">';
+                html += '                    <span class="fa fa-exchange fa-lg"></span>';
+                html += '                    转换为';
                 html += '                </li>';
             }
             html += '            </ul>';
@@ -149,17 +153,29 @@
             var html = '';
             html += '    <li class="file-cate-' + doc.cate + '" docId="' + doc.id + '">';
             html += '         <input type="checkbox" class="list-chk">';
+            //html += '   <div class="file-icons" >';
             if (doc.hasPreview) {
                 html += '         <img class="file-type" src="/doc/preview/' + doc.id + '?' + new Date().getTime() + '">';
+                if (doc.hasTrans && 'video' == doc.cate) {
+                    var mi = $z.util.str2json(doc.meta);
+                    if (!doc.transDone) {
+                        html += '   <div class="file-tip video-trans-stat"><span class="fa fa-refresh fa-lg"></span></div>';
+                    }
+                    if (mi.transCutX > 1 && mi.transCutY > 1) {
+                        html += '   <div class="file-tip video-cutAs">' + mi.transCutX + "x" + mi.transCutY + '</div>';
+                    }
+                    html += '</img>';
+                }
             } else {
                 html += '         <div class="file-type zui-icon-64 ' + doc.type + '"></div>';
             }
+            //html += '   <div>';
             // TODO doc.hasTrans
             html += '         <div class="file-type-list zui-icon-24 ' + doc.type + '"></div>';
             html += '         <div class="file-nm" fnm="' + doc.name + '"><span>';
             var fnm = doc.name;
             if (fnm.length > 25) {
-                fnm = fnm.substr(0, 18) + "..." + fnm.substr(fnm.length - 3);
+                fnm = fnm.substr(0, 18) + "..." + fnm.substr(fnm.length - 4);
             }
             if (doc.cate == "folder") {
                 html += fnm
@@ -371,24 +387,6 @@
                     nli.appendTo(pul);
                     data.refresh(selection);
                 } else {
-                    //if (doc.cate == "image") {
-                    //    $.masker({
-                    //        title: "图片名称: " + doc.name,
-                    //        closeBtn: true,
-                    //        width: "80%",
-                    //        height: "80%",
-                    //        body: function () {
-                    //            var html = '';
-                    //            html += '<div class="open-file-container">'
-                    //            html += '   <img class="open-file" src="/doc/bin/read?docId=' + doc.id + '" >';
-                    //            html += '</div>'
-                    //            return html;
-                    //        }
-                    //    });
-                    //    return;
-                    //}
-                    //// 预览
-                    //alert('暂时还不支持打开预览, 请下载到本地查看.')
                     $.zpreview({
                         "doc": doc
                     });
@@ -424,6 +422,138 @@
                 alert('该功能未完成');
             });
 
+            // 制作副本
+            selection.delegate('.file-copy', 'click', function () {
+                var selection = util.selection(this);
+                var opt = util.opt(selection);
+                var sfile = selection.find('.netdisk-list input[type=checkbox]:checked').first();
+                var doc = sfile.parent().data(DOC_ITEM);
+                if (doc.readAs == "DIR" || doc.readAs == "CPX") {
+                    alert("暂时不支持文件夹")
+                    return;
+                }
+                $z.http.post('/doc/copy', {'docId': doc.id}, function (re) {
+                    data.refresh(selection);
+                });
+            });
+
+            // 抓换文件
+            selection.delegate('.fa-exchange', 'click', function () {
+                var selection = util.selection(this);
+                var opt = util.opt(selection);
+                var sfile = selection.find('.netdisk-list input[type=checkbox]:checked').first();
+                var doc = sfile.parent().data(DOC_ITEM);
+                if (doc.cate == "video") {
+                    var mi = $z.util.str2json(doc.meta);
+                    if (mi.transCutX != 1 && mi.transCutY != 1) {
+                        alert("抱歉, 只有原版视频支持转换操作");
+                        return;
+                    }
+                    if (doc.transFail) {
+                        alert("当前视频转换存在问题, 请检查!");
+                        return;
+                    }
+                    if (!doc.transDone) {
+                        alert("当前视频转换正在进行转换, 请稍后在操作");
+                        return;
+                    }
+
+                    var cutMax = 10;
+
+                    var ow = mi.width;
+                    var oh = mi.height;
+                    var nw = mi.width;
+                    var nh = mi.height;
+                    var ncutX = 1;
+                    var ncutY = 1;
+
+                    // 进行新的切割
+                    $.masker({
+                        title: "视频切割",
+                        width: 300,
+                        height: 300,
+                        closeBtn: true,
+                        btns: [{
+                            clz: 'btn-video-trans',
+                            label: "开始转换",
+                            event: {
+                                type: 'click',
+                                handle: function (sele) {
+                                    if (ncutX == 1 && ncutY == 1) {
+                                        alert('额...没有分割吧, 还是1x1的视频');
+                                        return;
+                                    }
+                                    $z.http.post('/doc/trans/video', {
+                                        'docId': doc.id,
+                                        'cutX': ncutX,
+                                        "cutY": ncutY
+                                    }, function (re) {
+                                        $.masker('close');
+                                        data.refresh(selection);
+                                    });
+                                }
+                            }
+                        }],
+                        body: function () {
+                            var html = '';
+                            html += '<div class="trans-form-video">'
+                            html += '   <div class="trans-label">分割前</div>';
+                            html += '   <div class="trans-info before">';
+                            html += '       <div class="trans-cutAs">';
+                            html += '           <b>大小</b>';
+                            html += '           <input class="cutX" value="' + mi.transCutX + '" disabled> x';
+                            html += '           <input class="cutY" value="' + mi.transCutX + '" disabled>';
+                            html += '       </div>'
+                            html += '       <div class="trans-wh">';
+                            html += '           <b>分辨率</b>';
+                            html += '           <input class="twidth" value="' + mi.width + '" disabled> x';
+                            html += '           <input class="theight" value="' + mi.height + '" disabled>';
+                            html += '       </div>'
+                            html += '   </div>'
+                            html += '   <div class="trans-label ">分割后</div>';
+                            html += '   <div class="trans-info after">';
+                            html += '       <div class="trans-cutAs">';
+                            html += '           <b>大小</b>';
+                            html += '           <input class="cutX" value="' + mi.transCutX + '" type="number" min="1" max="' + cutMax + '"> x';
+                            html += '           <input class="cutY" value="' + mi.transCutX + '" type="number" min="1" max="' + cutMax + '">';
+                            html += '       </div>'
+                            html += '       <div class="trans-wh">';
+                            html += '           <b>分辨率</b>';
+                            html += '           <input class="twidth" value="' + mi.width + '" disabled> x';
+                            html += '           <input class="theight" value="' + mi.height + '" disabled>';
+                            html += '       </div>'
+                            html += '   </div>'
+                            html += '</div>'
+                            return html;
+                        },
+                        afterDomReady: function (mdiv) {
+                            var atw = mdiv.find('.trans-info.after .twidth');
+                            var ath = mdiv.find('.trans-info.after .theight');
+                            mdiv.delegate('.trans-info.after .cutX', 'change', function () {
+                                var cx = $(this);
+                                if (isNaN(parseInt(cx.val()))) {
+                                    cx.val(1);
+                                }
+                                ncutX = parseInt(cx.val());
+                                nw = ncutX * ow;
+                                atw.val(nw);
+                            });
+                            mdiv.delegate('.trans-info.after .cutY', 'change', function () {
+                                var cy = $(this);
+                                if (isNaN(parseInt(cy.val()))) {
+                                    cy.val(1);
+                                }
+                                ncutY = parseInt(cy.val());
+                                nh = parseInt(cy.val()) * oh;
+                                ath.val(nh);
+                            });
+                        }
+                    });
+                } else {
+                    alert("抱歉, 目前只有视频类型文件支持转换操作");
+                }
+            });
+
             // 重命名文件
             selection.delegate('.file-rename', 'click', function () {
                 var selection = util.selection(this);
@@ -443,7 +573,7 @@
                         var fnm = doc.name;
                         sfile.parent().find('.file-nm').prop('fnm', fnm);
                         if (fnm.length > 25) {
-                            fnm = fnm.substr(0, 18) + "..." + fnm.substr(fnm.length - 3);
+                            fnm = fnm.substr(0, 18) + "..." + fnm.substr(fnm.length - 4);
                         }
                         if (doc.cate != "folder") {
                             fnm += '.' + doc.type;
@@ -492,7 +622,7 @@
                             html += '<div class="netdisk-delete-list-log">' + addLog("开始删除以下文件:") + "</div>";
                             html += '<div class="netdisk-delete-list-log"></div>';
                             for (var i = 0; i < dfarray.length; i++) {
-                                html += '<div class="netdisk-delete-list-log">' + addLog("类型: " + dfmap[dfarray[i]].type + ", 名称: " + dfmap[dfarray[i]].name) + "</div>";
+                                html += '<div class="netdisk-delete-list-log">' + addLog((i + 1) + ". " + dfmap[dfarray[i]].name) + "</div>";
                             }
                             html += '<div class="netdisk-delete-list-log"></div>';
                             html += '<div class="netdisk-delete-list-log">' + addLog("努力删除中, 请耐心等待....") + "</div>";
@@ -510,7 +640,7 @@
                             var delDoc = dfmap[dfarray[i]];
                             var html = '';
                             html += '<div class="netdisk-delete-list-log">';
-                            html += addLog('<b>' + (delSucc ? "成功" : "失败") + "</b> " + delDoc.name);
+                            html += addLog('<b>' + (delSucc ? "成功" : "失败") + "</b> " + (i + 1) + ". " + delDoc.name);
                             html += '</div>';
                             dllog.append(html);
                         }

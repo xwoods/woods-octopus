@@ -9,6 +9,7 @@ import org.octopus.OctopusConfig;
 import org.octopus.core.Keys;
 import org.octopus.core.bean.Domain;
 import org.octopus.core.bean.User;
+import org.octopus.core.fs.FsExtra;
 import org.octopus.core.fs.FsIO;
 
 @IocBean
@@ -22,6 +23,9 @@ public abstract class AbstractBaseModule {
 
     @Inject("refer:fsIO")
     protected FsIO fsIO;
+
+    @Inject("refer:fsExtra")
+    protected FsExtra fsExtra;
 
     protected Domain DMN(HttpSession session) {
         return (Domain) session.getAttribute(Keys.SESSION_DOMAIN);

@@ -34,9 +34,11 @@ import org.nutz.web.fliter.CheckNotLogin;
 import org.octopus.OctopusErr;
 import org.octopus.core.Keys;
 import org.octopus.core.bean.Document;
+import org.octopus.core.bean.MetaInfo;
 import org.octopus.core.bean.User;
 import org.octopus.core.fs.FsModule;
 import org.octopus.core.fs.FsPath;
+import org.octopus.core.fs.TransInfo;
 
 @Filters({@By(type = CheckNotLogin.class, args = {Keys.SESSION_USER, "/login"})})
 @At("/doc")
@@ -82,15 +84,15 @@ public class DocumentModule extends AbstractBaseModule {
      *            是否可删除
      * @return 错误信息(如果为空, 则表示可以正常访问)
      */
-    public HttpStatusView checkDocumentPvg(User user,
-                                           Document doc,
-                                           boolean checkRead,
-                                           boolean checkWrite,
-                                           boolean checkRemove) {
+    public int checkDocumentPvg(User user,
+                                Document doc,
+                                boolean checkRead,
+                                boolean checkWrite,
+                                boolean checkRemove) {
 
         // 不登陆不能访问 || 文件为空
         if (user == null || doc == null) {
-            return new HttpStatusView(403);
+            return 403;
         }
         boolean isOwner = doc.getCreateUser().equals(user.getName());
         // 不是文件创建者 && 文件私有
@@ -99,24 +101,15 @@ public class DocumentModule extends AbstractBaseModule {
                       doc.getName(),
                       doc.getCreateUser(),
                       user.getName());
-            return new HttpStatusView(403);
+            return 403;
         }
-        // 检查是不是文件夹 FIXME 默认是检查是不是文件类型的
-        // boolean checkIsFile = true;
-        // if (checkIsFile && doc.getReadAs() == ReadType.DIR) {
-        // log.warnf("Dir[%s](Create by %s) Can't As File by %s",
-        // doc.getName(),
-        // doc.getCreateUser(),
-        // user.getName());
-        // return new HttpStatusView(403);
-        // }
         // READ
         if (checkRead && (!doc.isCanRead() && !isOwner)) {
             log.warnf("File[%s](Create by %s) Can't Read by %s",
                       doc.getName(),
                       doc.getCreateUser(),
                       user.getName());
-            return new HttpStatusView(403);
+            return 403;
         }
         // WRITE
         if (checkWrite && (!doc.isCanWrite() && !isOwner)) {
@@ -124,7 +117,7 @@ public class DocumentModule extends AbstractBaseModule {
                       doc.getName(),
                       doc.getCreateUser(),
                       user.getName());
-            return new HttpStatusView(403);
+            return 403;
         }
         // REMOVE
         if (checkRemove && (!doc.isCanRemove() && !isOwner)) {
@@ -132,9 +125,9 @@ public class DocumentModule extends AbstractBaseModule {
                       doc.getName(),
                       doc.getCreateUser(),
                       user.getName());
-            return new HttpStatusView(403);
+            return 403;
         }
-        return null;
+        return 200;
     }
 
     @At("/bin/read")
@@ -143,9 +136,9 @@ public class DocumentModule extends AbstractBaseModule {
                              HttpServletResponse resp,
                              @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
         Document doc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
-        HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, false);
-        if (errStatusView != null) {
-            return errStatusView;
+        int errCode = checkDocumentPvg(me, doc, true, false, false);
+        if (errCode != 200) {
+            return new HttpStatusView(errCode);
         }
         try {
             String encode = new String((doc.getName() + "." + doc.getType()).getBytes("UTF-8"),
@@ -165,9 +158,9 @@ public class DocumentModule extends AbstractBaseModule {
     public Object readTxt(@Param("docId") String docId,
                           @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
         Document doc = fsIO.fetch(docId);
-        HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, false);
-        if (errStatusView != null) {
-            return errStatusView;
+        int errCode = checkDocumentPvg(me, doc, true, false, false);
+        if (errCode != 200) {
+            return new HttpStatusView(errCode);
         }
         return fsIO.readText(doc);
     }
@@ -282,9 +275,9 @@ public class DocumentModule extends AbstractBaseModule {
                           HttpServletResponse resp,
                           @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
         Document doc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
-        HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, false);
-        if (errStatusView != null) {
-            return errStatusView;
+        int errCode = checkDocumentPvg(me, doc, true, false, false);
+        if (errCode != 200) {
+            return new HttpStatusView(errCode);
         }
         try {
             String encode = new String(doc.getName().getBytes("UTF-8"), "ISO8859-1");
@@ -310,9 +303,9 @@ public class DocumentModule extends AbstractBaseModule {
                                    HttpServletResponse resp,
                                    @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
         Document doc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
-        HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, false);
-        if (errStatusView != null) {
-            return errStatusView;
+        int errCode = checkDocumentPvg(me, doc, true, false, false);
+        if (errCode != 200) {
+            return new HttpStatusView(errCode);
         }
         try {
             String encode = new String(doc.getName().getBytes("UTF-8"), "ISO8859-1");
@@ -331,9 +324,9 @@ public class DocumentModule extends AbstractBaseModule {
                                HttpServletResponse resp,
                                @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
         Document doc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
-        HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, false);
-        if (errStatusView != null) {
-            return errStatusView;
+        int errCode = checkDocumentPvg(me, doc, true, false, false);
+        if (errCode != 200) {
+            return new HttpStatusView(errCode);
         }
         try {
             String encode = new String(doc.getName().getBytes("UTF-8"), "ISO8859-1");
@@ -353,8 +346,8 @@ public class DocumentModule extends AbstractBaseModule {
                                      HttpServletResponse resp,
                                      @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
         Document doc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
-        HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, false);
-        if (errStatusView != null) {
+        int errCode = checkDocumentPvg(me, doc, true, false, false);
+        if (errCode != 200) {
             // TODO
         } else {
             doc.setName(docName);
@@ -376,8 +369,8 @@ public class DocumentModule extends AbstractBaseModule {
         String[] dlist = Strings.splitIgnoreBlank(docIds, ",");
         for (String d : dlist) {
             Document doc = dao.fetch(Document.class, Cnd.where("id", "=", d));
-            HttpStatusView errStatusView = checkDocumentPvg(me, doc, true, false, true);
-            if (errStatusView != null) {
+            int errCode = checkDocumentPvg(me, doc, true, false, true);
+            if (errCode != 200) {
                 delSuccessMap.put(d, false);
             } else {
                 fsIO.delete(doc);
@@ -385,6 +378,51 @@ public class DocumentModule extends AbstractBaseModule {
             }
         }
         return Ajax.ok().setData(delSuccessMap);
+    }
+
+    @At("/trans/video")
+    @Ok("ajax")
+    public AjaxReturn transDocument(@Param("docId") String docId,
+                                    @Param("cutX") int cutX,
+                                    @Param("cutY") int cutY,
+                                    @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        if (cutX <= 1 && cutY <= 1) {
+            return Ajax.fail();
+        }
+        Document oldDoc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
+        // FIXME
+        oldDoc.setName(oldDoc.getName() + "_" + cutX + "x" + cutY);
+        Document newDoc = fsIO.copy(oldDoc, me.getName(), true);
+        // 先加上转换的后的分割信息
+        MetaInfo mi = newDoc.metaInfo();
+        mi.set("transCutX", cutX);
+        mi.set("transCutY", cutY);
+        newDoc.setMeta(mi.toString());
+        dao.update(newDoc, "meta");
+        // 转换
+        TransInfo tinfo = new TransInfo();
+        tinfo.setCutX(cutX);
+        tinfo.setCutY(cutY);
+        tinfo.setHasThumb(false);
+        tinfo.setHasPreview(false);
+        tinfo.setHasTrans(true);
+        fsExtra.makeTrans(newDoc, tinfo);
+        return Ajax.ok().setData(newDoc);
+    }
+
+    @At("/copy")
+    @Ok("ajax")
+    public AjaxReturn copyDocument(@Param("docId") String docId,
+                                   HttpServletResponse resp,
+                                   @Attr(scope = Scope.SESSION, value = Keys.SESSION_USER) User me) {
+        Document oldDoc = dao.fetch(Document.class, Cnd.where("id", "=", docId));
+        int errCode = checkDocumentPvg(me, oldDoc, true, false, false);
+        if (errCode != 200) {
+            return Ajax.fail().setData(200);
+        } else {
+            Document newDoc = fsIO.copy(oldDoc, me.getName(), false);
+            return Ajax.ok().setData(newDoc);
+        }
     }
 
     /**

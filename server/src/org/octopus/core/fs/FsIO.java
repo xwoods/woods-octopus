@@ -31,6 +31,7 @@ import org.nutz.web.Webs.Err;
 import org.octopus.OctopusErr;
 import org.octopus.core.bean.Document;
 import org.octopus.core.bean.DocumentType;
+import org.octopus.core.bean.MetaInfo;
 
 /**
  * 
@@ -459,7 +460,7 @@ public class FsIO {
      */
     public void visitChildren(Document root, String type, boolean deep, Each<Document> eachVisit) {
         // TODO
-
+        throw Lang.noImplement();
     }
 
     /**
@@ -521,5 +522,108 @@ public class FsIO {
             }
         }
         return false;
+    }
+
+    /**
+     * 复制一个当前的对象
+     * 
+     * @param oldDoc
+     * 
+     * @return
+     */
+    public Document copy(Document oldDoc, String ctUser, boolean withOutTrans) {
+        // 新建doc
+        Document doc = new Document();
+        doc.setCreateTime(new Date());
+        doc.setCreateUser(ctUser);
+        doc.setModifyTime(new Date());
+        doc.setModifyUser(ctUser);
+        doc.setSha1(oldDoc.getSha1());
+        doc.setSize(oldDoc.getSize());
+        doc.setParentId(oldDoc.getParentId());
+        doc.setModule(oldDoc.getModule());
+        doc.setDefine(oldDoc.getDefine());
+        doc.setName(oldDoc.getName());
+        doc.setType(oldDoc.getType());
+        // 是否私有看模块规定
+        doc.setPrivate(oldDoc.isPrivate());
+        // 默认可读
+        doc.setCanRead(oldDoc.isCanRead());
+        doc.setCanWrite(oldDoc.isCanWrite());
+        doc.setCanRemove(oldDoc.isCanRemove());
+        // 检查文件是否重名
+        if (existDocument(doc)) {
+            setNewName(doc);
+        }
+        // 根据文件后缀, 补全文件相关属性
+        doc.setHasPreview(oldDoc.isHasPreview());
+        doc.setHasInfo(oldDoc.isHasInfo());
+        doc.setHasTrans(oldDoc.isHasTrans());
+        doc.setMime(oldDoc.getMime());
+        doc.setReadAs(oldDoc.getReadAs());
+        doc.setCate(oldDoc.getCate());
+        doc.setTransFail(oldDoc.isTransFail());
+        doc.setTransDone(oldDoc.isTransDone());
+        doc.setTransRate(oldDoc.getTransRate());
+        if (withOutTrans && doc.isHasTrans()) {
+            doc.setTransFail(false);
+            doc.setTransDone(false);
+            doc.setTransRate(0);
+            MetaInfo mi = oldDoc.metaInfo();
+            mi.set("transCutX", 0);
+            mi.set("transCutY", 0);
+            mi.set("transCutWidth", 0);
+            mi.set("transCutHeight", 0);
+            oldDoc.setMeta(mi.toString());
+        }
+        doc.setMeta(oldDoc.getMeta());
+        // 插入数据库
+        dao.insert(doc);
+        // 逻辑上的文件夹, 不需要生成文件或目录
+        if (!doc.isDir()) {
+            // 生成对应文件跟目录
+            try {
+                // 复合型文件, 生成目录
+                if (doc.isComplex()) {
+                    Files.createDirIfNoExists(FsPath.file(doc));
+                    Files.copyDir(new File(FsPath.file(oldDoc)), new File(FsPath.file(doc)));
+                }
+                // BIN或TXT, 生成文件
+                else {
+                    Files.createFileIfNoExists(FsPath.file(doc));
+                    Files.copyFile(new File(FsPath.file(oldDoc)), new File(FsPath.file(doc)));
+                }
+
+                // 其他相关文件与目录
+                // info
+                if (doc.isHasInfo()) {
+                    Files.createFileIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_FILE_INFO));
+                    Files.copyFile(new File(FsPath.fileExtra(oldDoc, FsPath.EXTRA_FILE_INFO)),
+                                   new File(FsPath.fileExtra(doc, FsPath.EXTRA_FILE_INFO)));
+                }
+                // preview
+                if (doc.isHasPreview()) {
+                    Files.createDirIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_PREVIEW));
+                    Files.copyDir(new File(FsPath.fileExtra(oldDoc, FsPath.EXTRA_DIR_PREVIEW)),
+                                  new File(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_PREVIEW)));
+                }
+                // trans
+                if (doc.isHasTrans()) {
+                    Files.createDirIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_TRANS));
+                    Files.createFileIfNoExists(FsPath.fileExtra(doc, FsPath.EXTRA_FILE_TRANSINFO));
+                    if (!withOutTrans) {
+                        Files.copyDir(new File(FsPath.fileExtra(oldDoc, FsPath.EXTRA_DIR_TRANS)),
+                                      new File(FsPath.fileExtra(doc, FsPath.EXTRA_DIR_TRANS)));
+                        Files.copyFile(new File(FsPath.fileExtra(oldDoc,
+                                                                 FsPath.EXTRA_FILE_TRANSINFO)),
+                                       new File(FsPath.fileExtra(doc, FsPath.EXTRA_FILE_TRANSINFO)));
+                    }
+                }
+            }
+            catch (IOException e) {
+                throw Lang.wrapThrow(e);
+            }
+        }
+        return doc;
     }
 }

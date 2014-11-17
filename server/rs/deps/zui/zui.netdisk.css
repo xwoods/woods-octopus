@@ -157,6 +157,7 @@
     padding: 9px 0px 9px 0px;
     width: 110px;
     color: #4D4D4D;
+    position: relative;
 }
 
 .netdisk-list > ul > li > div {
@@ -449,4 +450,68 @@
     font-size: 12px;
     font-family: Courier;
     height: 20px;
+}
+
+.trans-label {
+    padding: 10px 15px;
+    font-size: 14px;
+    color: #FFFF00;
+}
+
+.trans-info {
+    padding: 5px;
+    color: #fff;
+}
+
+.trans-info b {
+    display: inline-block;
+    width: 80px;
+    padding: 0 15px;
+    text-align: right;
+}
+
+.trans-cutAs {
+    margin: 10px;
+}
+
+.trans-wh {
+    margin: 10px;
+}
+
+.trans-info input {
+    border: 1px solid #888;
+    border-radius: 6px;
+    width: 55px;
+    padding-left: 10px;
+    margin: 0 5px;
+}
+
+.file-icons {
+}
+
+.file-tip {
+    position: absolute;
+}
+
+.file-tip.video-trans-stat {
+    width: 16px;
+    height: 16px;
+    top: 22px;
+    right: 16px;
+    color: #f00;
+}
+
+
+.file-tip.video-cutAs {
+    /* width: 30px; */
+    padding: 0 5px;
+    height: 16px;
+    line-height: 16px;
+    background-color: #007AFF;
+    bottom: 64px;
+    right: 12px;
+    text-align: center;
+    font-size: 11px;
+    color: #fff;
+    border-radius: 6px;
 }

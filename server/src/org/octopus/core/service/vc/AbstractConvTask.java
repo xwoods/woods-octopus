@@ -65,8 +65,8 @@ public abstract class AbstractConvTask implements ConvTask {
         task.setupVideoInfo(srcInfo);
 
         MetaInfo mi = doc.metaInfo();
-        mi.set("width", srcInfo.getWidth());
-        mi.set("height", srcInfo.getHeight());
+        mi.set("width", task.getCutX() * srcInfo.getWidth()); // 保证分割视频的宽高正确
+        mi.set("height", task.getCutY() * srcInfo.getHeight());
         mi.set("transCutX", task.getCutX());
         mi.set("transCutY", task.getCutY());
         mi.set("transCutWidth", task.getCutWidth());
@@ -114,7 +114,7 @@ public abstract class AbstractConvTask implements ConvTask {
                     log.debugf("ConvertVideo, TransPercent: %d / %d", i + 1, mainShells.length);
                     runShell(mainShells[i]);
                     // 完成转换
-                    doc.setTransRate(i + 1 * 100 / mainShells.length);
+                    doc.setTransRate((i + 1) * 100 / mainShells.length);
                     dao.update(doc, "transRate");
                 }
                 log.debugf("ConvertVideo, Done Trans: %s", srcPath);
