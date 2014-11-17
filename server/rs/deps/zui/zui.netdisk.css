@@ -515,3 +515,11 @@
     color: #fff;
     border-radius: 6px;
 }
+
+.dwservice-url {
+    font-size: 14px;
+    border: 1px solid #007AFF;
+    color: #007AFF;
+    padding: 3px 8px;
+    border-radius: 6px;
+}

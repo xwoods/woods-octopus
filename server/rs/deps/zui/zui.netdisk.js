@@ -68,12 +68,14 @@
                 html += '                    上传';
                 html += '                </li>';
                 html += '            </ul>';
-                html += '            <ul class="netdisk-toolbar-btns default-btns-newfolder">';
-                html += '                <li>';
-                html += '                    <span class="fa fa-folder-o fa-lg"></span>';
-                html += '                    新建文件夹';
-                html += '                </li>';
-                html += '            </ul>';
+                if (!opt.dwservice) {
+                    html += '            <ul class="netdisk-toolbar-btns default-btns-newfolder">';
+                    html += '                <li>';
+                    html += '                    <span class="fa fa-folder-o fa-lg"></span>';
+                    html += '                    新建文件夹';
+                    html += '                </li>';
+                    html += '            </ul>';
+                }
             }
             html += '            <ul class="netdisk-toolbar-btns select-btns">';
             html += '                <li class="single file-download">';
@@ -85,28 +87,35 @@
                 html += '                    <span class="fa fa-trash fa-lg"></span>';
                 html += '                    删除';
                 html += '                </li>';
-                html += '                <li class="single file-share">';
-                html += '                    <span class="fa fa-share-alt fa-lg"></span>';
-                html += '                    分享';
-                html += '                </li>';
                 html += '                <li class="single file-rename">';
                 html += '                    <span class="fa fa-pencil-square-o fa-lg"></span>';
                 html += '                    重命名';
                 html += '                </li>';
-                html += '                <li class="multi single file-move">';
-                html += '                    <span class="fa fa-arrows fa-lg"></span>';
-                html += '                    移动到';
-                html += '                </li>';
-                html += '                <li class="single file-copy">';
-                html += '                    <span class="fa fa-copy fa-lg"></span>';
-                html += '                    制作副本';
-                html += '                </li>';
-                html += '                <li class="single file-trans">';
-                html += '                    <span class="fa fa-exchange fa-lg"></span>';
-                html += '                    转换为';
-                html += '                </li>';
+                if (!opt.dwservice) {
+                    html += '                <li class="single file-share">';
+                    html += '                    <span class="fa fa-share-alt fa-lg"></span>';
+                    html += '                    分享';
+                    html += '                </li>';
+                    html += '                <li class="multi single file-move">';
+                    html += '                    <span class="fa fa-arrows fa-lg"></span>';
+                    html += '                    移动到';
+                    html += '                </li>';
+                    html += '                <li class="single file-copy">';
+                    html += '                    <span class="fa fa-copy fa-lg"></span>';
+                    html += '                    制作副本';
+                    html += '                </li>';
+                    html += '                <li class="single file-trans">';
+                    html += '                    <span class="fa fa-exchange fa-lg"></span>';
+                    html += '                    转换为';
+                    html += '                </li>';
+                }
             }
             html += '            </ul>';
+            if (opt.dwservice) {
+                html += '<span class="dwservice-url">';
+                html += 'http://' + window.location.host + '/dw?fnm=' + '<em>文件名</em>';
+                html += '</span>';
+            }
             html += '            <ul class="netdisk-toolbar-btns list-mode-switch">';
             html += '                <li mode="grid" class="' + (opt.view == 'grid' ? "active" : "") + '">';
             html += '                    <span class="fa fa-th-large fa-lg"></span>';
@@ -670,12 +679,23 @@
             var opt = util.opt(selection);
             var nlist = selection.find('.netdisk-list');
             var selectBtns = selection.find('.select-btns');
-            var snum = nlist.find('input[type=checkbox]:checked').length;
+            var dwurl = selection.find('.dwservice-url em');
+            var slit = nlist.find('input[type=checkbox]:checked');
+            var snum = slit.length;
             if (snum == 0) {
                 selectBtns.removeClass('multi').removeClass('single');
+                dwurl.html('文件名');
             }
             else if (snum == 1) {
                 selectBtns.removeClass('multi').addClass('single');
+                if (opt.dwservice) {
+                    var dwDoc = slit.first().parent().data(DOC_ITEM);
+                    var dwName = dwDoc.name;
+                    if (dwDoc.type) {
+                        dwName += '.' + dwDoc.type;
+                    }
+                    dwurl.html(dwName);
+                }
             }
             else if (snum > 1) {
                 selectBtns.removeClass('single').addClass('multi');

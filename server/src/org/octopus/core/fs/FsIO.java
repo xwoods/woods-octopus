@@ -112,17 +112,20 @@ public class FsIO {
         return dao.fetch(Document.class, id);
     }
 
-    public Document fetch(String module, String define, String fnm) {
+    public Document fetch(String module, String define, String fnm, String type) {
         Document parent = new Document();
         parent.setModule(module);
         parent.setDefine(define);
         parent.setId(define); // define就是parentId
-        return fetch(parent, fnm);
+        return fetch(parent, fnm, type);
     }
 
-    public Document fetch(Document parent, String fnm) {
-        Document doc = dao.fetch(Document.class, fsCnd(parent).and("parentId", "=", parent.getId())
-                                                              .and("name", "=", fnm));
+    public Document fetch(Document parent, String fnm, String type) {
+        Cnd qcnd = fsCnd(parent).and("parentId", "=", parent.getId()).and("name", "=", fnm);
+        if (!Strings.isBlank(type)) {
+            qcnd.and("type", "=", type);
+        }
+        Document doc = dao.fetch(Document.class, qcnd);
         return doc;
     }
 
