@@ -97,12 +97,12 @@
         _ajax(http.constant.method.POST, url, form, callback);
     };
 
-    http.getText = function(url, form, callback) {
+    http.getText = function (url, form, callback) {
         if (typeof form == "function") {
             callback = form;
             form = null;
         }
-        var whenDone = function(text) {
+        var whenDone = function (text) {
             if (typeof callback == "function") callback(text);
         };
         var ajaxOption = {
@@ -112,6 +112,26 @@
             processData: true
         };
         $.ajax(ajaxOption).done(whenDone).fail(_ajaxFail);
+    };
+
+    http.syncGet = function (url, form) {
+        if (typeof form == "function") {
+            callback = form;
+            form = null;
+        }
+        var re;
+        $.ajax({
+            type: "GET",
+            async: false,
+            url: url,
+            data: form,
+            dataType: "text",
+            processData: true,
+            success: function (text) {
+                re = $z.util.fromJson(text);
+            }
+        });
+        return re;
     }
 
     //============================================= XMLHttpRequest
@@ -279,7 +299,7 @@
             _onChange(respTxt, opt);
         };
         evts.onerror = function (e) {
-            if(opt.onFinish){
+            if (opt.onFinish) {
                 opt.onFinish();
             }
             if (opt.onError) {
@@ -319,7 +339,7 @@
         return args;
     };
 
-    http.urlAfter = function() {
+    http.urlAfter = function () {
         var lo = decodeURIComponent("" + window.location.href);
         var pos = lo.indexOf("#");
         return pos < 0 ? null : lo.substring(pos + 1);

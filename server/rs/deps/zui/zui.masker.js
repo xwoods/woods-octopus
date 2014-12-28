@@ -152,7 +152,16 @@
             }
 
             mdiv.remove();
-            $(document.body).children().removeClass('masker-back');
+
+            // 如果是多层makser
+            var otherMasker = $('.masker.masker-back');
+
+            if (otherMasker.length > 0) {
+                $(otherMasker[otherMasker.length - 1]).removeClass('masker-back');
+            } else {
+                $(document.body).children().removeClass('masker-back');
+            }
+
 
             if (opt.afterClose) {
                 opt.afterClose();

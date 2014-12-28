@@ -62,11 +62,11 @@
     background-position: -16px -288px;
 }
 
+/*压缩包*/
 .zui-icon-24.rar {
     background-position: -16px -312px;
 }
 
-/*压缩包*/
 .zui-icon-24.tar {
     background-position: -16px -336px;
 }
@@ -109,7 +109,13 @@
     background-position: -16px -552px;
 }
 
+.zui-icon-24.js, .zui-icon-24.json {
+    background-position: -16px -576px;
+}
 
+.zui-icon-24.screen {
+    background-position: -16px -600px;
+}
 
 /*64px大小的icon*/
 
@@ -119,7 +125,6 @@
     background: url("zui.icons.png") no-repeat;
     background-position: -120px 0px;
 }
-
 
 /*图片*/
 .zui-icon-64.png {
@@ -221,4 +226,12 @@
 
 .zui-icon-64.dir {
     background-position: -120px -1472px;
+}
+
+.zui-icon-64.js, .zui-icon-64.json {
+    background-position: -120px -1536px;
+}
+
+.zui-icon-64.screen {
+    background-position: -120px -1600px;
 }

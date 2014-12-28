@@ -170,7 +170,7 @@
                 $.masker({
                     closeBtn: true,
                     width: "95%",
-                    height: "80%",
+                    height: "90%",
                     body: function () {
                         var html = '';
                         html += '<div class="zpreview-title">';

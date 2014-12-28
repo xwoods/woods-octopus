@@ -11,6 +11,7 @@
 
     <script language="JavaScript" src="${rs}/deps/jquery.js"></script>
     <script language="JavaScript" src="${rs}/deps/jquery-ui.js"></script>
+    <link rel="stylesheet" href="${rs}/deps/jquery-ui.css">
 
     <script language="JavaScript" src="${rs}/deps/handlebars.js"></script>
 
@@ -24,13 +25,18 @@
     <link rel="stylesheet" href="${rs}/deps/zui/zui.masker.css">
     <link rel="stylesheet" href="${rs}/deps/zui/zui.grid.css">
     <link rel="stylesheet" href="${rs}/deps/zui/zui.upload.css">
+    <link rel="stylesheet" href="${rs}/deps/zui/zui.edit.css">
     <link rel="stylesheet" href="${rs}/deps/zui/zui.netdisk.css">
 
     <script language="JavaScript" src="${rs}/deps/zui/zui.masker.js"></script>
     <script language="JavaScript" src="${rs}/deps/zui/zui.grid.js"></script>
     <script language="JavaScript" src="${rs}/deps/zui/zui.upload.js"></script>
     <script language="JavaScript" src="${rs}/deps/zui/zui.preview.js"></script>
+    <script language="JavaScript" src="${rs}/deps/zui/zui.text.js"></script>
+    <script language="JavaScript" src="${rs}/deps/zui/zui.screen.js"></script>
+    <script language="JavaScript" src="${rs}/deps/zui/zui.edit.js"></script>
     <script language="JavaScript" src="${rs}/deps/zui/zui.netdisk.js"></script>
+    
 
     <script language="JavaScript" src="${rs}/deps/underscore.js"></script>
     <script language="JavaScript" src="${rs}/deps/angular/angular.js"></script>

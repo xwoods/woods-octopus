@@ -34,6 +34,24 @@
             if (opt.isPrivate == undefined) {
                 opt.isPrivate = true;
             }
+            var defaultSwitchs = {
+                'createFile': false,
+                'createFolder': true,
+                'rename': true,
+                'upload': true,
+                'download': true,
+                'share': false,
+                'delete': true,
+                'move': false,
+                'copy': false,
+                'trans': false,
+                'add2Screen': false
+            };
+            if (opt.switchs) {
+                opt.switchs = $.extend({}, defaultSwitchs, opt.switchs);
+            } else {
+                opt.switchs = defaultSwitchs;
+            }
             return opt;
         },
         selection: function (ele) {
@@ -62,52 +80,84 @@
             html += ' 	<div class="netdisk">';
             html += '        <div class="netdisk-toolbar">';
             if (opt.mode == 'write') {
-                html += '            <ul class="netdisk-toolbar-btns default-btns-upload">';
-                html += '                <li>';
-                html += '                    <span class="fa fa-upload fa-lg"></span>';
-                html += '                    上传';
-                html += '                </li>';
-                html += '            </ul>';
-                if (!opt.dwservice) {
-                    html += '            <ul class="netdisk-toolbar-btns default-btns-newfolder">';
+                if (opt.switchs.upload) {
+                    html += '            <ul class="netdisk-toolbar-btns default-btns-upload">';
                     html += '                <li>';
-                    html += '                    <span class="fa fa-folder-o fa-lg"></span>';
-                    html += '                    新建文件夹';
+                    html += '                    <span class="fa fa-upload fa-lg"></span>';
+                    html += '                    上传';
                     html += '                </li>';
                     html += '            </ul>';
                 }
+                if (opt.switchs.createFile) {
+                    html += '            <ul class="netdisk-toolbar-btns default-btns-create">';
+                    html += '                <li>';
+                    html += '                    <span class="fa fa-file-o fa-lg"></span>';
+                    html += '                    新建';
+                    html += '                </li>';
+                    html += '            </ul>';
+                }
+                if (!opt.dwservice) {
+                    if (opt.switchs.createFolder) {
+                        html += '            <ul class="netdisk-toolbar-btns default-btns-newfolder">';
+                        html += '                <li>';
+                        html += '                    <span class="fa fa-folder-o fa-lg"></span>';
+                        html += '                    新建文件夹';
+                        html += '                </li>';
+                        html += '            </ul>';
+                    }
+                }
             }
             html += '            <ul class="netdisk-toolbar-btns select-btns">';
-            html += '                <li class="single file-download">';
-            html += '                    <span class="fa fa-download fa-lg"></span>';
-            html += '                    下载';
-            html += '                </li>';
+            if (opt.switchs.download) {
+                html += '                <li class="single file-download">';
+                html += '                    <span class="fa fa-download fa-lg"></span>';
+                html += '                    下载';
+                html += '                </li>';
+            }
             if (opt.mode == 'write') {
-                html += '                <li class="single multi file-delete">';
-                html += '                    <span class="fa fa-trash fa-lg"></span>';
-                html += '                    删除';
-                html += '                </li>';
-                html += '                <li class="single file-rename">';
-                html += '                    <span class="fa fa-pencil-square-o fa-lg"></span>';
-                html += '                    重命名';
-                html += '                </li>';
+                if (opt.switchs.delete) {
+                    html += '                <li class="single multi file-delete">';
+                    html += '                    <span class="fa fa-trash fa-lg"></span>';
+                    html += '                    删除';
+                    html += '                </li>';
+                }
+                if (opt.switchs.rename) {
+                    html += '                <li class="single file-rename">';
+                    html += '                    <span class="fa fa-pencil-square-o fa-lg"></span>';
+                    html += '                    重命名';
+                    html += '                </li>';
+                }
                 if (!opt.dwservice) {
-                    html += '                <li class="single file-share">';
-                    html += '                    <span class="fa fa-share-alt fa-lg"></span>';
-                    html += '                    分享';
-                    html += '                </li>';
-                    html += '                <li class="multi single file-move">';
-                    html += '                    <span class="fa fa-arrows fa-lg"></span>';
-                    html += '                    移动到';
-                    html += '                </li>';
-                    html += '                <li class="single file-copy">';
-                    html += '                    <span class="fa fa-copy fa-lg"></span>';
-                    html += '                    制作副本';
-                    html += '                </li>';
-                    html += '                <li class="single file-trans">';
-                    html += '                    <span class="fa fa-exchange fa-lg"></span>';
-                    html += '                    转换为';
-                    html += '                </li>';
+                    if (opt.switchs.share) {
+                        html += '                <li class="single file-share">';
+                        html += '                    <span class="fa fa-share-alt fa-lg"></span>';
+                        html += '                    分享';
+                        html += '                </li>';
+                    }
+                    if (opt.switchs.move) {
+                        html += '                <li class="multi single file-move">';
+                        html += '                    <span class="fa fa-arrows fa-lg"></span>';
+                        html += '                    移动到';
+                        html += '                </li>';
+                    }
+                    if (opt.switchs.copy) {
+                        html += '                <li class="single file-copy">';
+                        html += '                    <span class="fa fa-copy fa-lg"></span>';
+                        html += '                    制作副本';
+                        html += '                </li>';
+                    }
+                    if (opt.switchs.trans) {
+                        html += '                <li class="single file-trans">';
+                        html += '                    <span class="fa fa-exchange fa-lg"></span>';
+                        html += '                    转换为';
+                        html += '                </li>';
+                    }
+                    if (opt.switchs.add2Screen) {
+                        html += '                <li class="single multi file-add2screen">';
+                        html += '                    <span class="fa fa-plus-circle fa-lg"></span>';
+                        html += '                    添加到屏幕';
+                        html += '                </li>';
+                    }
                 }
             }
             html += '            </ul>';
@@ -127,7 +177,7 @@
             html += '        </div>';
             html += '        <div class="netdisk-crumbs">';
             html += '            <ul>';
-            html += '               <li module="' + opt.root.module + '" mkey="' + (opt.root.moduleKey ? opt.root.moduleKey : "") + '" pid="' + (opt.root.pid ? opt.root.pid : "") + '">全部文件</li>';
+            html += '               <li module="' + opt.root.module + '" mkey="' + (opt.root.moduleKey ? opt.root.moduleKey : "") + '" pid="' + (opt.root.pid ? opt.root.pid : "") + '">根目录</li>';
             html += '            </ul>';
             html += '            <div class="netdisk-list-num">共 <span>0</span> 个文件</div>';
             html += '        </div>';
@@ -230,6 +280,8 @@
             var dm = data.dm(selection);
             data.loadDocument(dm, function (dlist) {
                 opt.dlist = dlist;
+                // 缓存
+                setDocs(dlist);
                 // 更新显示
                 ndlistNum.html(opt.dlist.length);
                 loadingJq.hide();
@@ -336,6 +388,23 @@
                 });
             });
 
+            // 新建文件
+            selection.delegate('.default-btns-create', 'click', function () {
+                var selection = util.selection(this);
+                var opt = util.opt(selection);
+                var createType = opt.createType;
+                var fileNm = prompt("请输入" + createType[0] + "格式的文件名称", "未命名");
+                if ($z.util.isBlank(fileNm)) {
+                    return;
+                }
+                var dm = data.dm(selection);
+                events.createNewFile(dm, fileNm, createType[0], function (doc) {
+                    if (doc != null) {
+                        data.refresh(selection);
+                    }
+                });
+            });
+
             // 上传文件
             selection.delegate('.default-btns-upload', 'click', function () {
                 var selection = util.selection(this);
@@ -396,9 +465,17 @@
                     nli.appendTo(pul);
                     data.refresh(selection);
                 } else {
-                    $.zpreview({
-                        "doc": doc
-                    });
+                    // 预览还是修改
+                    // TODO 这里需要大修改
+                    if (doc.type == "js" || doc.type == "json" || doc.type == "screen") {
+                        $.zedit({
+                            'doc': doc
+                        });
+                    } else {
+                        $.zpreview({
+                            "doc": doc
+                        });
+                    }
                 }
             };
 
@@ -446,7 +523,45 @@
                 });
             });
 
-            // 抓换文件
+            // 添加到屏幕
+            selection.delegate('.file-add2screen', 'click', function () {
+                var selection = util.selection(this);
+                var opt = util.opt(selection);
+                var dflist = selection.find('.netdisk-list input[type=checkbox]:checked');
+                var dfarray = [];
+                var hasDir = false;
+                var notTransDone = false;
+                dflist.each(function () {
+                    var doc = $(this).parent().data(DOC_ITEM);
+                    if (doc.readAs == "DIR" || doc.readAs == "CPX") {
+                        hasDir = true;
+                        return;
+                    }
+                    if (doc.hasTrans && 'video' == doc.cate && !doc.transDone) {
+                        notTransDone = true;
+                        return;
+                    }
+                    dfarray.push(doc);
+                });
+                if (notTransDone) {
+                    alert("不能添加未转化完成的视频");
+                    return;
+                }
+                if (hasDir) {
+                    alert("暂时不支持添加文件夹, 请修改选中项目")
+                    return;
+                }
+                opt.events.add2Screen(dfarray);
+                //
+                var allchkbtn = selection.find('.check-all-file');
+                if (allchkbtn.prop('checked')) {
+                    allchkbtn.click();
+                } else {
+                    allchkbtn.click().click();
+                }
+            });
+
+            // 转换文件
             selection.delegate('.fa-exchange', 'click', function () {
                 var selection = util.selection(this);
                 var opt = util.opt(selection);
@@ -749,6 +864,11 @@
             }
             cul.append('<li module="' + module + '" mkey="' + (mkey ? mkey : "") + '" pid="' + (pid ? pid : "") + '">' + name + '</li>');
             data.refresh(selection);
+        },
+        listHeight: function () {
+            var sel = this;
+            var maxHeight = sel.height();
+            sel.find('.netdisk-list').css('height', maxHeight - 90).css('overflow-y', 'auto');
         }
     };
 // _________________________________

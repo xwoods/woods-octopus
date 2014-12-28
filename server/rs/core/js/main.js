@@ -84,11 +84,11 @@ var previewTypeMap = {
     'png': true,
     'gif': true,
     'mp4': true,
-    'mov' : true,
+    'mov': true,
     'wmv': true,
     'mpeg': true,
     'avi': true,
-    'mpg' : true
+    'mpg': true
 };
 
 var uploadTypeMap = {
@@ -101,11 +101,11 @@ var uploadTypeMap = {
     'ppt': true,
     'zip': true,
     'mp4': true,
-    'mov' : true,
+    'mov': true,
     'wmv': true,
     'mpeg': true,
     'avi': true,
-    'mpg' : true
+    'mpg': true
 };
 
 
@@ -120,7 +120,7 @@ if (!window.myConf) {
         'friendsName': '',
         'friendsChat': {},
         // 部分控制页面的元素
-        'isDebug': false,
+        'isDebug': true,
         'mini': true,
         hasPreview: function (type) {
             return previewTypeMap[type] == true;
@@ -128,6 +128,32 @@ if (!window.myConf) {
         canUpload: function (type) {
             return uploadTypeMap[type] == true;
         }
+    }
+}
+
+window.docmap = {};
+
+function getDoc(docId) {
+
+    var doc = window.docmap[docId];
+
+    if (doc == null) {
+        var re = $z.http.syncGet('/doc/fetch', {
+            id: docId
+        });
+        if (re.ok) {
+            window.docmap[docId] = re.data;
+            doc = window.docmap[docId];
+        }
+    }
+
+    return doc;
+}
+
+function setDocs(doclist) {
+    for (var i = 0; i < doclist.length; i++) {
+        var doc = doclist[i];
+        window.docmap[doc.id] = doc;
     }
 }
 
@@ -780,7 +806,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
         $z.http.post("/user/friends/online", {
             'friends': window.myConf.friendsName
         }, function (re) {
-            console.log("Check Friend Online, At " + new Date());
+            // console.log("Check Friend Online, At " + new Date());
             var fonlineMap = re.data;
             for (var i = 0; i < window.myConf.friends.length; i++) {
                 var fri = window.myConf.friends[i];
@@ -796,7 +822,7 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
     // 长ping
     function ping() {
         $z.http.get("/user/ping", function (re) {
-            console.log("Ping Server, At " + new Date());
+            // console.log("Ping Server, At " + new Date());
         });
     }
 
@@ -895,6 +921,17 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
             }
         });
     });
+
+
+    // ====================== test
+    //$z.http.post('/doc/fetch', {'id': "fa846ab4378447c18bfe1c0c0c9127dd"}, function (re) {
+    //    var doc = re.data;
+    //    $.zedit({
+    //        'doc': doc
+    //    });
+    //});
+
+
 });
 
 mainApp.config(['$routeProvider', function ($routeProvider) {
