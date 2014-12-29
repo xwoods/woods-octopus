@@ -153,7 +153,7 @@ function getDoc(docId) {
 function setDocs(doclist) {
     for (var i = 0; i < doclist.length; i++) {
         var doc = doclist[i];
-        window.docmap[doc.id] = doc;
+        window.docmap[doc.id] = re.data;
     }
 }
 

@@ -52,6 +52,12 @@ public class DocumentModule extends AbstractBaseModule {
 		return fsIO.fetch(docId);
 	}
 
+	@At("/path/?")
+	public String getDocumentPath(String docId) {
+		Document document = fsIO.fetch(docId);
+		return FsPath.file(document);
+	}
+
 	@At("/list")
 	public List<Document> listDocument(@Param("pid") String parentId,
 			@Param("module") String module,

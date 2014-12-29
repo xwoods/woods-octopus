@@ -76,7 +76,7 @@
             html += '               <div class="screen-dashboard-menu-inner">';
             html += '                   <span class="screen-mx-label">矩阵大小</span>';
             html += '                   <span class="screen-mx-attr">';
-            html += '                       <input class="screen-mx-size-x" value="1"> x <input class="screen-mx-size-y" value="1">';
+            html += '                       <input class="screen-mx-size-x" value="3"> x <input class="screen-mx-size-y" value="3">';
             html += '                   </span>';
             html += '                   <b class="vsep"></b>';
             html += '                   <span class="screen-mx-label">矩阵分辨率</span>';
@@ -186,13 +186,16 @@
             $z.http.getText('/doc/txt/read', {
                 'docId': opt.doc.id
             }, function (text) {
+                if ($z.util.isBlank(text)) {
+                    text = "{}";
+                }
                 var screen = eval("(" + text + ")");
                 if ($.isEmptyObject(screen)) {
                     screen = {
                         "width": 1920,
                         "height": 1080,
-                        "sizeX": 1,
-                        "sizeY": 1,
+                        "sizeX": 3,
+                        "sizeY": 3,
                         "layers": []
                     };
                 }
@@ -356,16 +359,31 @@
             // 查看源码
             selection.delegate('.screen-sourcecode', 'click', function () {
                 var sbtn = $(this);
+                var selection = util.selection(sbtn);
                 if (sbtn.hasClass('checksource')) {
                     sbtn.removeClass('checksource');
                     sbtn.html('查看源码');
+                    selection.find('.edit-container').removeClass('source');
                 } else {
                     sbtn.addClass('checksource');
                     sbtn.html('返回编辑');
+                    selection.find('.edit-container').addClass('source');
+                    selection.find('.source-layout textarea').val($z.util.json2strF(data.get(selection), true));
                 }
-                var selection = util.selection(sbtn);
-                selection.find('.edit-container').addClass('source');
-                selection.find('.source-layout textarea').val($z.util.json2strF(data.get(selection), true));
+            });
+
+            // 播放
+            selection.delegate('.screen-play', 'click', function () {
+                var opt = util.opt(util.selection(this));
+                var yes = confirm("将当前屏幕播放在 '默认' 矩阵中播放吗?");
+                if (yes) {
+                    $z.http.post("/matrix/play/start", {
+                        'mc': 'default',
+                        'scrn': opt.doc.id
+                    }, function (re) {
+                        alert('播放设置成功');
+                    });
+                }
             });
 
         },
