@@ -562,7 +562,7 @@
             });
 
             // 转换文件
-            selection.delegate('.fa-exchange', 'click', function () {
+            selection.delegate('.file-trans', 'click', function () {
                 var selection = util.selection(this);
                 var opt = util.opt(selection);
                 var sfile = selection.find('.netdisk-list input[type=checkbox]:checked').first();

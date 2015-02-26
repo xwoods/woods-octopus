@@ -587,6 +587,9 @@
             if (li.hasClass('active')) {
                 return;
             }
+            // pobj
+            //var acPobj = selection.find('.screen-mx-lypobj.active');
+            //acPobj.removeClass('active');
             var cindex = li.attr('cindex');
             var tljq = selection.find('.screen-timeline-stack-item.screen-mx-ly-' + cindex);
             var lyjq = selection.find('.screen-layout-stack-item.screen-mx-ly-' + cindex);
@@ -596,6 +599,7 @@
             tljq.addClass('active');
             lyjq.siblings().removeClass('active');
             lyjq.addClass('active');
+
 
             events.refreshTotalDuration(selection);
             events.refreshPobjInfo(selection);
@@ -770,7 +774,7 @@
             });
         },
         resetCurrentLypobj: function (selection) {
-            var lypobj = selection.find('.screen-mx-lypobj.active');
+            var lypobj = selection.find('.screen-layout-stack-item.active .screen-mx-lypobj.active');
             var opt = util.opt(selection);
             var mi = lypobj.data("POBJ").mymeta;
             lypobj.css({

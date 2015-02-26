@@ -29,7 +29,7 @@ public class Document extends BeanCreateModify {
     // 父节点id (如果是根节点的话)
     private String parentId;
     // 文件名
-    @ColDefine(width = 512)
+    @ColDefine(width = 256)
     private String name;
     // 文件后缀
     private String type;
