@@ -82,54 +82,54 @@
 <div class="header">
     <span>Oct</span><img class="logo" src="${rs}/core/img/octopus-logo.png"><span>pus</span>
     <ol class="header-menu">
-        <li class="header-module">
-            <i class="fa fa-comments fa-2x header-icon"><span class="check-list-tip">0</span></i>
-            <ul class="sub-menu sub-menu-right">
-                <li class="title">${msg['page.header.friends']}</li>
-                <li class="myfriends" ng-controller="MyFriendsCtrl">
-                    <input type="text" ng-model="friendFilter">
-                    <ul>
-                        <li ng-repeat="user in  users | filter:friendFilter | orderBy:'isOnline':true"
-                            chatId="{{user.chatId}}"
-                            class="friend-info online-{{user.isOnline}} friend-chat-{{user.chatId}}"
-                            ng-click="chatWithFriend(user.name)">
-                            <img src="/user/face/{{user.name}}" class="user-face"/>
+        <!--<li class="header-module">-->
+            <!--<i class="fa fa-comments fa-2x header-icon"><span class="check-list-tip">0</span></i>-->
+            <!--<ul class="sub-menu sub-menu-right">-->
+                <!--<li class="title">${msg['page.header.friends']}</li>-->
+                <!--<li class="myfriends" ng-controller="MyFriendsCtrl">-->
+                    <!--<input type="text" ng-model="friendFilter">-->
+                    <!--<ul>-->
+                        <!--<li ng-repeat="user in  users | filter:friendFilter | orderBy:'isOnline':true"-->
+                            <!--chatId="{{user.chatId}}"-->
+                            <!--class="friend-info online-{{user.isOnline}} friend-chat-{{user.chatId}}"-->
+                            <!--ng-click="chatWithFriend(user.name)">-->
+                            <!--<img src="/user/face/{{user.name}}" class="user-face"/>-->
 
-                            <div class="friend-base">
-                                <div class="friend-name">{{user.name}}</div>
-                                <div class="friend-stat">
-                                    <em></em>
-                                    <span class="on">${msg['page.header.friends.online']}</span>
-                                    <span class="off">${msg['page.header.friends.offline']}</span>
-                                </div>
-                            </div>
-                            <div class="friend-unread hdn">0</div>
-                        </li>
-                    </ul>
-                </li>
-                <li class="bottom-bar">
-                    <span>${msg['page.header.checkall']}</span><i class="fa fa-chevron-circle-right fa-1x"></i>
-                </li>
-            </ul>
-        </li>
-        <li class="header-module">
-            <i class="fa fa-tasks fa-2x header-icon"><span class="check-list-tip">0</span></i>
-            <ul class="sub-menu">
-                <li class="title">${msg['page.header.task']}</li>
-                <li class="bottom-bar">
-                    <span>${msg['page.header.checkall']}</span><i class="fa fa-chevron-circle-right fa-1x"></i>
-                </li>
-            </ul>
-        </li>
-        <li class="header-module">
-            <i class="fa fa-exclamation-circle fa-2x header-icon"><span class="check-list-tip">0</span></i>
-            <ul class="sub-menu">
-                <li class="title">${msg['page.header.notice']}</li>
-                <li class="bottom-bar">
-                    <span>${msg['page.header.checkall']}</span><i class="fa fa-chevron-circle-right fa-1x"></i>
-                </li>
-            </ul>
-        </li>
+                            <!--<div class="friend-base">-->
+                                <!--<div class="friend-name">{{user.name}}</div>-->
+                                <!--<div class="friend-stat">-->
+                                    <!--<em></em>-->
+                                    <!--<span class="on">${msg['page.header.friends.online']}</span>-->
+                                    <!--<span class="off">${msg['page.header.friends.offline']}</span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<div class="friend-unread hdn">0</div>-->
+                        <!--</li>-->
+                    <!--</ul>-->
+                <!--</li>-->
+                <!--<li class="bottom-bar">-->
+                    <!--<span>${msg['page.header.checkall']}</span><i class="fa fa-chevron-circle-right fa-1x"></i>-->
+                <!--</li>-->
+            <!--</ul>-->
+        <!--</li>-->
+        <!--<li class="header-module">-->
+            <!--<i class="fa fa-tasks fa-2x header-icon"><span class="check-list-tip">0</span></i>-->
+            <!--<ul class="sub-menu">-->
+                <!--<li class="title">${msg['page.header.task']}</li>-->
+                <!--<li class="bottom-bar">-->
+                    <!--<span>${msg['page.header.checkall']}</span><i class="fa fa-chevron-circle-right fa-1x"></i>-->
+                <!--</li>-->
+            <!--</ul>-->
+        <!--</li>-->
+        <!--<li class="header-module">-->
+            <!--<i class="fa fa-exclamation-circle fa-2x header-icon"><span class="check-list-tip">0</span></i>-->
+            <!--<ul class="sub-menu">-->
+                <!--<li class="title">${msg['page.header.notice']}</li>-->
+                <!--<li class="bottom-bar">-->
+                    <!--<span>${msg['page.header.checkall']}</span><i class="fa fa-chevron-circle-right fa-1x"></i>-->
+                <!--</li>-->
+            <!--</ul>-->
+        <!--</li>-->
         <li class="header-module hm-user">
             <img src="/user/face/${userInfo.userFace}" class="user-face">
 
@@ -186,24 +186,24 @@
             </div>
         </div>
     </div>
-    <div class="main-sidebar">
-        <div class="sidebar-container">
-            <div class="main-sidebar-switch">
-                <i class="fa fa-2x fa-angle-double-left"></i>
-            </div>
-            <ul class="chat-list">
-            </ul>
-            <div class="chat-list-filter">
-                <input type="text" placeholder="">
-            </div>
-            <div class="chat-container">
-            </div>
-            <div class="no-chat">
-                <img src="${rs}/core/img/baozou/bz001.png">
-                <span>No Chat Selected</span>
-            </div>
-        </div>
-    </div>
+    <!--<div class="main-sidebar">-->
+        <!--<div class="sidebar-container">-->
+            <!--<div class="main-sidebar-switch">-->
+                <!--<i class="fa fa-2x fa-angle-double-left"></i>-->
+            <!--</div>-->
+            <!--<ul class="chat-list">-->
+            <!--</ul>-->
+            <!--<div class="chat-list-filter">-->
+                <!--<input type="text" placeholder="">-->
+            <!--</div>-->
+            <!--<div class="chat-container">-->
+            <!--</div>-->
+            <!--<div class="no-chat">-->
+                <!--<img src="${rs}/core/img/baozou/bz001.png">-->
+                <!--<span>No Chat Selected</span>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
 </div>
 <div class="footer">
     <span>© 2012-2014 XWoods. All rights reserved Powered by <a href="http://nutzam.com">Nutz-Project</a></span>

@@ -826,41 +826,42 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
         });
     }
 
-    ping();
-    // 30s
-    setInterval(ping, 30000);
+    // 暂时关闭
+    //ping();
+    //// 30s
+    //setInterval(ping, 30000);
 
-    getUnread();
+    // getUnread();
 
-    // 启动一个轮训机制
-    var lastUnread = 0;
-    $z.http.cometES({
-        url: "/chat/unread/longcheck",
-        onChange: function (respTxt, opt) {
-            var unreadNum = parseInt(respTxt);
-            if (!isNaN(unreadNum)) {
-                if (lastUnread < unreadNum) {
-                    playAlertAudio();
-                    document.title = " 您有 " + unreadNum + " 条新消息未读";
-                }
-                // 说明是数字, 那就尝试读取吧
-                if (lastUnread !== unreadNum) {
-                    getUnread();
-                }
-            }
-        },
-        onFinish: function () {
-        }
-    });
+    //// 启动一个轮训机制
+    //var lastUnread = 0;
+    //$z.http.cometES({
+    //    url: "/chat/unread/longcheck",
+    //    onChange: function (respTxt, opt) {
+    //        var unreadNum = parseInt(respTxt);
+    //        if (!isNaN(unreadNum)) {
+    //            if (lastUnread < unreadNum) {
+    //                playAlertAudio();
+    //                document.title = " 您有 " + unreadNum + " 条新消息未读";
+    //            }
+    //            // 说明是数字, 那就尝试读取吧
+    //            if (lastUnread !== unreadNum) {
+    //                getUnread();
+    //            }
+    //        }
+    //    },
+    //    onFinish: function () {
+    //    }
+    //});
 
-    var currentChat = 0;
-    var currentChatUnread = 0;
-    setInterval(function () {
-        if (currentChat != 0 && currentChatUnread > 0) {
-            // 判断一下当前chat的unread数量
-            getChatMsg(currentChat);
-        }
-    }, 1000);
+    //var currentChat = 0;
+    //var currentChatUnread = 0;
+    //setInterval(function () {
+    //    if (currentChat != 0 && currentChatUnread > 0) {
+    //        // 判断一下当前chat的unread数量
+    //        getChatMsg(currentChat);
+    //    }
+    //}, 1000);
 
     // 播放提示音
     var isPlayAlertAudio = false;
