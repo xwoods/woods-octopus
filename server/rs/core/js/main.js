@@ -349,12 +349,20 @@ $(document).ready(function () {
             addMLog(e.data);
         };
         ws.onclose = function (e) {
+            clearInterval(wsInter);
+            ws = null;
         };
         ws.onerror = function (e) {
+            clearInterval(wsInter);
+            ws = null;
         };
 
-        setInterval(function () {
-            ws.send('ping');
+        var wsInter = setInterval(function () {
+            if (ws == null) {
+                clearInterval(wsInter);
+            } else {
+                ws.send('ping');
+            }
         }, 10 * 1000);
     }
 });

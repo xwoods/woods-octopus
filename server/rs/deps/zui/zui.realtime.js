@@ -8,18 +8,125 @@
     var OPT_NAME = "zrealtime_option";
     var SEL_CLASS = ".zrealtime";
     var SEL_CLASS_NM = "zrealtime";
-    var LY_INDEX = 0;
+    var LY_INDEX = 10;
 
     function getIndex() {
         return LY_INDEX++;
     }
 
+    function resetIndex() {
+        LY_INDEX = 10;
+    }
+
     // 实时播放命令的对象
     var RT = {
-        play: function () {
-
+        ws: null,
+        wsInter: null,
+        ping: function () {
+            RT.wsInter = setInterval(function () {
+                if (RT.ws == null) {
+                    clearInterval(RT.wsInter);
+                    RT.wsInter = null;
+                } else {
+                    RT.send('#PING');
+                }
+            }, 10 * 1000);
+        },
+        init: function () {
+            var host = window.location.host;
+            var ws = new WebSocket("ws://" + host + "/matrix/realtime/cmd");
+            ws.onopen = function (e) {
+            };
+            ws.onmessage = function (e) {
+            };
+            ws.onclose = function (e) {
+                RT.ws = null;
+            };
+            ws.onerror = function (e) {
+                RT.ws = null;
+            };
+            RT.ws = ws;
+        },
+        close: function () {
+            if (RT.ws != null) {
+                RT.ws.close();
+            }
+            RT.ws = null;
+            if (RT.wsInter != null) {
+                clearInterval(RT.wsInter);
+            }
+            RT.wsInter = null;
+        },
+        send: function (smg) {
+            if (RT.ws != null) {
+                RT.ws.send(smg);
+            }
+            console.debug("send : " + smg);
+        },
+        playLayer: function (cindex, docId, style) {
+            RT.send(RTCmd({
+                'type': "play",
+                'data': {
+                    'doc': docId,
+                    'style': style,
+                    'zIndex': parseInt(ci)
+                }
+            }));
+        },
+        stopLayer: function (cindex) {
+            if (cindex == undefined) {
+                RT.send(RTCmd('data', {
+                    "type": "stop",
+                    "by": "all"
+                }));
+            } else {
+                RT.send(RTCmd('data', {
+                    "type": "stop",
+                    "by": "z_index",
+                    "params": {"ids": "" + cindex}
+                }));
+            }
+        },
+        unlockLayer: function (cindex) {
+            RT.send(RTCmd('data', {
+                type: "play",
+                libName: "unlock",
+                params: {
+                    zIndex: parseInt(cindex)
+                }
+            }));
+        },
+        lockLayer: function (cindex) {
+            RT.send(RTCmd('data', {
+                type: "play",
+                libName: "lock",
+                params: {
+                    zIndex: parseInt(cindex)
+                }
+            }));
+        },
+        moveLayer: function (cindex, style) {
+            RT.send(RTCmd('data', {
+                type: "play",
+                libName: "move",
+                params: {
+                    "height": style.height,
+                    "left": style.left,
+                    "top": style.top,
+                    "width": style.width,
+                    zIndex: parseInt(cindex)
+                }
+            }));
         }
     };
+
+    function RTCmd(tp, data) {
+        return $z.util.json2str({
+            'type': tp,
+            'data': data
+        });
+    }
+
 
     // _________________________________
     var util = {
@@ -292,6 +399,7 @@
             selection.delegate('.screen-lys-list li', 'click', events.switchLayer);
             // 关闭
             selection.delegate('.close-masker', 'click', function () {
+                RT.close();
                 var opt = util.opt(util.selection(this));
                 if (opt.beforeClose) {
                     opt.beforeClose();
@@ -328,6 +436,7 @@
             selection.delegate('.screen-mx-item-lock', 'click', function () {
                 var lockBtn = $(this);
                 var selection = util.selection(lockBtn);
+                var cindex = selection.find('.screen-lys-list li.active').attr('cindex');
                 // 看看有没有选中的素材
                 var lypobj = selection.find('.screen-layout-stack-item.active .screen-mx-lypobj');
                 if (lypobj.length == 0) {
@@ -342,6 +451,8 @@
 
                     selection.find('.screen-lys').show();
                     selection.find('.screen-material').show();
+
+                    RT.lockLayer(cindex);
                 } else {
                     // 解锁
                     lypobj.addClass('unlock');
@@ -351,6 +462,8 @@
 
                     selection.find('.screen-lys').hide();
                     selection.find('.screen-material').hide();
+
+                    RT.unlockLayer(cindex);
                 }
             });
 
@@ -416,9 +529,10 @@
             var lyinfoY = selection.find('.screen-mx-item-top');
             var lyinfoW = selection.find('.screen-mx-item-width');
             var lyinfoH = selection.find('.screen-mx-item-height');
-            var cindex = 0;
+            var lastCindex = 0;
             for (var i = 0; i < doclist.length; i++) {
-                cindex = events.addLayer(selection);
+                var cindex = events.addLayer(selection);
+                lastCindex = cindex;
                 var pobj = selection.find('li.screen-mx-ly-' + cindex);
                 var layout = selection.find('.screen-layout-stack-item.screen-mx-ly-' + cindex);
                 var doc = doclist[i];
@@ -486,19 +600,24 @@
                     .appendTo(layout.find('.screen-layout-stack-item-wrap'))
                     .resizable({
                         resize: function (event, ui) {
-                            var width = Math.floor(ui.size.width / opt.layout.scaleX / opt.zoomNum);
-                            var height = Math.floor(ui.size.height / opt.layout.scaleY / opt.zoomNum);
-                            lyinfoW.val(width);
-                            lyinfoH.val(height);
-                        },
-                        stop: function (event, ui) {
                             var pobj = ui.helper.data('POBJ');
-                            var width = Math.floor(ui.size.width / opt.layout.scaleX / opt.zoomNum);
-                            var height = Math.floor(ui.size.height / opt.layout.scaleY / opt.zoomNum);
+                            var width = Math.floor(ui.size.width / opt.layout.scaleX);
+                            var height = Math.floor(ui.size.height / opt.layout.scaleY);
                             lyinfoW.val(width);
                             lyinfoH.val(height);
                             pobj.mymeta.width = width;
                             pobj.mymeta.height = height;
+                            RT.moveLayer(cindex, pobj.mymeta);
+                        },
+                        stop: function (event, ui) {
+                            var pobj = ui.helper.data('POBJ');
+                            var width = Math.floor(ui.size.width / opt.layout.scaleX);
+                            var height = Math.floor(ui.size.height / opt.layout.scaleY);
+                            lyinfoW.val(width);
+                            lyinfoH.val(height);
+                            pobj.mymeta.width = width;
+                            pobj.mymeta.height = height;
+                            RT.moveLayer(cindex, pobj.mymeta);
                         }
                     })
                     .draggable({
@@ -507,23 +626,29 @@
                         },
                         stop: function (event, ui) {
                             ui.helper.removeClass('moving');
-                            var left = Math.floor(ui.position.left / opt.layout.scaleX) * opt.zoomNum;
-                            var top = Math.floor(ui.position.top / opt.layout.scaleY) * opt.zoomNum;
+                            var pobj = ui.helper.data('POBJ');
+                            var left = Math.floor(ui.position.left / opt.layout.scaleX);
+                            var top = Math.floor(ui.position.top / opt.layout.scaleY);
                             lyinfoX.val(left);
                             lyinfoY.val(top);
-                            var pobj = ui.helper.data('POBJ');
                             pobj.mymeta.top = top;
                             pobj.mymeta.left = left;
+                            RT.moveLayer(cindex, pobj.mymeta);
                         },
                         drag: function (event, ui) {
-                            console.log('left : ' + ui.position.left + ", scaleX : " + opt.layout.scaleX);
-                            lyinfoX.val(Math.floor((ui.position.left - ((opt.zoomNum - 1) * 1920 / opt.layout.scaleX) ) / opt.layout.scaleX * opt.zoomNum));
-                            lyinfoY.val(Math.floor((ui.position.top - ((opt.zoomNum - 1) * 1080 / opt.layout.scaleX) ) / opt.layout.scaleY * opt.zoomNum));
+                            var pobj = ui.helper.data('POBJ');
+                            var left = Math.floor(ui.position.left / opt.layout.scaleX);
+                            var top = Math.floor(ui.position.top / opt.layout.scaleY);
+                            lyinfoX.val(left);
+                            lyinfoY.val(top);
+                            pobj.mymeta.top = top;
+                            pobj.mymeta.left = left;
+                            RT.moveLayer(cindex, pobj.mymeta);
                         }
                     }).resizable('disable').draggable('disable');
             }
 
-            selection.find('li.screen-mx-ly-' + cindex).click();
+            selection.find('li.screen-mx-ly-' + lastCindex).click();
 
         },
         mxStaffChange: function (selection) {
@@ -546,6 +671,10 @@
             var selection = util.selection(this);
             selection.find('.screen-layout-stack').empty();
             selection.find('.screen-lys-list').empty();
+
+            // 发送命令
+            RT.stopLayer();
+            resetIndex();
         },
         deleteLayer: function () {
             var mpobj = $(this).parent();
@@ -569,6 +698,9 @@
             if (nli != null) {
                 nli.click();
             }
+
+            // 发送命令
+            RT.stopLayer(cindex);
         },
         switchLayer: function () {
             var li = $(this);
@@ -745,6 +877,10 @@
             events.bind(selection);
             // 调整布局
             layout.resize(selection);
+
+            RT.init();
+            RT.ping();
+
             // 返回支持链式赋值
             return selection;
         }
