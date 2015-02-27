@@ -14,6 +14,13 @@
         return LY_INDEX++;
     }
 
+    // 实时播放命令的对象
+    var RT = {
+        play: function () {
+
+        }
+    };
+
     // _________________________________
     var util = {
         opt: function (selection) {
@@ -27,6 +34,7 @@
         },
         checkopt: function (opt) {
             opt.zoom = false;
+            opt.zoomNum = 1;
             return opt;
         },
         selection: function (ele) {
@@ -49,6 +57,31 @@
                 'sizeY': mxconf.sizeY,
                 'width': mxconf.revWidth,
                 'height': mxconf.revHeight
+            };
+        },
+        zoomIn: function (oldpos) {
+            return {
+                'width': oldpos.width * 2,
+                'height': oldpos.height * 2,
+                'top': oldpos.top - oldpos.height / 2,
+                'left': oldpos.left - oldpos.width / 2
+            };
+        },
+        zoomOut: function (oldpos) {
+            return {
+                'width': oldpos.width / 2,
+                'height': oldpos.height / 2,
+                'top': oldpos.top + oldpos.height / 4,
+                'left': oldpos.left + oldpos.width / 4
+            };
+        },
+        oldpos: function (jq) {
+            var style = jq[0].style;
+            return {
+                'width': parseFloat(style.width),
+                'height': parseFloat(style.height),
+                'top': parseFloat(style.top),
+                'left': parseFloat(style.left)
             };
         }
     };
@@ -320,6 +353,43 @@
                     selection.find('.screen-material').hide();
                 }
             });
+
+            // 缩放窗口
+
+            selection.delegate('.screen-layout-scale-menu-btns .fa', 'click', events.zoomLayout);
+
+        },
+        zoomLayout: function () {
+            var zbtn = $(this);
+            var selection = util.selection(zbtn);
+            var opt = util.opt(selection);
+            var zoom = selection.find('.scale-zoom input');
+            var z = parseInt(zoom.val());
+            var goBig = !zbtn.hasClass('fa-search-minus');
+            z = z + (zbtn.hasClass('fa-search-minus') ? -1 : 1);
+            if (z < 5 && z > 0) {
+                zoom.val(z);
+                // 调整小窗口
+                var zwin = selection.find('.screen-layout-scale-menu-cube');
+                if (goBig) {
+                    zwin.css(util.zoomOut(util.oldpos(zwin)));
+                } else {
+                    zwin.css(util.zoomIn(util.oldpos(zwin)));
+                }
+                // 调整大窗口
+                var lypobs = selection.find('.screen-mx-lypobj');
+                lypobs.each(function (i, ele) {
+                    var ly = $(ele);
+                    if (goBig) {
+                        ly.css(util.zoomIn(util.oldpos(ly)));
+                    } else {
+                        ly.css(util.zoomOut(util.oldpos(ly)));
+                    }
+                });
+                opt.zoomNum = z;
+            } else {
+                alert('抱歉, 超出了缩放范围');
+            }
         },
         addLayer: function (selection) {
             var cindex = getIndex();
@@ -416,15 +486,15 @@
                     .appendTo(layout.find('.screen-layout-stack-item-wrap'))
                     .resizable({
                         resize: function (event, ui) {
-                            var width = Math.floor(ui.size.width / opt.layout.scaleX);
-                            var height = Math.floor(ui.size.height / opt.layout.scaleY);
+                            var width = Math.floor(ui.size.width / opt.layout.scaleX / opt.zoomNum);
+                            var height = Math.floor(ui.size.height / opt.layout.scaleY / opt.zoomNum);
                             lyinfoW.val(width);
                             lyinfoH.val(height);
                         },
                         stop: function (event, ui) {
                             var pobj = ui.helper.data('POBJ');
-                            var width = Math.floor(ui.size.width / opt.layout.scaleX);
-                            var height = Math.floor(ui.size.height / opt.layout.scaleY);
+                            var width = Math.floor(ui.size.width / opt.layout.scaleX / opt.zoomNum);
+                            var height = Math.floor(ui.size.height / opt.layout.scaleY / opt.zoomNum);
                             lyinfoW.val(width);
                             lyinfoH.val(height);
                             pobj.mymeta.width = width;
@@ -437,8 +507,8 @@
                         },
                         stop: function (event, ui) {
                             ui.helper.removeClass('moving');
-                            var left = Math.floor(ui.position.left / opt.layout.scaleX);
-                            var top = Math.floor(ui.position.top / opt.layout.scaleY);
+                            var left = Math.floor(ui.position.left / opt.layout.scaleX) * opt.zoomNum;
+                            var top = Math.floor(ui.position.top / opt.layout.scaleY) * opt.zoomNum;
                             lyinfoX.val(left);
                             lyinfoY.val(top);
                             var pobj = ui.helper.data('POBJ');
@@ -446,8 +516,9 @@
                             pobj.mymeta.left = left;
                         },
                         drag: function (event, ui) {
-                            lyinfoX.val(Math.floor(ui.position.left / opt.layout.scaleX));
-                            lyinfoY.val(Math.floor(ui.position.top / opt.layout.scaleY));
+                            console.log('left : ' + ui.position.left + ", scaleX : " + opt.layout.scaleX);
+                            lyinfoX.val(Math.floor((ui.position.left - ((opt.zoomNum - 1) * 1920 / opt.layout.scaleX) ) / opt.layout.scaleX * opt.zoomNum));
+                            lyinfoY.val(Math.floor((ui.position.top - ((opt.zoomNum - 1) * 1080 / opt.layout.scaleX) ) / opt.layout.scaleY * opt.zoomNum));
                         }
                     }).resizable('disable').draggable('disable');
             }
@@ -601,6 +672,12 @@
                 height: lyPos.height / 2,
                 top: lyPos.top + lyPos.height / 2,
                 left: lyPos.left + lyPos.width / 2
+            });
+            selection.find('.screen-layout-scale-menu-cube').css({
+                width: lyPos.width / 2,
+                height: lyPos.height / 2,
+                top: 0,
+                left: 0
             });
 
             // stack-item
