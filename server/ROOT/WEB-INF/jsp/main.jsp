@@ -37,7 +37,8 @@
     <script language="JavaScript" src="${rs}/deps/zui/zui.screen.js"></script>
     <script language="JavaScript" src="${rs}/deps/zui/zui.edit.js"></script>
     <script language="JavaScript" src="${rs}/deps/zui/zui.netdisk.js"></script>
-    
+    <script language="JavaScript" src="${rs}/deps/zui/zui.realtime.js"></script>
+
 
     <script language="JavaScript" src="${rs}/deps/underscore.js"></script>
     <script language="JavaScript" src="${rs}/deps/angular/angular.js"></script>
