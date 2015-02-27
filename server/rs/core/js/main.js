@@ -304,6 +304,59 @@ $(document).ready(function () {
     if (window.myConf.mini) {
         navMenu.find(".nav-mini-toogle").click();
     }
+
+
+    var matrixMode = true;
+
+    if (matrixMode) {
+        var body = $(document.body);
+        var mlog = $('<div class="matrix-log"></div>');
+        var isCtrl = false;
+        var useConsole = false;
+        mlog.appendTo(body);
+
+        body.keydown(function (e) {
+            console.debug("keyCode : " + e.keyCode + ", keyWhich : " + e.which);
+            if (e.keyCode == 17) { // ctrl
+                isCtrl = true;
+                console.debug('ctrl down');
+            }
+            if (e.keyCode == 84 && isCtrl) { // t
+                useConsole ? mlog.removeClass('active') : mlog.addClass('active');
+                useConsole = !useConsole;
+            }
+        });
+        body.keyup(function (e) {
+            // console.debug("keyCode : " + e.keyCode + ", keyWhich : " + e.which);
+            if (e.keyCode == 17) {
+                isCtrl = false;
+                console.debug('ctrl up');
+            }
+        });
+
+        function addMatrixLog(str) {
+            mlog.append('<pre>' + str + '</pre>');
+            mlog[0].scrollTop = mlog[0].scrollHeight;
+        }
+
+        window.addMLog = addMatrixLog;
+
+        var host = window.location.host;
+        ws = new WebSocket("ws://" + host + "/matrix/play/log");
+        ws.onopen = function (e) {
+        };
+        ws.onmessage = function (e) {
+            addMLog(e.data);
+        };
+        ws.onclose = function (e) {
+        };
+        ws.onerror = function (e) {
+        };
+
+        setInterval(function () {
+            ws.send('ping');
+        }, 10 * 1000);
+    }
 });
 
 // 控制module跳转
@@ -932,58 +985,6 @@ mainApp.controller('MyFriendsCtrl', function ($scope) {
     //    });
     //});
 
-
-    var matrixMode = true;
-
-    if (matrixMode) {
-        var body = $(document.body);
-        var mlog = $('<div class="matrix-log"></div>');
-        var isCtrl = false;
-        var useConsole = false;
-        mlog.appendTo(body);
-
-        body.keydown(function (e) {
-            console.debug("keyCode : " + e.keyCode + ", keyWhich : " + e.which);
-            if (e.keyCode == 17) { // ctrl
-                isCtrl = true;
-                console.debug('ctrl down');
-            }
-            if (e.keyCode == 84 && isCtrl) { // t
-                useConsole ? mlog.removeClass('active') : mlog.addClass('active');
-                useConsole = !useConsole;
-            }
-        });
-        body.keyup(function (e) {
-            // console.debug("keyCode : " + e.keyCode + ", keyWhich : " + e.which);
-            if (e.keyCode == 17) {
-                isCtrl = false;
-                console.debug('ctrl up');
-            }
-        });
-
-        function addMatrixLog(str) {
-            mlog.append('<pre>' + str + '</pre>');
-            mlog[0].scrollTop = mlog[0].scrollHeight;
-        }
-
-        window.addMLog = addMatrixLog;
-
-        var host = window.location.host;
-        ws = new WebSocket("ws://" + host + "/matrix/play/log");
-        ws.onopen = function (e) {
-        };
-        ws.onmessage = function (e) {
-            addMLog(e.data);
-        };
-        ws.onclose = function (e) {
-        };
-        ws.onerror = function (e) {
-        };
-
-        setInterval(function () {
-            ws.send('ping');
-        }, 10 * 1000);
-    }
 
 });
 

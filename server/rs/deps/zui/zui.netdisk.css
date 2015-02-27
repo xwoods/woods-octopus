@@ -348,8 +348,8 @@
     font-size: 12px;
 }
 
-.zpreview-title > span.pre-docinfo {
-    margin: 8px 0 0 5px;
+.edit-title-bar > .pre-docinfo {
+    /* margin: 8px 0 0 5px; */
     color: #ff0000;
 }
 

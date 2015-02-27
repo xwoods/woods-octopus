@@ -4,7 +4,8 @@
 <head lang="en">
     <meta charset="UTF-8">
     <link rel="shortcut icon" href="${rs}/core/img/favicon.ico"/>
-    <title>${msg['page.main.title']}</title>
+    <!--<title>${msg['page.main.title']}</title>-->
+    <title>矩阵播放服务器</title>
 
     <!-- ############ 依赖 ############ -->
     <link rel="stylesheet" href="${rs}/deps/font-awesome/css/font-awesome.css">

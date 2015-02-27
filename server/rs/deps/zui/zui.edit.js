@@ -138,9 +138,9 @@
                 var doc = opt.doc;
                 // 初始化目录
                 $.masker({
-                    closeBtn: true,
-                    width: "95%",
-                    height: "90%",
+                    closeBtn: false,
+                    width: "98%",
+                    height: "98%",
                     body: function () {
                         return "";
                     },

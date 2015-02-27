@@ -45,6 +45,7 @@
             var html = '';
             html += '<div class="edit-title-bar">';
             html += '   <div class="edit-doc-name">' + doc.name + "." + doc.type + '</div>';
+            html += '   <div class="edit-btn close-masker">关闭</div>';
             html += '   <div class="edit-btn screen-save">保存</div>';
             html += '</div>';
             html += '<div class="edit-body ztext">';
@@ -80,6 +81,10 @@
                 }, function (re) {
                     alert('保存成功');
                 });
+            });
+
+            selection.delegate('.close-masker', 'click', function () {
+                $.masker('close');
             });
         }
     };

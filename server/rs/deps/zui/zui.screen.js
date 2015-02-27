@@ -64,7 +64,8 @@
             html += '<div class="zscreen">'
             html += '<div class="edit-title-bar">';
             html += '   <div class="edit-doc-name">' + doc.name + "." + doc.type + '</div>';
-            html += '   <div class="edit-btn screen-play">播放</div>';
+            //html += '   <div class="edit-btn screen-play">播放</div>';
+            html += '   <div class="edit-btn close-masker">关闭</div>';
             html += '   <div class="edit-btn screen-sourcecode">查看源码</div>';
             html += '   <div class="edit-btn screen-save">保存</div>';
             html += '</div>';
@@ -384,6 +385,10 @@
                         alert('播放设置成功');
                     });
                 }
+            });
+
+            selection.delegate('.close-masker', 'click', function () {
+                $.masker('close');
             });
 
         },

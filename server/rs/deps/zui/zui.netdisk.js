@@ -45,7 +45,8 @@
                 'move': false,
                 'copy': false,
                 'trans': false,
-                'add2Screen': false
+                'add2Screen': false,
+                'selected': false
             };
             if (opt.switchs) {
                 opt.switchs = $.extend({}, defaultSwitchs, opt.switchs);
@@ -156,6 +157,12 @@
                         html += '                <li class="single multi file-add2screen">';
                         html += '                    <span class="fa fa-plus-circle fa-lg"></span>';
                         html += '                    添加到屏幕';
+                        html += '                </li>';
+                    }
+                    if (opt.switchs.selected) {
+                        html += '                <li class="single multi file-selected">';
+                        html += '                    <span class="fa fa-plus-circle fa-lg"></span>';
+                        html += '                    选中';
                         html += '                </li>';
                     }
                 }
@@ -559,6 +566,20 @@
                 } else {
                     allchkbtn.click().click();
                 }
+            });
+
+
+            // 选中
+            selection.delegate('.file-selected', 'click', function () {
+                var selection = util.selection(this);
+                var opt = util.opt(selection);
+                var dflist = selection.find('.netdisk-list input[type=checkbox]:checked');
+                var dfarray = [];
+                dflist.each(function () {
+                    var doc = $(this).parent().data(DOC_ITEM);
+                    dfarray.push(doc);
+                });
+                opt.events.selected(dfarray);
             });
 
             // 转换文件

@@ -168,15 +168,16 @@
                 var doc = opt.doc;
                 // 初始化目录
                 $.masker({
-                    closeBtn: true,
-                    width: "95%",
-                    height: "90%",
+                    closeBtn: false,
+                    width: "98%",
+                    height: "98%",
                     body: function () {
                         var html = '';
-                        html += '<div class="zpreview-title">';
-                        html += '   <span class="pre-docname">' + doc.name + "." + doc.type + '</span>';
-                        html += '   <span class="pre-docinfo"></span>';
-                        html += '   <a class="pre-download" href="/doc/bin/read?docId=' + doc.id + '">下载</a>';
+                        html += '<div class="edit-title-bar">';
+                        html += '   <div class="edit-doc-name">' + doc.name + "." + doc.type + '</div>';
+                        html += '   <div class="edit-doc-name pre-docinfo"></div>';
+                        html += '   <div class="edit-btn close-masker">关闭</div>';
+                        html += '   <a class="edit-btn pre-download" href="/doc/bin/read?docId=' + doc.id + '">下载</a>';
                         html += '</div>';
                         html += '<div class="zpreview-body">';
                         html += '<div class="zpreview-body-container">';
@@ -237,6 +238,10 @@
                     afterDomReady: function (mdiv) {
                         showDoc(mdiv, doc);
                         showMeta(mdiv, doc);
+
+                        mdiv.delegate('.close-masker', 'click', function () {
+                            $.masker('close');
+                        });
                     }
                 });
                 // 加载数据
