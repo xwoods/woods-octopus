@@ -209,20 +209,15 @@
             selection.find('.screen-mx-size-y').val(screen.sizeY);
             selection.find('.screen-mx-rev').val(screen.width + "x" + screen.height);
 
-            var lymap = {}
+
             for (var i = screen.layers.length - 1; i >= 0; i--) {
                 var layer = screen.layers[i];
                 var ci = events.addLayerByName(selection, layer.name);
-                lymap[ci] = layer;
-            }
-
-            for (var ci in lymap) {
-                var layer = lymap[ci];
                 var pobjs = layer.pobjs;
                 if (pobjs && pobjs.length > 0) {
                     var doclist = [];
-                    for (var i = 0; i < pobjs.length; i++) {
-                        var pobj = pobjs[i];
+                    for (var j = 0; j < pobjs.length; j++) {
+                        var pobj = pobjs[j];
                         var docId = pobj.deps[0].id;
                         var doc = getDoc(docId);
                         var meta = $z.util.str2json(doc.meta);
@@ -237,7 +232,6 @@
                     events.addPobj2TimelineAndLayout(selection, doclist, ci);
                 }
             }
-
 
             events.mxStaffChange(selection);
             layout.resize(selection);
@@ -555,7 +549,7 @@
             // layout
             var layout = '';
             //layout += '<div class="screen-layout-stack-item screen-mx-ly-' + cindex + '" ></div>';
-            layout += '<div class="screen-layout-stack-item screen-mx-ly-' + cindex + '" ><div class="screen-layout-stack-item-wrap"></div></div>';
+            layout += '<div class="screen-layout-stack-item active screen-mx-ly-' + cindex + '" ><div class="screen-layout-stack-item-wrap"></div></div>';
             selection.find('.screen-layout-stack').append(layout);
 
             // 激活
@@ -651,6 +645,7 @@
             e.stopPropagation();
             var dpobj = $(this).parent();
             var docId = dpobj.attr('docId');
+            var pos = dpobj.prevAll().length;
             var selection = util.selection(dpobj);
             var npobj = null;
             if (dpobj.hasClass('active')) {
@@ -663,7 +658,7 @@
                 }
             }
             dpobj.remove();
-            var lypobj = selection.find('.screen-mx-lypobj.pobj-' + docId);
+            var lypobj = $(selection.find('.screen-layout-stack-item.active .screen-mx-lypobj')[pos]);
             lypobj.remove();
             if (npobj != null) {
                 npobj.click();
