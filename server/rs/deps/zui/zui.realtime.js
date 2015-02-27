@@ -118,6 +118,8 @@
             html += '               <div class="screen-timeline">';
             html += '                   <div class="screen-timeline-bar">';
             html += '                       <div class="screen-timeline-item-info">';
+            html += '                           <span>锁定</span>';
+            html += '                           <div class="screen-mx-item-lock">ON</div>';
             html += '                           <span>宽度</span>';
             html += '                           <input class="screen-mx-item-width" type="width" value="0" oldval="0">';
             html += '                           <span>高度</span>';
@@ -257,6 +259,10 @@
             selection.delegate('.screen-lys-list li', 'click', events.switchLayer);
             // 关闭
             selection.delegate('.close-masker', 'click', function () {
+                var opt = util.opt(util.selection(this));
+                if (opt.beforeClose) {
+                    opt.beforeClose();
+                }
                 $.masker('close');
             });
             // 显示zoom区域
@@ -273,9 +279,47 @@
                 opt.zoom = !opt.zoom;
             });
 
-            // 清除
-            // selection.delegate('.screen-lys-btn.clear', 'click', events.clearAllLayer);
+            // 隐藏zoom
+            selection.delegate('.screen-layout-scale-menu-back', 'click', function () {
+                selection.find('.screen-layout-scale-menu').hide();
+                selection.find('.screen-layout-scale-menu-back').hide();
+                selection.find('.screen-layout-scale-menu-btns i').hide();
+                opt.zoom = false;
+            });
 
+            // 清除
+            selection.delegate('.screen-lys-btn.clear', 'click', events.clearLayer);
+            selection.delegate('.screen-mx-pobj .mx-pobj-del', 'click', events.deleteLayer);
+
+            // 加解锁
+            selection.delegate('.screen-mx-item-lock', 'click', function () {
+                var lockBtn = $(this);
+                var selection = util.selection(lockBtn);
+                // 看看有没有选中的素材
+                var lypobj = selection.find('.screen-layout-stack-item.active .screen-mx-lypobj');
+                if (lypobj.length == 0) {
+                    return;
+                }
+                if (lockBtn.hasClass('off')) {
+                    // 所上
+                    lypobj.removeClass('unlock');
+                    lypobj.resizable("disable").draggable('disable');
+                    lockBtn.removeClass('off');
+                    lockBtn.html('ON')
+
+                    selection.find('.screen-lys').show();
+                    selection.find('.screen-material').show();
+                } else {
+                    // 解锁
+                    lypobj.addClass('unlock');
+                    lypobj.resizable("enable").draggable('enable');
+                    lockBtn.addClass('off');
+                    lockBtn.html('OFF');
+
+                    selection.find('.screen-lys').hide();
+                    selection.find('.screen-material').hide();
+                }
+            });
         },
         addLayer: function (selection) {
             var cindex = getIndex();
@@ -367,41 +411,45 @@
                     'height': opt.layout.scaleY * mi.height,
                     'top': opt.layout.scaleX * mi.top,
                     'left': opt.layout.scaleY * mi.left
-                }).attr('width', mi.width).attr('height', mi.height).appendTo(layout.find('.screen-layout-stack-item-wrap')).resizable({
-                    resize: function (event, ui) {
-                        var width = Math.floor(ui.size.width / opt.layout.scaleX);
-                        var height = Math.floor(ui.size.height / opt.layout.scaleY);
-                        lyinfoW.val(width);
-                        lyinfoH.val(height);
-                    },
-                    stop: function (event, ui) {
-                        var pobj = ui.helper.data('POBJ');
-                        var width = Math.floor(ui.size.width / opt.layout.scaleX);
-                        var height = Math.floor(ui.size.height / opt.layout.scaleY);
-                        lyinfoW.val(width);
-                        lyinfoH.val(height);
-                        pobj.mymeta.width = width;
-                        pobj.mymeta.height = height;
-                    }
-                }).draggable({
-                    start: function (event, ui) {
-                        ui.helper.addClass('moving');
-                    },
-                    stop: function (event, ui) {
-                        ui.helper.removeClass('moving');
-                        var left = Math.floor(ui.position.left / opt.layout.scaleX);
-                        var top = Math.floor(ui.position.top / opt.layout.scaleY);
-                        lyinfoX.val(left);
-                        lyinfoY.val(top);
-                        var pobj = ui.helper.data('POBJ');
-                        pobj.mymeta.top = top;
-                        pobj.mymeta.left = left;
-                    },
-                    drag: function (event, ui) {
-                        lyinfoX.val(Math.floor(ui.position.left / opt.layout.scaleX));
-                        lyinfoY.val(Math.floor(ui.position.top / opt.layout.scaleY));
-                    }
-                });
+                }).attr('width', mi.width)
+                    .attr('height', mi.height)
+                    .appendTo(layout.find('.screen-layout-stack-item-wrap'))
+                    .resizable({
+                        resize: function (event, ui) {
+                            var width = Math.floor(ui.size.width / opt.layout.scaleX);
+                            var height = Math.floor(ui.size.height / opt.layout.scaleY);
+                            lyinfoW.val(width);
+                            lyinfoH.val(height);
+                        },
+                        stop: function (event, ui) {
+                            var pobj = ui.helper.data('POBJ');
+                            var width = Math.floor(ui.size.width / opt.layout.scaleX);
+                            var height = Math.floor(ui.size.height / opt.layout.scaleY);
+                            lyinfoW.val(width);
+                            lyinfoH.val(height);
+                            pobj.mymeta.width = width;
+                            pobj.mymeta.height = height;
+                        }
+                    })
+                    .draggable({
+                        start: function (event, ui) {
+                            ui.helper.addClass('moving');
+                        },
+                        stop: function (event, ui) {
+                            ui.helper.removeClass('moving');
+                            var left = Math.floor(ui.position.left / opt.layout.scaleX);
+                            var top = Math.floor(ui.position.top / opt.layout.scaleY);
+                            lyinfoX.val(left);
+                            lyinfoY.val(top);
+                            var pobj = ui.helper.data('POBJ');
+                            pobj.mymeta.top = top;
+                            pobj.mymeta.left = left;
+                        },
+                        drag: function (event, ui) {
+                            lyinfoX.val(Math.floor(ui.position.left / opt.layout.scaleX));
+                            lyinfoY.val(Math.floor(ui.position.top / opt.layout.scaleY));
+                        }
+                    }).resizable('disable').draggable('disable');
             }
 
             selection.find('li.screen-mx-ly-' + cindex).click();
@@ -423,8 +471,14 @@
         mxLayoutChange: function (selection) {
             layout.resizeDashboard(selection)
         },
-        delLayer: function () {
-            var li = $(this).parent();
+        clearLayer: function () {
+            var selection = util.selection(this);
+            selection.find('.screen-layout-stack').empty();
+            selection.find('.screen-lys-list').empty();
+        },
+        deleteLayer: function () {
+            var mpobj = $(this).parent();
+            var li = mpobj.parent();
             var selection = util.selection(li);
             var nli = null;
             if (li.hasClass('active')) {
@@ -438,9 +492,7 @@
             }
             var cindex = li.attr('cindex');
             li.remove();
-            var tljq = selection.find('.screen-timeline-stack-item.screen-mx-ly-' + cindex);
             var lyjq = selection.find('.screen-layout-stack-item.screen-mx-ly-' + cindex);
-            tljq.remove();
             lyjq.remove();
 
             if (nli != null) {
@@ -462,15 +514,6 @@
 
             events.refreshPobjInfo(selection);
         },
-        changeLayerName: function () {
-            var ln = $(this);
-            var lyName = prompt('请修改名称', ln.html());
-            if (lyName == '' || lyName == undefined || lyName == null) {
-                return;
-            } else {
-                ln.html(lyName);
-            }
-        },
         selPobj: function () {
             var mpobj = $(this);
             var selection = util.selection(mpobj);
@@ -491,64 +534,8 @@
             selection.find('.screen-timeline-item-info input[type=height]').val(pobj.mymeta.height);
             selection.find('.screen-timeline-item-info input[type=top]').val(pobj.mymeta.top);
             selection.find('.screen-timeline-item-info input[type=left]').val(pobj.mymeta.left);
-        },
-        afterPobjMove: function (selection) {
-            var pobjs = selection.find('.screen-timeline-stack-item.active .screen-mx-pobj');
-            pobjs.each(function (i, ele) {
-                $(ele).find('.mx-pobj-index').html(i + 1);
-            });
-        },
-        deletePobj: function (e) {
-            e.stopPropagation();
-            var dpobj = $(this).parent();
-            var docId = dpobj.attr('docId');
-            var selection = util.selection(dpobj);
-            var npobj = null;
-            if (dpobj.hasClass('active')) {
-                npobj = dpobj.next();
-                if (npobj.length == 0) {
-                    npobj = dpobj.prev();
-                }
-                if (npobj.length == 0) {
-                    npobj = null;
-                }
-            }
-            dpobj.remove();
-            var lypobj = selection.find('.screen-mx-lypobj.pobj-' + docId);
-            lypobj.remove();
-            if (npobj != null) {
-                npobj.click();
-                events.afterPobjMove(selection);
-                events.refreshTotalDuration(selection);
-            } else {
-                // 没有其他pobj了?
-                selection.find('.screen-timeline-item-info input').val(0);
-                selection.find('.screen-timeline-stack-info b').val(0);
-            }
-        },
-        changePobjDuration: function (e) {
-            e.stopPropagation();
-            var dujq = $(this);
-            var selection = util.selection(dujq);
-            var currentDu = parseInt(dujq.val());
-            if (isNaN(currentDu) || currentDu <= 0) {
-                dujq.val(dujq.attr('oldval'));
-            } else {
-                dujq.attr('oldval', currentDu);
-                events.refreshTotalDuration(selection);
-                if (currentDu != dujq.val()) {
-                    dujq.val(currentDu);
-                }
-            }
-        },
-        refreshTotalDuration: function (selection) {
-            var tdu = 0;
-            var pobjs = selection.find('.screen-timeline-stack-item.active .screen-mx-pobj');
-            pobjs.each(function (i, ele) {
-                tdu += parseInt($(ele).find('.mx-pobj-duration-val').val());
-            });
-            selection.find('.screen-timeline-stack-info b').html(tdu);
-        },
+        }
+        ,
         refreshPobjInfo: function (selection) {
             var mpobj = selection.find('.screen-layout-stack-item.active .screen-mx-lypobj');
             if (mpobj.length > 0) {

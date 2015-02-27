@@ -339,7 +339,7 @@
     border-radius: 6px 6px 0 0;
     background: rgba(128, 128, 128, 0.3);
     padding: 0 30px;
-    width: 400px;
+    width: 500px;
 }
 
 .screen-timeline-stack {
@@ -534,7 +534,6 @@
     position: absolute;
     background: rgba(0, 0, 0, 0.8);
     display: none;
-    cursor: pointer;
 }
 
 .screen-mx-lypobj.active {
@@ -544,6 +543,11 @@
 .screen-mx-lypobj.moving {
     border: 2px solid #008800;
     box-shadow: 0 0 10px #004400;
+}
+
+.screen-mx-lypobj.unlock {
+    box-shadow: 0 0 15px #080;
+    cursor: move;
 }
 
 .mx-lypobj-name {
@@ -608,6 +612,7 @@
     position: absolute;
     z-index: 2400;
     display: none;
+    background: rgba(255, 255, 255, 0.5);
 }
 
 .screen-layout-scale-menu-btns {
@@ -758,4 +763,22 @@
 
 .zrealtime li.active .screen-mx-pobj {
     background: #007AFF;
+}
+
+.screen-mx-item-lock {
+    display: inline-block;
+    width: 40px;
+    background: #007AFF;
+    border-radius: 4px;
+    text-align: center;
+    height: 20px;
+    line-height: 20px;
+    margin-top: 5px;
+    color: #fff;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.screen-mx-item-lock.off {
+    background: #080;
 }
