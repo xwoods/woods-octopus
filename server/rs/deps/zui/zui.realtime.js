@@ -70,6 +70,19 @@
                 'zIndex': parseInt(cindex)
             }));
         },
+        playVisible: function (cindex, docId, mxconf) {
+            RT.send(RTCmd('play', {
+                'doc': docId,
+                'style': {
+                    'width': mxconf.sizeX * mxconf.revWidth,
+                    'height': mxconf.sizeY * mxconf.revHeight,
+                    'top': 0,
+                    'left': 0
+                },
+                'zIndex': parseInt(cindex),
+                'visible': false
+            }));
+        },
         stopLayer: function (cindex) {
             if (cindex == undefined) {
                 RT.send(RTCmd('data', {
@@ -84,29 +97,26 @@
                 }));
             }
         },
-        unlockLayer: function (cindex) {
-            RT.send(RTCmd('data', {
-                type: "play",
-                libName: "unlock",
-                params: {
-                    zIndex: parseInt(cindex)
-                }
-            }));
+        unlockLayer: function (cindex, docId, style, mxconf) {
+            RT.stopLayer(cindex);
+            RT.playVisible(cindex, docId, mxconf);
+            RT.moveLayer(cindex, style);
         },
-        lockLayer: function (cindex) {
-            RT.send(RTCmd('data', {
-                type: "play",
-                libName: "lock",
-                params: {
-                    zIndex: parseInt(cindex)
-                }
-            }));
+        lockLayer: function (cindex, docId, style) {
+            RT.stopLayer(cindex);
+            RT.playLayer(cindex, docId, {
+                "height": style.height,
+                "left": style.left,
+                "top": style.top,
+                "width": style.width
+            });
         },
         moveLayer: function (cindex, style) {
             RT.send(RTCmd('data', {
-                type: "play",
-                libName: "move",
+                type: "update",
+                target: "z_index",
                 params: {
+                    "type": "move",
                     "height": style.height,
                     "left": style.left,
                     "top": style.top,
@@ -258,13 +268,13 @@
             html += '                           <span>锁定</span>';
             html += '                           <div class="screen-mx-item-lock">ON</div>';
             html += '                           <span>宽度</span>';
-            html += '                           <input class="screen-mx-item-width" type="width" value="0" oldval="0">';
+            html += '                           <input class="screen-mx-item-width" type="width" value="0" oldval="0" disabled />';
             html += '                           <span>高度</span>';
-            html += '                           <input class="screen-mx-item-height" type="height" value="0" oldval="0">';
+            html += '                           <input class="screen-mx-item-height" type="height" value="0" oldval="0" disabled />';
             html += '                           <span>X</span>';
-            html += '                           <input class="screen-mx-item-left" type="left" value="0" oldval="0">';
+            html += '                           <input class="screen-mx-item-left" type="left" value="0" oldval="0" disabled />';
             html += '                           <span>Y</span>';
-            html += '                           <input class="screen-mx-item-top" type="top" value="0" oldval="0">';
+            html += '                           <input class="screen-mx-item-top" type="top" value="0" oldval="0" disabled />';
             html += '                       </div>';
             html += '                   </div>';
             html += '               </div>';
@@ -433,12 +443,22 @@
             selection.delegate('.screen-mx-item-lock', 'click', function () {
                 var lockBtn = $(this);
                 var selection = util.selection(lockBtn);
-                var cindex = selection.find('.screen-lys-list li.active').attr('cindex');
                 // 看看有没有选中的素材
                 var lypobj = selection.find('.screen-layout-stack-item.active .screen-mx-lypobj');
                 if (lypobj.length == 0) {
                     return;
                 }
+
+                var ips = lockBtn.parent().find('input');
+
+                var opt = util.opt(selection);
+                var mxpobj = selection.find('.screen-lys-list li.active .screen-mx-pobj');
+
+                var cindex = mxpobj.parent().attr('cindex');
+                var docId = mxpobj.attr('docid');
+                var style = mxpobj.data('POBJ').mymeta;
+                var mxconf = opt.mxconf;
+
                 if (lockBtn.hasClass('off')) {
                     // 所上
                     lypobj.removeClass('unlock');
@@ -448,8 +468,9 @@
 
                     selection.find('.screen-lys').show();
                     selection.find('.screen-material').show();
+                    ips.attr('disabled', 'disabled');
 
-                    RT.lockLayer(cindex);
+                    RT.lockLayer(cindex, docId, style, mxconf);
                 } else {
                     // 解锁
                     lypobj.addClass('unlock');
@@ -459,8 +480,9 @@
 
                     selection.find('.screen-lys').hide();
                     selection.find('.screen-material').hide();
+                    ips.attr('disabled', null);
 
-                    RT.unlockLayer(cindex);
+                    RT.unlockLayer(cindex, docId, style, mxconf);
                 }
             });
 
@@ -762,9 +784,16 @@
             var val = parseInt(injq.val());
 
             var apobj = selection.find('.screen-layout-stack-item.active .screen-mx-lypobj');
-            apobj.data('POBJ').mymeta[tp] = val;
+            var pobj = apobj.data('POBJ');
+            pobj.mymeta[tp] = val;
 
             layout.resetCurrentLypobj(selection);
+
+            var mxpobj = selection.find('.screen-lys-list li.active .screen-mx-pobj');
+            var cindex = mxpobj.parent().attr('cindex');
+
+            // 也要调用move
+            RT.moveLayer(cindex, pobj.mymeta);
         }
     };
 // _________________________________
