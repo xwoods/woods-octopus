@@ -64,13 +64,10 @@
             console.debug("send : " + smg);
         },
         playLayer: function (cindex, docId, style) {
-            RT.send(RTCmd({
-                'type': "play",
-                'data': {
-                    'doc': docId,
-                    'style': style,
-                    'zIndex': parseInt(ci)
-                }
+            RT.send(RTCmd('play', {
+                'doc': docId,
+                'style': style,
+                'zIndex': parseInt(cindex)
             }));
         },
         stopLayer: function (cindex) {
@@ -646,6 +643,15 @@
                             RT.moveLayer(cindex, pobj.mymeta);
                         }
                     }).resizable('disable').draggable('disable');
+
+
+                // 播放
+                RT.playLayer(cindex, doc.id, {
+                    "height": mi.height,
+                    "left": mi.left,
+                    "top": mi.top,
+                    "width": mi.width
+                });
             }
 
             selection.find('li.screen-mx-ly-' + lastCindex).click();

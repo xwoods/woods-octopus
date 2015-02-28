@@ -316,10 +316,10 @@ $(document).ready(function () {
         mlog.appendTo(body);
 
         body.keydown(function (e) {
-            console.debug("keyCode : " + e.keyCode + ", keyWhich : " + e.which);
+            // .debug("keyCode : " + e.keyCode + ", keyWhich : " + e.which);
             if (e.keyCode == 17) { // ctrl
                 isCtrl = true;
-                console.debug('ctrl down');
+                //console.debug('ctrl down');
             }
             if (e.keyCode == 84 && isCtrl) { // t
                 useConsole ? mlog.removeClass('active') : mlog.addClass('active');
@@ -330,7 +330,7 @@ $(document).ready(function () {
             // console.debug("keyCode : " + e.keyCode + ", keyWhich : " + e.which);
             if (e.keyCode == 17) {
                 isCtrl = false;
-                console.debug('ctrl up');
+                // console.debug('ctrl up');
             }
         });
 
