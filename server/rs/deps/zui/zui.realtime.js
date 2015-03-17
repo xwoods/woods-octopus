@@ -18,6 +18,16 @@
         LY_INDEX = 10;
     }
 
+    function stopPlay(callback) {
+        $z.http.post("/matrix/play/stop", {
+            'mc': 'default'
+        }, function (re) {
+            if (callback) {
+                callback();
+            }
+        });
+    }
+
     // 实时播放命令的对象
     var RT = {
         ws: null,
@@ -60,8 +70,8 @@
         send: function (smg) {
             if (RT.ws != null) {
                 RT.ws.send(smg);
+                console.debug("send : " + smg);
             }
-            console.debug("send : " + smg);
         },
         playLayer: function (cindex, docId, style) {
             RT.send(RTCmd('play', {
@@ -93,7 +103,7 @@
                 RT.send(RTCmd('data', {
                     "type": "stop",
                     "by": "z_index",
-                    "params": {"ids": "" + cindex}
+                    "params": {"ids": [cindex]}
                 }));
             }
         },
@@ -111,19 +121,40 @@
                 "width": style.width
             });
         },
+        moving: false,
+        moveInfo: {
+            width: 0,
+            height: 0,
+            top: 0,
+            left: 0,
+            zIndex: 10
+        },
+        moveDuration: 20,
         moveLayer: function (cindex, style) {
-            RT.send(RTCmd('data', {
-                type: "update",
-                target: "z_index",
-                params: {
-                    "type": "move",
-                    "height": style.height,
-                    "left": style.left,
-                    "top": style.top,
-                    "width": style.width,
-                    zIndex: parseInt(cindex)
-                }
-            }));
+            if (!RT.moving) {
+                setTimeout(function () {
+                    RT.send(RTCmd('data', {
+                        type: "update",
+                        target: "z_index",
+                        params: {
+                            "type": "move",
+                            "height": RT.moveInfo.height,
+                            "left": RT.moveInfo.left,
+                            "top": RT.moveInfo.top,
+                            "width": RT.moveInfo.width,
+                            zIndex: RT.moveInfo.zIndex
+                        }
+                    }));
+                    RT.moving = false;
+                }, RT.moveDuration);
+                RT.moving = true;
+            }
+
+            RT.moveInfo.zIndex = parseInt(cindex);
+            RT.moveInfo.width = style.width
+            RT.moveInfo.height = style.height
+            RT.moveInfo.top = style.top
+            RT.moveInfo.left = style.left
         }
     };
 
@@ -134,6 +165,7 @@
         });
     }
 
+    window.RT = RT;
 
     // _________________________________
     var util = {
@@ -149,6 +181,9 @@
         checkopt: function (opt) {
             opt.zoom = false;
             opt.zoomNum = 1;
+            if (opt.ask == undefined) {
+                opt.ask = true;
+            }
             return opt;
         },
         selection: function (ele) {
@@ -209,6 +244,7 @@
             html += '<div class="edit-title-bar">';
             html += '   <div class="edit-doc-name"></div>';
             html += '   <div class="edit-btn close-masker">关闭</div>';
+            // html += '   <div class="edit-btn screen-save">保存</div>';
             html += '</div>';
             html += '<div class="edit-body">';
             html += '   <div class="edit-container">'
@@ -331,6 +367,70 @@
     };
     // _________________________________
     var data = {
+        load: function (selection) {
+            var opt = util.opt(selection);
+            $z.http.getText('/doc/txt/read', {
+                'docId': opt.doc.id
+            }, function (text) {
+                if ($z.util.isBlank(text)) {
+                    text = "{}";
+                }
+                var screen = eval("(" + text + ")");
+                if ($.isEmptyObject(screen)) {
+                    screen = {
+                        "layers": []
+                    };
+                }
+                // 按照screen进行加载
+                var doclist = [];
+                for (var i = 0; i < screen.layers.length; i++) {
+                    var ly = screen.layers[i];
+                    var doc = getDoc(ly.docId);
+                    var mi = $z.util.str2json(doc.meta);
+                    mi.width = ly.style.width;
+                    mi.height = ly.style.height;
+                    mi.top = ly.style.top;
+                    mi.left = ly.style.left;
+                    doc.meta = $z.util.json2str(mi);
+                    doclist.push(doc);
+                }
+                events.addPobj2TimelineAndLayout(selection, doclist);
+            });
+        },
+        export: function (selection) {
+            var layers = [];
+            var lis = selection.find('.screen-lys-list li');
+            lis.each(function (i, ele) {
+                var li = $(ele);
+                var ly = {};
+                ly.docId = li.find('.screen-mx-pobj').attr('docid');
+                var cindex = li.attr('cindex');
+                var mpobj = selection.find('.screen-layout-stack-item.screen-mx-ly-' + cindex + ' .screen-mx-lypobj');
+                if (mpobj.length > 0) {
+                    var pobj = mpobj.data('POBJ');
+                    ly.style = {
+                        'width': pobj.mymeta.width,
+                        'height': pobj.mymeta.height,
+                        'top': pobj.mymeta.top,
+                        'left': pobj.mymeta.left
+                    };
+                }
+                layers.push(ly);
+            });
+            return layers;
+        },
+        save: function (selection) {
+            var opt = util.opt(selection);
+            var screen = {
+                'layers': data.export(selection)
+            };
+            $z.http.post('/doc/txt/write', {
+                'docId': opt.doc.id,
+                'content': $z.util.json2str(screen)
+            }, function (re) {
+                //alert('保存成功');
+            });
+        },
         get: function (selection) {
             var mxlayout = util.mxLayout(selection);
             var screen = {
@@ -385,6 +485,13 @@
 
             var opt = util.opt(selection);
 
+            // 保存
+            selection.delegate('.screen-save', 'click', function () {
+                var sbtn = $(this);
+                var selection = util.selection(sbtn);
+                data.save(selection);
+            });
+
             // 辅助线
             selection.delegate('.screen-mx-layout-assist', 'click', function () {
                 var selection = util.selection(this);
@@ -406,6 +513,7 @@
             selection.delegate('.screen-lys-list li', 'click', events.switchLayer);
             // 关闭
             selection.delegate('.close-masker', 'click', function () {
+                data.save(selection);
                 RT.close();
                 var opt = util.opt(util.selection(this));
                 if (opt.beforeClose) {
@@ -565,7 +673,6 @@
                 }, mi); // TODO 根据前一个修改
                 doc.mymeta = mi;
                 var html = '';
-
                 html += '                           <div class="screen-mx-pobj pobj-' + doc.id + '" docId="' + doc.id + '">';
                 html += '                               <div class="mx-pobj-del"><i class="fa fa-remove fa-1x"></i></div>';
                 //html += '                               <div class="mx-pobj-duration">';
@@ -858,6 +965,10 @@
                     'left': opt.layout.scaleY * mi.left
                 });
             });
+
+            // screen-lys-list
+            var lysList = selection.find('.screen-lys-list');
+
         },
         resetLypobj: function (selection, docId) {
             var lypobj = selection.find('.screen-mx-lypobj.pobj-' + docId);
@@ -913,9 +1024,25 @@
             // 调整布局
             layout.resize(selection);
 
-            RT.init();
-            RT.ping();
+            if (opt.ask) {
+                if (confirm('是否进入实时编辑模式')) {
+                    stopPlay(function () {
+                        RT.init();
+                        RT.ping();
+                        data.load(selection);
+                    });
+                } else {
+                    // 初始化doc
+                    data.load(selection);
+                }
+            } else {
+                stopPlay(function () {
+                    RT.init();
+                    RT.ping();
+                    data.load(selection);
+                });
 
+            }
             // 返回支持链式赋值
             return selection;
         }

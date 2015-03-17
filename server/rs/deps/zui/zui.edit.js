@@ -153,6 +153,19 @@
                             });
                             return
                         }
+                        // screen-real
+                        if (doc.type == 'screen-real') {
+                            $z.http.get('/matrix/conf/fetch', {
+                                'name': 'default'
+                            }, function (re) {
+                                var mxconf = re.data;
+                                selection.zrealtime({
+                                    'mxconf': mxconf,
+                                    'doc': doc
+                                });
+                            });
+                            return
+                        }
                         // 文本格式
                         if (doc.cate == 'text' || doc.cate == 'code') {
                             selection.ztext({

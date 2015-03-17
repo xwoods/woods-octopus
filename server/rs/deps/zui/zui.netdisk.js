@@ -9,6 +9,11 @@
     var SEL_CLASS = ".netdisk";
     var SEL_CLASS_NM = "netdisk";
     var DOC_ITEM = "doc-item";
+    var TYPE_NAMES = {
+        'screen': "屏幕",
+        'screen-real': "实时播放屏幕",
+        'js': "配置文件"
+    };
     // _________________________________
     var util = {
         opt: function (selection) {
@@ -22,6 +27,9 @@
         },
         checkopt: function (opt) {
             // TODO
+            if(opt.openFile == undefined){
+                opt.openFile = true;
+            }
             if (!opt.mode) {
                 opt.mode = 'write'
             }
@@ -400,16 +408,77 @@
                 var selection = util.selection(this);
                 var opt = util.opt(selection);
                 var createType = opt.createType;
-                var fileNm = prompt("请输入" + createType[0] + "格式的文件名称", "未命名");
-                if ($z.util.isBlank(fileNm)) {
-                    return;
-                }
                 var dm = data.dm(selection);
-                events.createNewFile(dm, fileNm, createType[0], function (doc) {
-                    if (doc != null) {
-                        data.refresh(selection);
+                //var fileNm = prompt("请输入" + createType[0] + "格式的文件名称", "未命名");
+                //if ($z.util.isBlank(fileNm)) {
+                //    return;
+                //}
+
+                //events.createNewFile(dm, fileNm, createType[0], function (doc) {
+                //    if (doc != null) {
+                //        data.refresh(selection);
+                //    }
+                //});
+                $.masker({
+                    width: 600,
+                    height: 160,
+                    closeBtn: true,
+                    btns: [{
+                        clz: 'btn-add-file',
+                        label: "创建新文件",
+                        event: {
+                            type: 'click',
+                            handle: function (sele) {
+                                var nm = sele.find('.add-file-name');
+                                var nmVal = nm.val();
+                                if ($z.util.isBlank(nmVal)) {
+                                    alert('名字不能为空!');
+                                    return;
+                                }
+                                var tp = sele.find('.add-file-type-list li.active').attr('type');
+                                events.createNewFile(dm, nmVal, tp, function (doc) {
+                                    if (doc != null) {
+                                        data.refresh(selection);
+                                    }
+                                });
+                                $.masker('close');
+                            }
+                        }
+                    }],
+                    body: function () {
+                        var html = '';
+                        html += '<div class="add-file-container">';
+                        html += '   <div class="add-file-type-list">';
+                        html += '       <ul>';
+                        for (var i = 0; i < createType.length; i++) {
+                            html += '<li type="' + createType[i] + '"';
+                            if (i == 0) {
+                                html += ' class="active"';
+                            }
+                            html += ' >';
+                            html += '   <div class="file-type zui-icon-64 ' + createType[i] + '"></div>';
+                            html += '   <div class="file-type-label" >' + TYPE_NAMES[createType[i]] + '</div>';
+                            html += '</li>';
+                        }
+                        html += '       </ul>';
+                        html += '   </div>';
+                        html += '   <div>';
+                        html += '       <input class="add-file-name" placeholder="未命名"/>';
+                        html += '   </div>';
+                        html += '</div>';
+                        return html;
+                    },
+                    afterDomReady: function (mdiv) {
+                        mdiv.delegate('.add-file-type-list li', 'click', function () {
+                            var li = $(this);
+                            if (!li.hasClass('active')) {
+                                li.siblings().removeClass('active');
+                                li.addClass('active');
+                            }
+                        });
+                        mdiv.find('.add-file-name').focus();
                     }
-                });
+                })
             });
 
             // 上传文件
@@ -464,6 +533,9 @@
             var openFile = function () {
                 var selection = util.selection(this);
                 var opt = util.opt(selection);
+                if (opt.openFile == false) {
+                    return;
+                }
                 var doc = $(this).parent().data(DOC_ITEM);
                 if (doc.cate == "folder") {
                     // 进入该目录
@@ -474,7 +546,7 @@
                 } else {
                     // 预览还是修改
                     // TODO 这里需要大修改
-                    if (doc.type == "js" || doc.type == "json" || doc.type == "screen") {
+                    if (doc.type == "js" || doc.type == "json" || doc.cate == "matrix") {
                         $.zedit({
                             'doc': doc
                         });
